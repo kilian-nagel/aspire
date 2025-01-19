@@ -4,10 +4,12 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { createUser } from "@/models/users/users.service";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
+  const username = formData.get("username")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
@@ -19,13 +21,28 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
     },
   });
+
+  // On crée l'utilisateur dans la BD.
+  if(data?.user?.id && username){
+      try {
+        createUser({id:data?.user?.id, email:email, username:username});
+      } catch (err){
+          if(err instanceof Error){
+            return encodedRedirect("error", "/sign-up", err.message);
+          } else {
+            return encodedRedirect("error", "/sign-up", "Erreur lors de la créatio de l'utilisateur");
+          }
+      }
+  } else {
+    return encodedRedirect("error", "/sign-up", "Erreur lors de la créatio de l'utilisateur");
+  }
 
   if (error) {
     console.error(error.code + " " + error.message);
@@ -44,7 +61,7 @@ export const signInAction = async (formData: FormData) => {
   const password = formData.get("password") as string;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  let { error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
