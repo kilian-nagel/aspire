@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 /**
  * Redirects to a specified path with an encoded message as a query parameter.
@@ -13,4 +14,13 @@ export function encodedRedirect(
   message: string,
 ) {
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
+}
+
+export async function getAuthenticatedUser(){
+    const supabase = createClient();
+
+    // On récupère les données de l'user connecté
+    const data = await supabase.auth.getUser();
+    let user = data.data.user;
+    return user;
 }
