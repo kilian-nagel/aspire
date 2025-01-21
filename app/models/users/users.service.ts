@@ -15,7 +15,6 @@ export const getFullUser = async (id: string): Promise<User> => {
     const { data, error } = await supabase.from('users')
     .select("*, likes:likes(*)").eq("id",id).single();
 
-    console.log(data);
     if (error) throw error;
     return data;
 };

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useEffect} from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import {
   Avatar,
@@ -9,6 +9,7 @@ import { Heart, Share, MessageCircle} from "lucide-react";
 import { Post as PostModel } from "@/models/posts/posts.types";
 import { userStore } from "@/store/userStore";
 import { LikeButton } from "@/components/like-button";
+import { timeAgo } from "@/utils/dates"; 
 
 export function Post(post: PostModel) {
   const user_store = userStore();
@@ -26,7 +27,7 @@ export function Post(post: PostModel) {
           </Avatar>
           <div>
             <CardTitle className="text-lg font-semibold">{post.user.username}</CardTitle>
-            <CardDescription className="text-sm text-gray-400">{post.createdAt}</CardDescription>
+            <CardDescription className="text-sm text-gray-400">{timeAgo(post.createdAt)}</CardDescription>
           </div>
         </div>
       </CardHeader>
