@@ -12,7 +12,9 @@ export const createUser = async (user: User) => {
 
 export const getFullUser = async (id: string): Promise<User> => {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('users').select("*").eq("id",id).single();
+    const { data, error } = await supabase.from('users')
+    .select("*, likes:likes(*)").eq("id",id).single();
+
     if (error) throw error;
     return data;
 };
