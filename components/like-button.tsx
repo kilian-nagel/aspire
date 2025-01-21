@@ -16,36 +16,41 @@ export function LikeButton(post:PostModel) {
 
     if(!user) return;
 
-    const [post_belong_to_user, set_post_belong_to_user] = useState(user.likes.find(
+    // On vérifie si l'utilisateur a liké le post 
+    const [is_post_liked, set_is_post_liked] = useState(user.likes.find(
         (post_user) => post_user.postId === post.id
     ) ? true : false);
 
+    // Lorsque l'utilisateur like on change la couleur du coeur en rouge et on augmente le nombre de likes.
     const like = () => {
           set_color("red");
           set_fill_color("red");
-          set_post_belong_to_user(true);
+          set_is_post_liked(true);
           set_nb_likes(nb_likes => nb_likes+1);
     }
 
     const dislike = () => {
           set_color("white");
           set_fill_color("");
-          set_post_belong_to_user(false);
+          set_is_post_liked(false);
           set_nb_likes(nb_likes => nb_likes-1);
     }
 
     useEffect(() => {
         if (!user) return;
 
-        if (post_belong_to_user) {
+        // On change la couleur du coeur si le post est liké par l'user.
+        if (is_post_liked) {
           set_color("red");
           set_fill_color("red");
         }
     }, [user, post.id]);
 
     const like_action = async () => {
-        const initial_state = post_belong_to_user;
-        if(post_belong_to_user){
+        const initial_state = is_post_liked;
+
+        // Lorsque l'user clique sur le coeur on fait l'opération inverse par rapport à l'état du post.
+        if(is_post_liked){
             dislike();
         } else {
             like();
@@ -54,9 +59,10 @@ export function LikeButton(post:PostModel) {
         try {
             await likePost(user.id, post.id); 
         } catch(error){
+            // En cas d'erreur on prévient l'user et on revient à l'état initial
             toast({title:"Erreur", description:"Le post n'a pas pu être liké", variant:"destructive"})
-            set_post_belong_to_user(initial_state)
-            if(post_belong_to_user){
+            set_is_post_liked(initial_state)
+            if(is_post_liked){
                 dislike();
             } else {
                 like();
