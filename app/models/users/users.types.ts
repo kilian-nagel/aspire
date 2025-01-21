@@ -11,3 +11,9 @@ export interface User {
     shares: Share[]
     posts: Post[];
 }
+
+export interface PartialUser {
+    id: string,
+    email: string,
+    username: string
+}
