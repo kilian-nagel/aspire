@@ -3,6 +3,7 @@ import { User } from "@/models/users/users.types"
 import { create } from 'zustand';
 import { getAuthenticatedUser } from "@/utils/utils";
 import { getFullUser } from '@/models/users/users.service';
+import { useEffect } from "react";
 
 interface UserData {
     user: User | null,
@@ -36,3 +37,16 @@ export const userStore = create<UserData>((set, get) => ({
   },
 }));
 
+interface props {
+    initialData: User
+}
+
+export const ClientStoreInitializer:React.FC<props> = ({initialData}) => {
+  const setUserData = userStore((state) => state.setUser);
+
+  useEffect(() => {
+    setUserData(initialData);
+  }, [initialData, setUserData]);
+
+  return null;
+};
