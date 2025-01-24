@@ -24,9 +24,6 @@ export function Post(post: PostModel) {
   const user_store = userStore();
   const user_info = user_store.user;
 
-  // Pour déterminer si on peut afficher certaines actions on vérifie que l'utilise soit l'auteur du post.
-  const user_own_post = user_info?.posts?.some(user_post => user_post.id = post.id);
-
   if(!user_info) return;
 
   return (
