@@ -2,13 +2,17 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { Post } from "@/models/posts/posts.types";
-import { Like } from "@/models/likes/likes.types";
-import { Share } from "@/models/shares/shares.types";
-import { User } from "@/models/users/users.types";
 
 export const createPost = async (post: { userId: string; chatId: number; content: string }) => {
   const supabase = await createClient();
   const { data, error } = await supabase.from('posts').insert([post]).single();
+  if (error) throw error;
+  return data;
+};
+
+export const modifyPost = async (post: { content: string, postId:number }) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from('posts').update({content:post.content}).eq("id", post.postId).single();
   if (error) throw error;
   return data;
 };

@@ -13,10 +13,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { useRef, useState } from "react";
-import { TextAreaAction } from "@/components/text-area-action";  
+import { useState } from "react";
+import { TextAreaAction } from "@/components/text-area-action"; 
 
-export function PostDialog(content:string|null) {
+interface props {
+    content:string |null
+    action_type:string
+}
+
+export const PostDialog:React.FC<props> = ({content, action_type}) => {
   const [btn_clicked,set_btn_clicked] = useState(0);
 
   const create_post = (e) => {
@@ -27,13 +32,14 @@ export function PostDialog(content:string|null) {
   const props = {
     confirm_button_clicked: btn_clicked,
     content: content,
-    action_type: 'add', // Explicitly cast if needed
+    action_type: action_type ?? "add", // Explicitly cast if needed
   };
 
+  // L'user connecté est l'auteur du post.
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">New Post</Button>
+      <DialogTrigger asChild >
+        <span variant="ghost">New Post</span>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

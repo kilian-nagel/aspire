@@ -1,5 +1,5 @@
 "use client";
-import React, {useEffect} from "react";
+import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import {
   Avatar,
@@ -10,11 +10,22 @@ import { Post as PostModel } from "@/models/posts/posts.types";
 import { userStore } from "@/store/userStore";
 import { LikeButton } from "@/components/like-button";
 import { timeAgo } from "@/utils/dates"; 
+import { Button } from "@/components/ui/button"
+import { PostDialog } from "@/components/new-post";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Post(post: PostModel) {
   const user_store = userStore();
-  user_store.loadData();
   const user_info = user_store.user;
+
+  // Pour déterminer si on peut afficher certaines actions on vérifie que l'utilise soit l'auteur du post.
+  const user_own_post = user_info?.posts?.some(user_post => user_post.id = post.id);
 
   if(!user_info) return;
 
@@ -26,9 +37,19 @@ export function Post(post: PostModel) {
             <AvatarFallback>{post.user.username.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
+
             <CardTitle className="text-lg font-semibold">{post.user.username}</CardTitle>
             <CardDescription className="text-sm text-gray-400">{timeAgo(post.createdAt)}</CardDescription>
           </div>
+          <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost">...</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 flex flex-col">
+                    <PostDialog content={post.content} action_type="edit"/>
+                    <Button variant="ghost">Delete</Button>
+              </DropdownMenuContent>
+         </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
