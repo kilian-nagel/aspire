@@ -5,18 +5,18 @@ import {
   Avatar,
   AvatarFallback,
 } from "@/components/ui/avatar"
-import { Heart, Share, MessageCircle} from "lucide-react";
+import { Share, MessageCircle} from "lucide-react";
 import { Post as PostModel } from "@/models/posts/posts.types";
 import { userStore } from "@/store/userStore";
 import { LikeButton } from "@/components/like-button";
 import { timeAgo } from "@/utils/dates"; 
 import { Button } from "@/components/ui/button"
 import { PostDialog } from "@/components/new-post";
+import { deletePost } from "@/models/posts/posts.service";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -34,7 +34,6 @@ export function Post(post: PostModel) {
             <AvatarFallback>{post.user.username.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-
             <CardTitle className="text-lg font-semibold">{post.user.username}</CardTitle>
             <CardDescription className="text-sm text-gray-400">{timeAgo(post.createdAt)}</CardDescription>
           </div>
@@ -43,8 +42,8 @@ export function Post(post: PostModel) {
                 <Button variant="ghost">...</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 flex flex-col">
-                    <PostDialog content={post.content} action_type="edit"/>
-                    <Button variant="ghost">Delete</Button>
+                        <PostDialog className="p-2 hover:cursor-pointer" content={post.content} action_type="edit" id={post.id} />
+                    <Button className="text-left" variant="ghost" onClick={()=>deletePost(post.id)}>Delete</Button>
               </DropdownMenuContent>
          </DropdownMenu>
         </div>

@@ -10,9 +10,18 @@ export const createPost = async (post: { userId: string; chatId: number; content
   return data;
 };
 
-export const modifyPost = async (post: { content: string, postId:number }) => {
+export const modifyPost = async (post: { userId:string, content: string, postId:number }) => {
   const supabase = await createClient();
+
   const { data, error } = await supabase.from('posts').update({content:post.content}).eq("id", post.postId).single();
+  if (error) throw error;
+  return data;
+};
+
+export const deletePost = async (postId:number) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.from('posts').delete().eq("id", postId);
   if (error) throw error;
   return data;
 };
