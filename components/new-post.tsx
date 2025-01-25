@@ -1,6 +1,5 @@
 "use client";
 
-import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -17,29 +16,32 @@ import { useState } from "react";
 import { TextAreaAction } from "@/components/text-area-action"; 
 
 interface props {
-    content:string |null
-    action_type:string
+    content?:string
+    action_type?:string
+    id?: number | undefined
+    className?: string
 }
 
-export const PostDialog:React.FC<props> = ({content, action_type}) => {
+export const PostDialog:React.FC<props> = ({content, action_type, id, className}) => {
   const [btn_clicked,set_btn_clicked] = useState(0);
 
-  const create_post = (e) => {
-    e.preventDefault();
+  // Fonction appelé lorsque le bouton d'ajout est cliqué. Le composant TextAreaAction détectera la modif de la variable btn_clicked et va exécuter l'action d'ajout du post en conséquence.
+  const create_post = () => {
     set_btn_clicked(btn_clicked => btn_clicked + 1);
   }
 
   const props = {
     confirm_button_clicked: btn_clicked,
     content: content,
-    action_type: action_type ?? "add", // Explicitly cast if needed
+    action_type: action_type ?? "add",
+    id:id
   };
 
   // L'user connecté est l'auteur du post.
   return (
-    <Dialog>
-      <DialogTrigger asChild >
-        <span variant="ghost">New Post</span>
+    <Dialog> 
+      <DialogTrigger className={className ?? ""} asChild >
+        <button className="btn-ghost">{action_type === "edit" ? "Edit post":"New post"}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -53,6 +55,8 @@ export const PostDialog:React.FC<props> = ({content, action_type}) => {
             <Label htmlFor="link" className="sr-only">
               Link
             </Label>
+
+            {/* L'input qui contient le texte à modifier ou à ajouter au post. Cette input executera l'action d'ajout du post, lorsqu'on clique sur le bouton 'publish' */}
             <TextAreaAction {...props}/>
           </div>
         </div>
