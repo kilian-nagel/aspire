@@ -5,6 +5,7 @@ import { getAllPosts } from "@/models/posts/posts.service";
 import { PostDialog } from "@/components/new-post";
 import { getFullUser } from "@/models/users/users.service";
 import { ClientStoreInitializer } from "@/store/userStore";
+import { PostStoreInitializer } from "@/store/postStore";
 
 export default async function Page() {
   const supabase = await createClient();
@@ -23,6 +24,7 @@ export default async function Page() {
   return (
     <div className="flex-1 flex relative flex-col gap-12">
       <ClientStoreInitializer initialData={user_data}/>
+      <PostStoreInitializer initialData={posts}/>
       <div className="w-[100%]">
         <div className="flex justify-between items-end gap-3">
             <div>
@@ -38,8 +40,7 @@ export default async function Page() {
                 <PostDialog content="" />
             </div>
         </div>
-
-    
+ 
         <SocialFeed posts={posts} className="mt-4"/>
       </div>
     </div>
