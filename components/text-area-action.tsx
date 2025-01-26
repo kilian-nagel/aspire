@@ -3,8 +3,8 @@ import { useRef, useState } from "react";
 import { createPost, modifyPost } from "@/models/posts/posts.service";
 import { getMainChat } from "@/models/chats/chats.service";
 import { userStore } from "@/store/userStore";
-import { useToast } from "@/hooks/use-toast";
 import { postStore } from "@/store/postStore";
+import { useToast } from "@/hooks/use-toast";
 
 interface props {
     content?:string | undefined
@@ -16,9 +16,9 @@ interface props {
 export function TextAreaAction({content, action_type, confirm_button_clicked, id}: props){
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const user_store = userStore();
-    const post_store = postStore();
     const [prev_confirm_button_clicked, set_prev_confirm_button_clicked] = useState(confirm_button_clicked);
     const { toast } = useToast();
+
 
     const handleClick = async () => {
         try {
@@ -30,16 +30,17 @@ export function TextAreaAction({content, action_type, confirm_button_clicked, id
             if(action_type !== 'edit'){
                 // On crée le post avec le contenu du text area.
                 await createPost({userId:user_store.user.id, chatId:chat.id, content:inputRef.current.value});
+                postStore.getState().reloadData();
                 toast({title: "Succès", description:"Post crée avec succès"});
 
             } else {
                 // On modifie le post avec le contenu du text area.
                 await modifyPost({userId:user_store?.user?.id ?? '', content:inputRef.current?.value ?? "", postId:id??-1});
+                postStore.getState().reloadData();
                 toast({title: "Succès", description:"Post modifiée avec succès"}); 
             }
 
         } catch (e) {
-            console.log(e);
             toast({title: "Erreur", description:`Echec de ${action_type !== "edit" ? "création":"modification"} du post`, variant:"destructive"}); 
         }
     }

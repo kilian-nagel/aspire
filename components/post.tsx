@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import {
   Avatar,
@@ -13,6 +13,8 @@ import { timeAgo } from "@/utils/dates";
 import { Button } from "@/components/ui/button"
 import { PostDialog } from "@/components/new-post";
 import { deletePost } from "@/models/posts/posts.service";
+import { useToast } from "@/hooks/use-toast";
+import { postStore } from "@/store/postStore";
 
 import {
   DropdownMenu,
@@ -23,8 +25,15 @@ import {
 export function Post(post: PostModel) {
   const user_store = userStore();
   const user_info = user_store.user;
+  const { toast } = useToast();
 
   if(!user_info) return;
+
+  const handle_action = async () => {
+    await deletePost(post.id); 
+    postStore.getState().reloadData();
+    toast({title:"Success", description:"Post deleted with succes"}) 
+  }
 
   return (
     <Card key={post.id}>
@@ -43,7 +52,7 @@ export function Post(post: PostModel) {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 flex flex-col">
                         <PostDialog className="p-2 hover:cursor-pointer" content={post.content} action_type="edit" id={post.id} />
-                    <Button className="text-left" variant="ghost" onClick={()=>deletePost(post.id)}>Delete</Button>
+                    <Button className="text-left" variant="ghost" onClick={handle_action}>Delete</Button>
               </DropdownMenuContent>
          </DropdownMenu>
         </div>

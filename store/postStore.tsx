@@ -10,6 +10,7 @@ interface PostData {
     posts: Post[] | null,
     setPosts: (posts: Post[]) => void;
     loadData: () => void,
+    reloadData: () => void,
     loaded: boolean
 }
 
@@ -21,7 +22,6 @@ export const postStore = create<PostData>((set, get) => ({
   loadData: async () => {
     const { posts, loaded } = get();
 
-    console.l
     // Avoid re-fetching data if already loaded
     if (loaded) return posts;
 
@@ -38,6 +38,19 @@ export const postStore = create<PostData>((set, get) => ({
     }
 
     return postsData;
+  },
+  reloadData: async () => {
+    const authUser = await getAuthenticatedUser();
+    if (!authUser) return;
+
+    const chat = await getMainChat();
+    const postsData = await getPostsForChat(chat.id);
+
+    if (postsData) {
+      set({ posts: postsData, loaded: true });
+    }
+    const { posts, loaded } = get();
+    console.log(posts);
   },
 }));
 
