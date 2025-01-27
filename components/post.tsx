@@ -1,5 +1,5 @@
 "use client";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import {
   Avatar,
@@ -23,12 +23,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function Post(post: PostModel) {
-  const user_store = userStore();
-  const user_info = user_store.user;
+  const user_info = userStore((state)=> state.user);
   const { toast } = useToast();
 
   if(!user_info) return;
-
   const handle_action = async () => {
     await deletePost(post.id); 
     postStore.getState().reloadData();
