@@ -12,7 +12,8 @@ interface PostData {
     setPosts: (posts: Post[]) => void;
     loadData: () => void,
     reloadData: () => void,
-    loaded: boolean
+    loaded: boolean,
+    hasHydrated: boolean
 }
 
 // Create a store
@@ -21,6 +22,7 @@ export const postStore = create<PostData>()(
     (set, get) => ({
       posts: null,
       loaded: false,
+      hasHydrated: false,
       setPosts: (posts: Post[] | null) => set({ posts }),
       loadData: async () => {
         const { posts, loaded } = get();
@@ -52,8 +54,11 @@ export const postStore = create<PostData>()(
       },
     }),
     {
-      name: 'post-storage', // Name of the local storage key
-      getStorage: () => localStorage, // Default storage is localStorage
+      name: 'post-storage',
+      getStorage: () => localStorage, // Use localStorage for persistence
+      onRehydrateStorage: () => (state) => {
+        state.hasHydrated = true; // Set hydrated state to true after rehydration
+      },
     }
   )
 );
