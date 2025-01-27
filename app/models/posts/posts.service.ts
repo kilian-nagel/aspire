@@ -92,3 +92,39 @@ export const getAllPosts = async (): Promise<Post[]> => {
       comments: post.comments || [],
   }));
 };
+
+
+export const getPost = async (id:string): Promise<Post> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('posts')
+    .select(`
+      *,
+      user:users(*),         
+      likes:likes(*),        
+      shares:shares(*),      
+      comments:comments(*)  
+    `)
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+
+  // Transform data into a type-safe structure
+  return {
+      id: data.id,
+      userId: data.userId,
+      chatId: data.chatId,
+      content: data.content,
+      createdAt: data.created_at,
+      numberOfLikes: data.likes.length,
+      numberOfShares: data.comments.length,
+      user: data.user,
+      likes: data.likes || [],
+      shares: data.shares || [],
+      comments: data.comments || [],
+  };
+};
