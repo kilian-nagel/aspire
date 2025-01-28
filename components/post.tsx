@@ -23,10 +23,17 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function Post(post: PostModel) {
-  const user_info = userStore((state)=> state.user);
+
+  const { user, loadData } = userStore();
+
+  useEffect(() => {
+    // Load user data on component mount
+    loadData();
+  }, [loadData]);
+
   const { toast } = useToast();
 
-  if(!user_info) return;
+  if(!user) return;
   const handle_action = async () => {
     await deletePost(post.id); 
     postStore.getState().reloadData();
