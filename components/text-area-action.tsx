@@ -5,6 +5,7 @@ import { getMainChat } from "@/models/chats/chats.service";
 import { userStore } from "@/store/userStore";
 import { postStore } from "@/store/postStore";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 interface props {
     content?:string | undefined
@@ -15,16 +16,22 @@ interface props {
 
 export function TextAreaAction({content, action_type, confirm_button_clicked, id}: props){
     const inputRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.value = content ?? "";
+        }
+    }, [content]);
+
     const user_store = userStore();
     const [prev_confirm_button_clicked, set_prev_confirm_button_clicked] = useState(confirm_button_clicked);
     const { toast } = useToast();
-
+    
 
     const handleClick = async () => {
         try {
             // On récupère les infos du chat courant.
             let chat = await getMainChat();
-
             if(!user_store?.user?.id || !inputRef.current?.value) throw new Error("User id empty or inputRef empty");
 
             if(action_type !== 'edit'){
@@ -41,6 +48,7 @@ export function TextAreaAction({content, action_type, confirm_button_clicked, id
             }
 
         } catch (e) {
+            console.log(e);
             toast({title: "Erreur", description:`Echec de ${action_type !== "edit" ? "création":"modification"} du post`, variant:"destructive"}); 
         }
     }
@@ -52,5 +60,5 @@ export function TextAreaAction({content, action_type, confirm_button_clicked, id
     }
 
     return (
-    <Textarea id="post_content" defaultValue={content ?? ""} ref={inputRef} placeholder="write something..."/> )
+    <Textarea id="post_content" defaultValue={content} ref={inputRef} placeholder="write something..."/> )
 }
