@@ -15,17 +15,18 @@ interface props {
 }
 
 export function TextAreaAction({content, action_type, confirm_button_clicked, id}: props){
+    const [prev_confirm_button_clicked, set_prev_confirm_button_clicked] = useState(confirm_button_clicked);
+    const user_store = userStore();
+    const { toast } = useToast();
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
+    // On initialise le contenu du text area.
     useEffect(() => {
         if (inputRef.current) {
             inputRef.current.value = content ?? "";
         }
     }, [content]);
 
-    const user_store = userStore();
-    const [prev_confirm_button_clicked, set_prev_confirm_button_clicked] = useState(confirm_button_clicked);
-    const { toast } = useToast();
     
 
     const handleClick = async () => {
