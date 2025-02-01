@@ -15,6 +15,7 @@ import { PostDialog } from "@/components/new-post";
 import { deletePost } from "@/models/posts/posts.service";
 import { useToast } from "@/hooks/use-toast";
 import { postStore } from "@/store/postStore";
+import { useRouter } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function Post(post: PostModel) {
-
+  const router = useRouter();
   const { user, loadData } = userStore();
 
   useEffect(() => {
@@ -34,20 +35,27 @@ export function Post(post: PostModel) {
   const { toast } = useToast();
 
   if(!user) return;
+ 
+  // Clic sur l'un des éléments du post à l'exception des (actions (dropdown) etc..)
+  const handle_click_on_post = () => {
+    router.push(`/community/post/${post.id}`); 
+  }
+
   const handle_action = async () => {
     await deletePost(post.id); 
     postStore.getState().reloadData();
     toast({title:"Success", description:"Post deleted with succes"}) 
   }
 
+
   return (
     <Card key={post.id}>
       <CardHeader>
         <div className="flex gap-4 items-center">
-          <Avatar>
+          <Avatar onClick={handle_click_on_post}>
             <AvatarFallback>{post.user.username.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div>
+          <div onClick={handle_click_on_post}>
             <CardTitle className="text-lg font-semibold">{post.user.username}</CardTitle>
             <CardDescription className="text-sm text-gray-400">{timeAgo(post.createdAt)}</CardDescription>
           </div>
@@ -62,10 +70,12 @@ export function Post(post: PostModel) {
          </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4" onClick={handle_click_on_post}>
         <p className="text-gray-200">{post.content}</p>
       </CardContent>
-      <CardContent className="flex gap-4">
+
+      { (Array.isArray(post?.comments) && Array.isArray(post?.likes)) ?
+      (<CardContent className="flex gap-4">
         <LikeButton {...post} ></LikeButton>
         <span className="flex gap-1 items-center">
           <MessageCircle className="h-5 w-5" />
@@ -75,7 +85,7 @@ export function Post(post: PostModel) {
           <Share className="h-4 w-4" />
           {post.shares.length}
         </span>
-      </CardContent>
+      </CardContent>) : ""}
     </Card>
   );
 }
