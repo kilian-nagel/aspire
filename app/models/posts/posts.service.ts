@@ -12,7 +12,6 @@ export const createPost = async (post: {userId: string; chatId: number; content:
 
 export const modifyPost = async (post: {userId: string, content: string, postId: number}) => {
     const supabase = await createClient();
-
     const {data, error} = await supabase.from('posts').update({content: post.content}).eq("id", post.postId).is("postId", null).single();
     if (error) throw error;
     return data;
@@ -35,10 +34,8 @@ export const getPostsForChat = async (chatId: number) => {
       user:users(*),         
       likes:likes(*),        
       shares:shares(*),      
-      comments:comments(*)`)
+      comments:posts(*)`) // Correctly fetch related comments
         .eq('chatId', chatId)
-        .is("postId", null);
-
 
     if (error) {
         console.error('Error fetching posts:', error);
@@ -71,7 +68,7 @@ export const getAllPosts = async (): Promise<Post[]> => {
       user:users(*),         
       likes:likes(*),        
       shares:shares(*),      
-      comments:comments(*)  
+      comments:posts(*)  
     `).is("postId", null);
 
     if (error) {
@@ -105,7 +102,7 @@ export const getPost = async (id: number): Promise<Post> => {
             user:users(*),         
             likes:likes(*),        
             shares:shares(*),      
-            comments:comments(*)  
+            comments:posts(*)  
             `)
         .eq("id", id)
         .single();
