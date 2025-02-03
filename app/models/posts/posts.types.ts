@@ -7,7 +7,7 @@ export interface Post {
   userId: string;
   chatId: number;
   content: string;
-  createdAt: string;
+  created_at: string;
   numberOfLikes: number;
   numberOfShares: number;
   user:User;

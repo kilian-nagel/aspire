@@ -14,8 +14,6 @@ export function timeAgo(dateString: string): string {
     const one_day = 86400000;
     let time = 0;
 
-    console.log(diffInMs);
-
     if(!(diffInMs >= one_minute)){
         time = Math.floor(diffInMs/one_second);
         display_text = `${time} second`;
