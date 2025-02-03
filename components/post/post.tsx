@@ -27,7 +27,7 @@ import {
 
 export function Post(post: PostModel) {
     const router = useRouter();
-    const is_comment = post.hasOwnProperty("postId");
+    const is_comment = post.hasOwnProperty("postId") && post.postId !== null;
 
     const {user} = userStore();
     const {toast} = useToast();

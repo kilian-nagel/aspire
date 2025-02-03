@@ -8,7 +8,7 @@ import {PostEvent} from "@/handlers/post-reducer";
 export function CommentButton(post: Post) {
     return (
         <span className="flex gap-1 items-center">
-            <PostDialog {...{action_type: PostEvent.createComment, ...post}}>
+            <PostDialog {...{action_type: PostEvent.createComment, ...post, content: ""}}>
                 <span className="flex gap-1 items-center">
                     <MessageCircle className="h-4 w-4" />
                     {post.comments.length}
