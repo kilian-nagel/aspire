@@ -25,8 +25,6 @@ export function TextAreaAction({
     const user_store = userStore();
     const {toast} = useToast();
 
-    console.log(id);
-
     const handleClick = async () => {
         try {
             const chat = await getMainChat();
@@ -55,12 +53,10 @@ export function TextAreaAction({
     };
 
     // Detect button click change and trigger action
-    useEffect(() => {
-        if (prevConfirmClick !== confirm_button_clicked) {
-            setPrevConfirmClick(confirm_button_clicked);
-            handleClick();
-        }
-    }, [confirm_button_clicked]); // Depend on confirm_button_clicked
+    if (prevConfirmClick !== confirm_button_clicked) {
+        setPrevConfirmClick(confirm_button_clicked);
+        handleClick();
+    }
 
     return (
         <Textarea

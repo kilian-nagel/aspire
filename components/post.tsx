@@ -28,18 +28,10 @@ export function Post(post: PostModel) {
     const router = useRouter();
     const is_comment = post.hasOwnProperty("postId");
 
-    const {user, loadData} = userStore();
-
-    useEffect(() => {
-        // Load user data on component mount
-        loadData();
-    }, [loadData]);
-
+    const {user} = userStore();
     const {toast} = useToast();
 
     if (!user) return;
-
-    console.log(post)
 
     // Clic sur l'un des éléments du post à l'exception des (actions (dropdown) etc..)
     const handle_click_on_post = () => {

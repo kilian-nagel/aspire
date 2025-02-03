@@ -3,7 +3,7 @@ import {TextAreaAction} from "@/components/text-area-action";
 import {Post} from "@/models/posts/posts.types";
 
 export const ResponseInput: React.FC<Post> = ({content, id}) => {
-    const [btn_clicked, set_btn_clicked] = useState(0);
+    const [btn_clicked] = useState(0);
 
     return (
         <div className="fixed">

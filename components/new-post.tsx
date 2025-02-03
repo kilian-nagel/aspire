@@ -53,7 +53,6 @@ export const PostDialog: React.FC<props> = ({children, content, action_type, id,
             <DialogTrigger className={className ?? ""} asChild>
                 {action_text ?
                     <button className="btn-ghost">{action_text}</button> : <p>{children}</p>}
-
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
