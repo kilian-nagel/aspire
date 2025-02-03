@@ -78,17 +78,9 @@ export const getAllPosts = async (): Promise<Post[]> => {
 
     // Transform data into a type-safe structure
     return data.map((post: any) => ({
-        id: post.id,
-        userId: post.userId,
-        chatId: post.chatId,
-        content: post.content,
-        created_at: post.created_at,
+        ...post,
         numberOfLikes: post.likes.length,
         numberOfShares: post.comments.length,
-        user: post.user,
-        likes: post.likes || [],
-        shares: post.shares || [],
-        comments: post.comments || [],
     }));
 };
 
@@ -114,16 +106,8 @@ export const getPost = async (id: number): Promise<Post> => {
 
     // Transform data into a type-safe structure
     return {
-        id: data.id,
-        userId: data.userId,
-        chatId: data.chatId,
-        content: data.content,
-        created_at: data.created_at,
+        ...data,
         numberOfLikes: data.likes.length,
         numberOfShares: data.comments.length,
-        user: data.user,
-        likes: data.likes || [],
-        shares: data.shares || [],
-        comments: data.comments || [],
     };
 };
