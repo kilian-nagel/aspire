@@ -14,11 +14,12 @@ import {
 import {Label} from "@/components/ui/label"
 import {useState} from "react";
 import {TextAreaAction} from "@/components/text-area-action";
+import {PostEvent} from "@/handlers/post-reducer";
 
 interface props {
     children?: React.ReactNode
     content?: string
-    action_type?: string
+    action_type: PostEvent
     id?: number | undefined
     className?: string
 }
@@ -38,25 +39,25 @@ export const PostDialog: React.FC<props> = ({children, content, action_type, id,
         id: id
     };
 
-    let action_text = "";
-    if (action_type === "edit") {action_text = "Edit post"}
-    else if (action_type === "add") {action_text = "New post"}
-
-    let dialog_title = "";
-    if (action_type === "edit") {dialog_title = "Edit post"}
-    else if (action_type === "add") {dialog_title = "New post"}
-    else if (action_type === "comment") {dialog_title = "New comment"}
+    let text = "";
+    if (action_type === PostEvent.update) {
+        text = "Edit post"
+    } else if (action_type === PostEvent.create) {
+        text = "New post"
+    } else if (action_type === PostEvent.createComment) {
+        text = "New Comment"
+    }
 
     // L'user connecté est l'auteur du post.
     return (
         <Dialog>
             <DialogTrigger className={className ?? ""} asChild>
-                {action_text ?
-                    <button className="btn-ghost">{action_text}</button> : <p>{children}</p>}
+                {action_type !== PostEvent.createComment ?
+                    <button className="btn-ghost">{text}</button> : <p>{children}</p>}
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>{dialog_title}</DialogTitle>
+                    <DialogTitle>{text}</DialogTitle>
                     <DialogDescription>
                         This post will be published on the main chat.
                     </DialogDescription>

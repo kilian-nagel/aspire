@@ -2,10 +2,11 @@ import {createClient} from "@/utils/supabase/server";
 import {redirect} from "next/navigation";
 import {SocialFeed} from "@/components/social-feed"
 import {getAllPosts} from "@/models/posts/posts.service";
-import {PostDialog} from "@/components/new-post";
+import {PostDialog} from "@/components/post/post-dialog";
 import {getFullUser} from "@/models/users/users.service";
 import {ClientStoreInitializer} from "@/store/userStore";
 import {PostStoreInitializer} from "@/store/postStore";
+import {PostEvent} from "@/handlers/post-reducer";
 
 export default async function Page() {
     const supabase = await createClient();
@@ -37,7 +38,7 @@ export default async function Page() {
                         </p>
                     </div>
                     <div className="pb-2">
-                        <PostDialog {...{action_type: "add", content: ""}} />
+                        <PostDialog {...{action_type: PostEvent.create, content: ""}} />
                     </div>
                 </div>
 

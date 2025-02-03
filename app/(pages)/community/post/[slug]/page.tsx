@@ -1,4 +1,4 @@
-import {Post} from "@/components/post";
+import {Post} from "@/components/post/post";
 import {getPost} from "@/models/posts/posts.service";
 import {getCommentsForPost} from "@/models/comments/comments.service";
 import {createClient} from "@/utils/supabase/server";
@@ -43,4 +43,3 @@ export default async function Page(props: {params: Params}) {
         </>
     );
 }
-

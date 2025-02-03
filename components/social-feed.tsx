@@ -1,5 +1,5 @@
 "use client";
-import {Post} from "@/components/post";
+import {Post} from "@/components/post/post";
 import {cn} from "@/lib/utils"; // Your `cn` utility
 import {Post as PostModel} from "@/models/posts/posts.types";
 import {postStore} from "@/store/postStore";
