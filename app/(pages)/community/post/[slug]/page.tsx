@@ -1,10 +1,13 @@
-import {Post} from "@/components/post/post";
+import {PostDetail} from "@/components/postDetail";
 import {getPost} from "@/models/posts/posts.service";
 import {getCommentsForPost} from "@/models/comments/comments.service";
 import {createClient} from "@/utils/supabase/server";
 import {redirect} from "next/navigation";
 import {getFullUser} from "@/models/users/users.service";
 import {ClientStoreInitializer} from "@/store/userStore";
+import {PostDetailStoreInitializer} from "@/store/postDetailStore";
+import {CommentStoreInitializer} from "@/store/commentsStore";
+import {Comments} from "@/components/comments";
 
 type Params = Promise<{slug: string}>
 
@@ -34,11 +37,11 @@ export default async function Page(props: {params: Params}) {
     return (
         <>
             <ClientStoreInitializer initialData={user_data} />
+            <PostDetailStoreInitializer initialData={post} />
+            <CommentStoreInitializer postId={post.id} initialData={comments} />
             <div>
-                <Post key={post.id} {...post} />
-                {comments.map((comment) => (
-                    <Post key={comment.id} {...comment} />
-                ))}
+                <PostDetail key={post.id}></PostDetail>
+                <Comments />
             </div>
         </>
     );

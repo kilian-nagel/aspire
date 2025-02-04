@@ -44,17 +44,9 @@ export const getPostsForChat = async (chatId: number) => {
 
     // Transform data into a type-safe structure
     return data.map((post: any) => ({
-        id: post.id,
-        userId: post.userId,
-        chatId: post.chatId,
-        content: post.content,
-        created_at: post.created_at,
+        ...post,
         numberOfLikes: post.likes.length,
         numberOfShares: post.comments.length,
-        user: post.user,
-        likes: post.likes || [],
-        shares: post.shares || [],
-        comments: post.comments || [],
     }));
 };
 
