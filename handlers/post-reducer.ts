@@ -1,5 +1,6 @@
 import {createPost, modifyPost} from "@/models/posts/posts.service";
 import {addComment} from "@/models/comments/comments.service";
+import {PostPartial} from "@/models/posts/posts.types";
 
 export enum PostEvent {
     create,
@@ -10,7 +11,7 @@ export enum PostEvent {
     share
 }
 
-export const dispatchPostEvent = async (event: PostEvent, data: Object) => {
+export const dispatchPostEvent = async<T extends PostPartial>(event: PostEvent, data: T) => {
     console.log(event);
     console.log(data);
     switch (event) {

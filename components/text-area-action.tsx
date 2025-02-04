@@ -3,6 +3,8 @@ import {useState} from "react";
 import {getMainChat} from "@/models/chats/chats.service";
 import {userStore} from "@/store/userStore";
 import {postStore} from "@/store/postStore";
+import {postDetailStore} from "@/store/postDetailStore";
+import {commentsStore} from "@/store/commentsStore";
 import {useToast} from "@/hooks/use-toast";
 import {dispatchPostEvent, PostEvent} from "@/handlers/post-reducer";
 
@@ -27,11 +29,13 @@ export function TextAreaAction({
     const handleClick = async () => {
         try {
             const chat = await getMainChat();
-            if (!user_store?.user?.id || !text.trim()) throw new Error("User ID empty or input empty");
+            if (!user_store?.user?.id || !text.trim() || !id) throw new Error("User ID empty or input empty");
 
             // On dispatch un évènement, d'ajout, modif etc.. pour exécuter l'action nécessaire
-            await dispatchPostEvent(action_type, {userId: user_store.user.id, chatId: chat.id, content: text, id});
+            await dispatchPostEvent(action_type, {userId: user_store.user.id, chatId: chat.id, content: text, postId: id, id});
             postStore.getState().reloadData();
+            postDetailStore.getState().reloadData();
+            commentsStore.getState().reloadData();
 
             let description = "";
             if (action_type === PostEvent.create) {
