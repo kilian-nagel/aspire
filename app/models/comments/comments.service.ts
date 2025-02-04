@@ -2,7 +2,7 @@
 
 import {createClient} from "@/utils/supabase/server";
 
-export const addComment = async (userId: string, postId: number, content: string, chatId = 1) => {
+export const addComment = async ({userId, postId, content, chatId = 1}: {userId: string, postId: number, content: string, chatId?: number}) => {
     const supabase = await createClient();
     const {data, error} = await supabase.from('posts').insert([{userId: userId, postId: postId, content, chatId: chatId}]);
     if (error) throw error;
@@ -20,7 +20,7 @@ export const getCommentsForPost = async (postId: number) => {
     const supabase = await createClient();
 
     const {data, error} = await supabase.from('posts')
-        .select('*, user:users(*), likes:likes(*), shares:shares(*), comments:comments(*)')
+        .select('*, user:users(*), likes:likes(*), shares:shares(*), comments:posts(*)')
         .eq("postId", postId);
     if (error) throw error;
     return data;

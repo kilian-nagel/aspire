@@ -1,15 +1,14 @@
 import {Textarea} from "@/components/ui/textarea";
-import {useEffect, useState} from "react";
-import {createPost, modifyPost} from "@/models/posts/posts.service";
-import {addComment} from "@/models/comments/comments.service";
+import {useState} from "react";
 import {getMainChat} from "@/models/chats/chats.service";
 import {userStore} from "@/store/userStore";
 import {postStore} from "@/store/postStore";
 import {useToast} from "@/hooks/use-toast";
+import {dispatchPostEvent, PostEvent} from "@/handlers/post-reducer";
 
 interface Props {
     content?: string;
-    action_type?: string;
+    action_type: PostEvent;
     confirm_button_clicked: number;
     id?: number;
 }
@@ -25,42 +24,39 @@ export function TextAreaAction({
     const user_store = userStore();
     const {toast} = useToast();
 
-    console.log(id);
-
     const handleClick = async () => {
         try {
             const chat = await getMainChat();
             if (!user_store?.user?.id || !text.trim()) throw new Error("User ID empty or input empty");
 
-            if (action_type === "add") {
-                await createPost({userId: user_store.user.id, chatId: chat.id, content: text});
-                postStore.getState().reloadData();
-                toast({title: "Succès", description: "Post créé avec succès"});
-            } else if (action_type === "edit") {
-                await modifyPost({userId: user_store?.user?.id ?? "", content: text, postId: id ?? -1});
-                postStore.getState().reloadData();
-                toast({title: "Succès", description: "Post modifié avec succès"});
-            } else if (action_type === "comment") {
-                await addComment(user_store?.user?.id, id ?? -1, text);
-                postStore.getState().reloadData();
-                toast({title: "Succès", description: "Commentaire créé avec succès"});
+            // On dispatch un évènement, d'ajout, modif etc.. pour exécuter l'action nécessaire
+            await dispatchPostEvent(action_type, {userId: user_store.user.id, chatId: chat.id, content: text, id});
+            postStore.getState().reloadData();
+
+            let description = "";
+            if (action_type === PostEvent.create) {
+                description = "Post créé avec succès";
+            } else if (action_type === PostEvent.createComment) {
+                description = "Commentaire créé avec succès";
+            } else if (action_type === PostEvent.update) {
+                description = "Post modifié avec succès";
             }
+            toast({title: "Succès", description});
+
         } catch (e) {
             toast({
                 title: "Erreur",
-                description: `Échec de ${action_type !== "edit" ? "création" : "modification"} du post`,
+                description: `Échec de l'opération`,
                 variant: "destructive",
             });
         }
     };
 
     // Detect button click change and trigger action
-    useEffect(() => {
-        if (prevConfirmClick !== confirm_button_clicked) {
-            setPrevConfirmClick(confirm_button_clicked);
-            handleClick();
-        }
-    }, [confirm_button_clicked]); // Depend on confirm_button_clicked
+    if (prevConfirmClick !== confirm_button_clicked) {
+        setPrevConfirmClick(confirm_button_clicked);
+        handleClick();
+    }
 
     return (
         <Textarea

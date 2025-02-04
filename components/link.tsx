@@ -1,20 +1,20 @@
 import Link from "next/link";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import {clsx, type ClassValue} from "clsx";
+import {twMerge} from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+    return twMerge(clsx(inputs));
 }
 
 type CustomLinkProps = React.ComponentProps<typeof Link> & {
-  className?: string;
+    className?: string;
 };
 
-export function CustomLink({ className, children, ...props }: CustomLinkProps) {
-  return (
-    <Link {...props} className={cn("text-blue-400 hover:underline", className)}>
-      {children}
-    </Link>
-  );
+export function CustomLink({className, children, ...props}: CustomLinkProps) {
+    return (
+        <Link {...props} className={cn("text-blue-400 hover:underline", className)}>
+            {children}
+        </Link>
+    );
 }
 

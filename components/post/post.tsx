@@ -1,22 +1,23 @@
 "use client";
-import React, {useEffect} from "react";
+import React from "react";
 import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card";
 import {
     Avatar,
     AvatarFallback,
 } from "@/components/ui/avatar"
-import {Share, MessageCircle} from "lucide-react";
+import {Share} from "lucide-react";
 import {Post as PostModel} from "@/models/posts/posts.types";
 import {userStore} from "@/store/userStore";
-import {LikeButton} from "@/components/like-button";
-import {CommentButton} from "@/components/comment-button";
+import {LikeButton} from "@/components/buttons/like-button";
+import {CommentButton} from "@/components/buttons/comment-button";
 import {timeAgo} from "@/utils/dates";
 import {Button} from "@/components/ui/button"
-import {PostDialog} from "@/components/new-post";
+import {PostDialog} from "@/components/post/post-dialog";
 import {deletePost} from "@/models/posts/posts.service";
 import {useToast} from "@/hooks/use-toast";
 import {postStore} from "@/store/postStore";
 import {useRouter} from "next/navigation";
+import {PostEvent} from "@/handlers/post-reducer";
 
 import {
     DropdownMenu,
@@ -26,20 +27,12 @@ import {
 
 export function Post(post: PostModel) {
     const router = useRouter();
-    const is_comment = post.hasOwnProperty("postId");
+    const is_comment = post.hasOwnProperty("postId") && post.postId !== null;
 
-    const {user, loadData} = userStore();
-
-    useEffect(() => {
-        // Load user data on component mount
-        loadData();
-    }, [loadData]);
-
+    const {user} = userStore();
     const {toast} = useToast();
 
     if (!user) return;
-
-    console.log(post)
 
     // Clic sur l'un des éléments du post à l'exception des (actions (dropdown) etc..)
     const handle_click_on_post = () => {
@@ -68,7 +61,7 @@ export function Post(post: PostModel) {
                             <Button variant="ghost">...</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56 flex flex-col">
-                            <PostDialog className="p-2 hover:cursor-pointer" content={post.content} action_type="edit" id={post.id} />
+                            <PostDialog className="p-2 hover:cursor-pointer" content={post.content} action_type={PostEvent.update} id={post.id} />
                             <Button className="text-left" variant="ghost" onClick={handle_action}>Delete</Button>
                         </DropdownMenuContent>
                     </DropdownMenu>
