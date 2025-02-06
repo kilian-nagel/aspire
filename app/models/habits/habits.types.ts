@@ -17,5 +17,6 @@ export interface Habit {
     name: string,
     description: string,
     user_id: string,
+    frequency: HabitFrequency[];
     created_at: string
 }
