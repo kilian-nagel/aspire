@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react"
-import {useState, useRef} from "react";
+import {useState} from "react";
 import {clsx} from "clsx";
 import {HabitType} from "@/models/habits/habits.types";
 import {HabitTypeCard} from "@/components/habits/habit-type-card";
@@ -23,6 +23,7 @@ import {addHabit} from "@/models/habits/habits.service";
 import {userStore} from "@/store/userStore";
 import {useToast} from "@/hooks/use-toast"
 import {DialogClose} from "@/components/ui/dialog";
+import {habitStore} from "@/store/habitsStore";
 
 interface props {
     habits_type: HabitType[]
@@ -50,6 +51,8 @@ export function HabitForm({habits_type}: props) {
     const user_store = userStore();
     const {toast} = useToast();
 
+    const load_data = habitStore((store) => store.loadData);
+
     // Lorsqu'on clique sur un jour on le rajoute dans le tableau des jours sélectionnés, sinon si le jour est déjà sélectionné on le supprime des jours sélectionnés.
     const handle_days_click = (id: string) => {
         set_badges_selected((prev) =>
@@ -75,7 +78,10 @@ export function HabitForm({habits_type}: props) {
         habit.frequency = frequencies;
 
         try {
-            const response = await addHabit(habit);
+            // On ajoute l'habitude dans la bd
+            console.log('before habits');
+            await addHabit(habit);
+            load_data();
             toast({title: "Succès", description: "L'habitude a été créée avec succès"})
         } catch (err) {
             toast({title: "Succès", description: "L'habitude a été créée avec succès"})
