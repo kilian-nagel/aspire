@@ -42,7 +42,7 @@ const steps_length = 3;
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export function HabitForm({habits_type}: props) {
-    const {step, next, prev} = useStepStore();
+    const {step, next, prev, reset} = useStepStore();
     const [badges_selected, set_badges_selected] = useState<string[]>([]);
     const [category_id, set_category_id] = useState(0);
     const [habit_name, set_habit_name] = useState("");
@@ -81,6 +81,7 @@ export function HabitForm({habits_type}: props) {
             toast({title: "Succès", description: "L'habitude a été créée avec succès"})
         }
 
+        reset();
     }
 
     return (
