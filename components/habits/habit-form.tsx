@@ -105,7 +105,7 @@ export function HabitForm({habits_type}: props) {
                 {step === 0 ? <>
                     <h1 className="mb-10 text-3xl font-semibold">What type of habit do you want to build?</h1>
                     <div className="flex gap-3 flex-wrap">
-                        {habits_type.map((habit, i) => (<HabitTypeCard on_click_function={(id: number) => set_category_id(id)} key={i} {...habit} />))}
+                        {habits_type.map((habit, i) => (<HabitTypeCard selected={category_id === habit.id} on_click_function={(id: number) => set_category_id(id)} key={i} {...habit} />))}
                     </div></> : (<></>)
                 }
 

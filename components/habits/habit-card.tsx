@@ -19,7 +19,7 @@ import {HabitEvent, dispatchHabitEvent} from "@/handlers/habits-reducer";
 import {habitStore} from "@/store/habitsStore";
 
 let habit: Tables<'habits'>;
-export function HabitCard({id, name, description, category}: typeof habit) {
+export function HabitCard({id, name, description, category, edit_habit_function}: typeof habit) {
     const img_source = resolver(category.name);
     const set_habits = habitStore((store) => store.setHabits);
     const habits = habitStore((store) => store.habits);
@@ -36,6 +36,9 @@ export function HabitCard({id, name, description, category}: typeof habit) {
 
         }
     }
+
+    console.log(edit_habit_function);
+
 
     return (<Card className="cursor-pointer">
         <CardHeader>
@@ -58,7 +61,7 @@ export function HabitCard({id, name, description, category}: typeof habit) {
                         <Button variant="ghost">...</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 flex flex-col">
-                        <Button variant="ghost" onClick={() => handle_action(HabitEvent.update, {name, description, category})}>Edit</Button>
+                        <Button variant="ghost" onClick={() => edit_habit_function()}>Edit</Button>
                         <Button variant="ghost" onClick={() => handle_action(HabitEvent.delete, {id})}>Delete</Button>
                     </DropdownMenuContent>
                 </DropdownMenu>

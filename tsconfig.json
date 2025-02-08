@@ -26,7 +26,8 @@
       "@/interfaces/*":["./app/interfaces/*"],
       "@/hooks/*":["./hooks/*"],
       "@/utils/*":["./utils/*"],
-      "@/handlers/*":["./handlers/*"]
+      "@/handlers/*":["./handlers/*"],
+      "@/images/*":["./public/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

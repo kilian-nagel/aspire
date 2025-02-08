@@ -1,6 +1,11 @@
 import {Button} from "@/components/ui/button"
 import {HabitForm} from "@/components/habits/habit-form"
-import {getHabitsCategories} from "@/models/habits/habits.service"
+import {getHabitsCategories, getUserHabits} from "@/models/habits/habits.service"
+import {createClient} from "@/utils/supabase/server";
+import {redirect} from "next/navigation";
+import {HabitsStoreInitializer} from "@/store/habitsStore";
+import {HabitsCards} from "@/components/habits/habits-cards";
+import {useRef} from "react";
 
 import {
     Dialog,
@@ -10,7 +15,17 @@ import {
 } from "@/components/ui/dialog"
 
 export default async function page() {
+
+    const supabase = await createClient();
+    const {
+        data: {user},
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return redirect("/sign-in");
+    }
     const habits_type = await getHabitsCategories();
+    const habits = await getUserHabits(user.id);
     return (
         <div>
             <div className="flex justify-between items-end mb-10">
@@ -25,8 +40,9 @@ export default async function page() {
                     </DialogContent>
                 </Dialog>
             </div>
-            <div>
-            </div>
+            <HabitsStoreInitializer initialData={habits} />
+
+            <HabitsCards habits_type={habits_type} />
         </div>
     );
 }

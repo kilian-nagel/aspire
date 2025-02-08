@@ -12,8 +12,6 @@ export enum PostEvent {
 }
 
 export const dispatchPostEvent = async<T extends PostPartial>(event: PostEvent, data: T) => {
-    console.log(event);
-    console.log(data);
     switch (event) {
         case PostEvent.create:
             const res1 = await createPost(data);
@@ -22,8 +20,6 @@ export const dispatchPostEvent = async<T extends PostPartial>(event: PostEvent, 
             const res2 = await addComment({...data, postId: data.id});
             return res2;
         case PostEvent.update:
-            const post_data = {...data, postId: data.id};
-            console.log(post_data);
             const res3 = await modifyPost({...data, postId: data.id});
             return res3;
     }

@@ -2,8 +2,7 @@
 
 import {createClient} from "@/utils/supabase/server";
 import {SupabaseClient} from '@supabase/supabase-js';
-import {Habit} from "@/models/habits/habits.types";
-import {Database, Tables, Enums} from "@/models/database.types";
+import {Database, Tables} from "@/models/database.types";
 
 let habit: Tables<'habits'>;
 
@@ -12,7 +11,7 @@ export const getUserHabits = async (userId: string): Promise<typeof habit[]> => 
     const {data, error} = await supabase
         .from('habits')
         .select(`
-      *`).eq("user_id", userId);
+            *, category:habitCategory(*)`).eq("user_id", userId);
 
     if (error || !data) {
         console.error('Error fetching posts:', error);
@@ -49,6 +48,21 @@ export const addHabit = async (habit_data: typeof habit) => {
     if (response.error) {
         console.error('Error fetching posts:', error);
         throw error;
+    }
+}
+
+export const deleteHabit = async (habit_id: number) => {
+    const supabase = await createClient();
+    console.log(habit_id);
+    const {error} = await supabase
+        .from('habits')
+        .delete()
+        .eq("id", habit_id);
+
+    console.log(error);
+
+    if (error) {
+        throw new Error("Error while delete an habit.")
     }
 }
 
