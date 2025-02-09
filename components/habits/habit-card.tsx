@@ -37,8 +37,6 @@ export function HabitCard({id, name, description, category, edit_habit_function}
         }
     }
 
-    console.log(edit_habit_function);
-
 
     return (<Card className="cursor-pointer">
         <CardHeader>

@@ -24,9 +24,6 @@ export const HabitsCards = ({habits_type}) => {
         return (<p>No habits...</p>)
     }
 
-    console.log(habits_type);
-
-
     const edit_habit = (habit: typeof Habit) => {
         if (dialog_btn.current) {
             set_habit_to_edit(habit);
@@ -37,7 +34,7 @@ export const HabitsCards = ({habits_type}) => {
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
-                {habits.map(habit => <HabitCard is_selected={habit_to_edit?.id} edit_habit_function={edit_habit} key={habit.id} {...habit} />)}
+                {habits.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} {...habit} />)}
             </div>
             <Dialog >
                 <DialogTrigger asChild className="absolute hidden">
@@ -45,7 +42,7 @@ export const HabitsCards = ({habits_type}) => {
                 </DialogTrigger>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle></DialogTitle>
-                    <HabitForm habits_type={habits_type} />
+                    <HabitForm habits_type={habits_type} habit={habit_to_edit} />
                 </DialogContent>
             </Dialog>
         </>

@@ -24,9 +24,14 @@ import {userStore} from "@/store/userStore";
 import {useToast} from "@/hooks/use-toast"
 import {DialogClose} from "@/components/ui/dialog";
 import {habitStore} from "@/store/habitsStore";
+import {Tables} from "@/models/database.types";
 
+
+let Habit: Tables<'habits'>;
+let HabitFrequency: Tables<'habitFrequency'>;
 interface props {
-    habits_type: HabitType[]
+    habits_type: HabitType[],
+    habit?: typeof Habit
 }
 
 // Data store.
@@ -42,14 +47,27 @@ const steps_length = 3;
 // Jours de l'année
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-export function HabitForm({habits_type}: props) {
+function get_days_from_index(frequency: typeof HabitFrequency[]): string[] {
+    // On récupère les index des jours ou doit être répétée l'habitude.
+    const days_index: number[] = frequency.reduce((data, freq) => {
+        data.push(freq.day); return data;
+    }, [])
+
+    // On récupère les jours sous forme de tableau de string à partir des index.
+    return days_index.reduce((data, index) => {
+        data.push(days[index]); return data;
+    }, []);
+}
+
+export function HabitForm({habits_type, habit}: props) {
     const {step, next, prev, reset} = useStepStore();
-    const [badges_selected, set_badges_selected] = useState<string[]>([]);
-    const [category_id, set_category_id] = useState(0);
-    const [habit_name, set_habit_name] = useState("");
-    const [habit_description, set_habit_description] = useState("");
+    const [badges_selected, set_badges_selected] = useState<string[]>(habit ? get_days_from_index(habit?.frequency) : []);
+    const [category_id, set_category_id] = useState<number>(habit ? habit.category.id : 0);
+    const [habit_name, set_habit_name] = useState(habit ? habit.name : "");
+    const [habit_description, set_habit_description] = useState(habit ? habit.description : "");
     const user_store = userStore();
     const {toast} = useToast();
+
 
     const load_data = habitStore((store) => store.loadData);
 
@@ -63,10 +81,13 @@ export function HabitForm({habits_type}: props) {
     // On ajoute l'habitude lorsque le formulaire est validé
     const handle_form_validation = async () => {
         let user_id = user_store?.user?.id;
+        let habit_id = habit ? habit.id : undefined;
 
         // On récupère les données nécessaires pour l'habitude
-        const habit = {description: habit_description, name: habit_name, user_id: user_id ?? "", category: category_id};
+        const habit_data = {description: habit_description, name: habit_name, user_id: user_id ?? "", category: category_id};
 
+
+        if (habit_id) habit_data.id = habit_id;
 
         // On récupère les fréquences des habitudes.  
         let frequencies: {day: number, period: number}[] = badges_selected.reduce((data, day) => {
@@ -75,16 +96,17 @@ export function HabitForm({habits_type}: props) {
             return data
         }, []);
 
-        habit.frequency = frequencies;
+        habit_data.frequency = frequencies;
 
         try {
             // On ajoute l'habitude dans la bd
-            console.log('before habits');
-            await addHabit(habit);
+            await addHabit(habit_data);
             load_data();
-            toast({title: "Succès", description: "L'habitude a été créée avec succès"})
+            let description = habit ? "Habit modified successfully" : "Habit created successfully";
+            toast({title: "Success", description: description})
         } catch (err) {
-            toast({title: "Succès", description: "L'habitude a été créée avec succès"})
+            let description = habit ? "Failed to modify habit" : "Failed to create habit";
+            toast({title: "Failure", description: description})
         }
 
         reset();

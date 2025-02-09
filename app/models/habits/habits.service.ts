@@ -11,7 +11,7 @@ export const getUserHabits = async (userId: string): Promise<typeof habit[]> => 
     const {data, error} = await supabase
         .from('habits')
         .select(`
-            *, category:habitCategory(*)`).eq("user_id", userId);
+            *, category:habitCategory(*), frequency:habitFrequency(*)`).eq("user_id", userId);
 
     if (error || !data) {
         console.error('Error fetching posts:', error);
@@ -30,8 +30,9 @@ export const addHabit = async (habit_data: typeof habit) => {
     // On ajoute l'habitude et on récupère l'habitude créée.
     const {error, data} = await supabase
         .from('habits')
-        .insert(habit_data)
+        .upsert(habit_data)
         .select();
+
 
     if (error) {
         throw new Error("Error while inserting an habit.")
@@ -40,12 +41,27 @@ export const addHabit = async (habit_data: typeof habit) => {
     // On associe l'id de l'habitude crée à ses fréquences de répétition.
     frequency.map(freq => freq.id = data[0].id);
 
+
     // On insère les fréquences de répétition de l'habitude.
     const response = await supabase
         .from("habitFrequency")
-        .insert(frequency);
+        .upsert(frequency);
 
     if (response.error) {
+        console.error('Error fetching posts:', error);
+        throw error;
+    }
+
+
+    const days_ids = frequency.map(x => x["day"]);
+    const response2 = await supabase
+        .from("habitFrequency")
+        .delete()
+        .eq("id", data[0].id)
+        .not("day", "in", `(${days_ids.join(",")})`);
+
+
+    if (response2.error) {
         console.error('Error fetching posts:', error);
         throw error;
     }
@@ -53,13 +69,11 @@ export const addHabit = async (habit_data: typeof habit) => {
 
 export const deleteHabit = async (habit_id: number) => {
     const supabase = await createClient();
-    console.log(habit_id);
     const {error} = await supabase
         .from('habits')
         .delete()
         .eq("id", habit_id);
 
-    console.log(error);
 
     if (error) {
         throw new Error("Error while delete an habit.")
