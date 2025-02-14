@@ -4,6 +4,7 @@ import {habitStore} from "@/store/habitsStore";
 import {Button} from "@/components/ui/button";
 import {HabitForm} from "@/components/habits/habit-form";
 import {Tables} from "@/models/database.types";
+import {filterHabitsByCompletion} from "@/models/habits/habits.utils";
 
 import {
     Dialog,
@@ -18,6 +19,7 @@ let Habit: Tables<'habits'>;
 export const HabitsCards = ({habits_type}) => {
     const dialog_btn = useRef(null);
     const habits = habitStore((store) => store.habits);
+    const habits_filtered_by_completion = filterHabitsByCompletion(habits);
     const [habit_to_edit, set_habit_to_edit] = useState<null | typeof Habit>(null);
 
     if (!habits) {
@@ -34,8 +36,11 @@ export const HabitsCards = ({habits_type}) => {
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
-                {habits.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} {...habit} />)}
+                {habits_filtered_by_completion.uncompleted.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} {...habit} />)}
+                {habits_filtered_by_completion.completed.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} completed={true} {...habit} />)}
             </div>
+
+            {/* Edit habit button */}
             <Dialog >
                 <DialogTrigger asChild className="absolute hidden">
                     <Button ref={dialog_btn} variant="outline">New Habit</Button>
