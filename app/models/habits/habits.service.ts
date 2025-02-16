@@ -5,13 +5,17 @@ import {SupabaseClient} from '@supabase/supabase-js';
 import {Database, Tables} from "@/models/database.types";
 
 let habit: Tables<'habits'>;
+interface habitsByCompletion {
+    completed: typeof habit[],
+    uncompleted: typeof habit[]
+}
 
 export const getUserHabits = async (userId: string): Promise<typeof habit[]> => {
     const supabase: SupabaseClient<Database> = await createClient();
     const {data, error} = await supabase
         .from('habits')
         .select(`
-            *, category:habitCategory(*), frequency:habitFrequency(*)`).eq("user_id", userId);
+            *, category:habitCategory(*), frequency:habitFrequency(*), completions: habitCompletion(*)`).eq("user_id", userId);
 
     if (error || !data) {
         console.error('Error fetching posts:', error);
@@ -94,3 +98,34 @@ export const getHabitsCategories = async (): Promise<typeof habit[]> => {
     // Transform data into a type-safe structure
     return data;
 };
+
+export const completeHabit = async (habit_id: number) => {
+    const supabase = await createClient();
+
+    const {error} = await supabase
+        .from('habitCompletion')
+        .upsert({habit_id: habit_id})
+        .select();
+
+    if (error) throw new Error("Erreur lors de la complétion de l'habitude");
+}
+
+
+export const uncompleteHabit = async (habit_id: number) => {
+    const supabase = await createClient();
+
+    let today_at_midnight = new Date();
+    today_at_midnight.setHours(0);
+    today_at_midnight.setMinutes(0);
+    today_at_midnight.setSeconds(0);
+    console.log(today_at_midnight.toString());
+
+    // On ajoute l'habitude et on récupère l'habitude créée.
+    const {error} = await supabase
+        .from('habitCompletion')
+        .delete()
+        .eq("habit_id", habit_id)
+        .gt("created_at", today_at_midnight.toISOString())
+
+    if (error) throw new Error("Erreur lors de l'invalidation de l'habitude");
+}

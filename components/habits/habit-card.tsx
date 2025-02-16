@@ -18,21 +18,24 @@ import {
 import {HabitEvent, dispatchHabitEvent} from "@/handlers/habits-reducer";
 import {habitStore} from "@/store/habitsStore";
 import {Check} from 'lucide-react';
+import {X} from "lucide-react";
+
 
 let habit: Tables<'habits'>;
-export function HabitCard({id, name, description, category, edit_habit_function}: typeof habit) {
+export function HabitCard({id, name, description, category, edit_habit_function, completed}: typeof habit) {
     const img_source = resolver(category.name);
     const set_habits = habitStore((store) => store.setHabits);
+    const load_habits = habitStore((store) => store.loadData);
     const habits = habitStore((store) => store.habits);
 
     const handle_action = async (event: HabitEvent, data: typeof habit) => {
-
         try {
-            dispatchHabitEvent(event, data);
+            await dispatchHabitEvent(event, data);
             if (event === HabitEvent.delete) {
                 let habits_filtered = habits.filter(h => h.id !== data.id);
                 set_habits(habits_filtered);
             }
+            load_habits();
         } catch (e) {
 
         }
@@ -40,20 +43,19 @@ export function HabitCard({id, name, description, category, edit_habit_function}
 
     return (
         <div className="relative group">
-            {/* Hidden text, shown on hover */}
-            <div className="h-full w-full absolute flex justify-center items-center z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white">
-                <Button className="bg-blue-700 text-3xl text-white"><Check /></Button>
-            </div>
+            <Card className="h-full cursor-pointer transition-all duration-300 hover:bg-white/5 relative overflow-hidden">
+                {completed && (
+                    <div className="absolute w-full h-full bg-black/50 flex items-center justify-center text-white text-lg font-bold">
+                    </div>
+                )}
 
-            {/* Blurred Card */}
-            <Card className="h-full cursor-pointer transition-all duration-300 hover:blur-md hover:bg-white/5">
                 <CardHeader>
                     <div className="flex gap-2 justify-between">
                         <div className="flex gap-5 items-center">
                             <Image src={img_source} width={40} height={40} alt="Picture of the author" />
                             <div>
                                 <CardTitle>{name}</CardTitle>
-                                <CardDescription className="mt-1 transition-colors duration-300 group-hover:text-white">
+                                <CardDescription className="mt-1 transition-colors duration-300">
                                     {category.name}
                                 </CardDescription>
                             </div>
@@ -64,13 +66,39 @@ export function HabitCard({id, name, description, category, edit_habit_function}
                                 <Button variant="ghost">...</Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56 flex flex-col">
-                                <Button variant="ghost" onClick={() => edit_habit_function()}>Edit</Button>
-                                <Button variant="ghost" onClick={() => handle_action(HabitEvent.delete, {id})}>Delete</Button>
+                                <Button variant="ghost" onClick={() => edit_habit_function()}>
+                                    Edit
+                                </Button>
+                                <Button variant="ghost" onClick={() => handle_action(HabitEvent.delete, {id})}>
+                                    Delete
+                                </Button>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </CardHeader>
-                <CardFooter>{description}</CardFooter>
+                <CardFooter>
+                    {description}
+
+                    {!completed ? (
+                        <Button
+                            onClick={(e) => {
+                                handle_action(HabitEvent.complete, {id});
+                            }}
+                            className="bg-blue-700 hover:bg-blue-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
+                        >
+                            <Check />
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={(e) => {
+                                handle_action(HabitEvent.uncomplete, {id});
+                            }}
+                            className="bg-red-700 hover:bg-red-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
+                        >
+                            <X size={24} color="white" />
+                        </Button>
+                    )}
+                </CardFooter>
             </Card>
         </div>
 
