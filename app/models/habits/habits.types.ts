@@ -1,22 +1,13 @@
-export interface HabitType {
-    id: number,
-    name: string,
-    description: string
+import {Tables} from "@/models/database.types";
+
+export type HabitFrequencyCreate = Omit<Tables<'habitFrequency'>, 'created_at' | 'id'>;
+
+export interface Habit extends Tables<'habits'> {
+    frequency?: Tables<'habitFrequency'>[];
+    categoryObject: Tables<'habitCategory'>
 }
 
-export interface HabitFrequency {
-    id: number,
-    day: number,
-    period: number,
-    expires_at: string
+export interface HabitCreate extends Omit<Tables<'habits'>, 'created_at'> {
+    frequency?: Omit<Tables<'habitFrequency'>, 'created_at' | 'id'>[];
 }
 
-export interface Habit {
-    id: number,
-    category: number,
-    name: string,
-    description: string,
-    user_id: string,
-    frequency: HabitFrequency[];
-    created_at: string
-}
