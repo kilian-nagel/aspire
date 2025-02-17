@@ -97,6 +97,35 @@ export type Database = {
                 }
                 Relationships: []
             }
+            habitCompletion: {
+                Row: {
+                    created_at: string
+                    habit_id: number
+                    id: number
+                    performance: Database["public"]["Enums"]["habit_performance"] | null
+                }
+                Insert: {
+                    created_at?: string
+                    habit_id: number
+                    id?: number
+                    performance?: Database["public"]["Enums"]["habit_performance"] | null
+                }
+                Update: {
+                    created_at?: string
+                    habit_id?: number
+                    id?: number
+                    performance?: Database["public"]["Enums"]["habit_performance"] | null
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "habitCompletion_habit_id_fkey"
+                        columns: ["habit_id"]
+                        isOneToOne: false
+                        referencedRelation: "habits"
+                        referencedColumns: ["id"]
+                    },
+                ]
+            }
             habitFrequency: {
                 Row: {
                     created_at: string
@@ -318,7 +347,7 @@ export type Database = {
             [_ in never]: never
         }
         Enums: {
-            [_ in never]: never
+            habit_performance: "low" | "medium" | "high" | "very high"
         }
         CompositeTypes: {
             [_ in never]: never

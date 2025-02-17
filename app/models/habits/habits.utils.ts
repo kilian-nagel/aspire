@@ -1,9 +1,9 @@
 import {Tables} from "@/models/database.types";
+import {Habit} from "@/models/habits/habits.types";
 
-let habit: Tables<'habits'>;
 interface habitsByCompletion {
-    completed: typeof habit[],
-    uncompleted: typeof habit[]
+    completed: Habit[],
+    uncompleted: Habit[]
 }
 
 export const dateEqualByDayPrecision = (date1: Date, date2: Date) => {
@@ -13,17 +13,17 @@ export const dateEqualByDayPrecision = (date1: Date, date2: Date) => {
         date1.getFullYear() === date2.getFullYear());
 }
 
-export const filterHabitsByCompletion = (data: typeof habit[] | null): habitsByCompletion => {
+export const filterHabitsByCompletion = (data: Habit[] | null): habitsByCompletion => {
     if (!data) return {completed: [], uncompleted: []};
 
     const now = (new Date());
     const today = (now.getDay() + 6) % 7;
     let filtered_habits = data.filter(habit => {
-        const habit_days = habit.frequency.map(freq => freq.day);
+        const habit_days = habit?.frequency ? habit.frequency.map(freq => freq.day) : [];
         return habit_days.includes(today);
     });
 
-    let habits: {completed: typeof habit[], uncompleted: typeof habit[]} = {completed: [], uncompleted: []}
+    let habits: {completed: Habit[], uncompleted: Habit[]} = {completed: [], uncompleted: []}
 
     // On filtre les habitudes en fonction de si elles ont été complétées.
     filtered_habits.map(habit => {

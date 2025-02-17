@@ -3,16 +3,27 @@
 import {createClient} from "@/utils/supabase/server";
 import {SupabaseClient} from '@supabase/supabase-js';
 import {Database, Tables} from "@/models/database.types";
-import {HabitCreate} from "@/models/habits/habits.types";
+import {Habit, HabitCreate} from "@/models/habits/habits.types";
 
-let habit: Tables<'habits'>;
+type HabitCategory = Database["public"]["Tables"]["habitCategory"]["Row"];
+type HabitFrequency = Database["public"]["Tables"]["habitFrequency"]["Row"];
+type HabitCompletion = Database["public"]["Tables"]["habitCompletion"]["Row"];
 
-export const getUserHabits = async (userId: string): Promise<typeof habit[]> => {
+
+type HabitWithRelations = Habit & {
+    categoryObject: HabitCategory | null;
+    frequency: HabitFrequency[]; // Assuming multiple frequencies per habit
+    completions: HabitCompletion[]; // Assuming multiple completions per habit
+};
+
+
+export const getUserHabits = async (userId: string): Promise<Habit[]> => {
     const supabase: SupabaseClient<Database> = await createClient();
     const {data, error} = await supabase
         .from('habits')
         .select(`
-            *, categoryObject:habitCategory(*), frequency:habitFrequency(*), completions: habitCompletion(*)`).eq("user_id", userId);
+            *, categoryObject:habitCategory(*), frequency:habitFrequency(*), completions: habitCompletion(*)`).eq("user_id", userId)
+        .returns<HabitWithRelations[]>();
 
     if (error || !data) {
         console.error('Error fetching posts:', error);
@@ -83,11 +94,12 @@ export const deleteHabit = async (habit_id: number) => {
     }
 }
 
-export const getHabitsCategories = async (): Promise<typeof habit[]> => {
+export const getHabitsCategories = async (): Promise<Tables<'habitCategory'>[]> => {
     const supabase = await createClient();
     const {data, error} = await supabase
         .from('habitCategory')
         .select(`*`)
+        .returns<Tables<'habitCategory'>[]>();
 
     if (error) {
         console.error('Error fetching posts:', error);

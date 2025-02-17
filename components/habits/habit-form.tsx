@@ -2,7 +2,7 @@
 import * as React from "react"
 import {useState} from "react";
 import {clsx} from "clsx";
-import {HabitType} from "@/models/habits/habits.types";
+import {HabitCreate, HabitFrequencyCreate} from "@/models/habits/habits.types";
 import {HabitTypeCard} from "@/components/habits/habit-type-card";
 import {Badge} from "@/components/ui/badge"
 import {Input} from "@/components/ui/input"
@@ -24,14 +24,13 @@ import {userStore} from "@/store/userStore";
 import {useToast} from "@/hooks/use-toast"
 import {DialogClose} from "@/components/ui/dialog";
 import {habitStore} from "@/store/habitsStore";
-import {Tables} from "@/models/database.types";
+import {Tables} from "@/models/database.types"
+import {Habit} from "@/models/habits/habits.types";
 
-
-let Habit: Tables<'habits'>;
 let HabitFrequency: Tables<'habitFrequency'>;
 interface props {
-    habits_type: HabitType[],
-    habit?: typeof Habit
+    habits_type: Tables<'habitCategory'>[],
+    habit?: Habit
 }
 
 // Data store.
@@ -49,20 +48,20 @@ const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 function get_days_from_index(frequency: typeof HabitFrequency[]): string[] {
     // On récupère les index des jours ou doit être répétée l'habitude.
-    const days_index: number[] = frequency.reduce((data, freq) => {
+    const days_index: number[] = frequency.reduce<number[]>((data, freq) => {
         data.push(freq.day); return data;
     }, [])
 
     // On récupère les jours sous forme de tableau de string à partir des index.
-    return days_index.reduce((data, index) => {
+    return days_index.reduce<string[]>((data, index) => {
         data.push(days[index]); return data;
     }, []);
 }
 
 export function HabitForm({habits_type, habit}: props) {
     const {step, next, prev, reset} = useStepStore();
-    const [badges_selected, set_badges_selected] = useState<string[]>(habit ? get_days_from_index(habit?.frequency) : []);
-    const [category_id, set_category_id] = useState<number>(habit ? habit.category.id : 0);
+    const [badges_selected, set_badges_selected] = useState<string[]>(habit && habit?.frequency ? get_days_from_index(habit?.frequency) : []);
+    const [category_id, set_category_id] = useState<number>(habit ? habit.category : 0);
     const [habit_name, set_habit_name] = useState(habit ? habit.name : "");
     const [habit_description, set_habit_description] = useState(habit ? habit.description : "");
     const user_store = userStore();
@@ -84,15 +83,15 @@ export function HabitForm({habits_type, habit}: props) {
         let habit_id = habit ? habit.id : undefined;
 
         // On récupère les données nécessaires pour l'habitude
-        const habit_data = {description: habit_description, name: habit_name, user_id: user_id ?? "", category: category_id};
+        const habit_data: HabitCreate = {id: -1, description: habit_description, name: habit_name, user_id: user_id ?? "", category: category_id};
 
 
         if (habit_id) habit_data.id = habit_id;
 
         // On récupère les fréquences des habitudes.  
-        let frequencies: {day: number, period: number}[] = badges_selected.reduce((data, day) => {
+        let frequencies: HabitFrequencyCreate[] = badges_selected.reduce<HabitFrequencyCreate[]>((data, day) => {
             // Pour chaque jour sélectionnée on récupère son index, et on met une période de 1 (car se répète toutes les semaine).
-            data.push({day: days.indexOf(day), period: 1});
+            data.push({day: days.indexOf(day), period: 1, id: -1});
             return data
         }, []);
 
@@ -176,7 +175,7 @@ export function HabitForm({habits_type, habit}: props) {
                         <div className="flex flex-col items-start gap-1 cols-span-2">
                             <Label className="text-lg" htmlFor="description">Description</Label>
 
-                            <Textarea id="description" value={habit_description} onChange={(e) => {set_habit_description(e.target.value)}} placeholder="Enter a description" className="mt-1" />
+                            <Textarea id="description" value={habit_description ?? undefined} onChange={(e) => {set_habit_description(e.target.value)}} placeholder="Enter a description" className="mt-1" />
                         </div>
                     </div>
                 </> : <></>

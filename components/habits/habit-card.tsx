@@ -19,22 +19,22 @@ import {HabitEvent, dispatchHabitEvent} from "@/handlers/habits-reducer";
 import {habitStore} from "@/store/habitsStore";
 import {Check} from 'lucide-react';
 import {X} from "lucide-react";
-
+import {Habit} from "@/models/habits/habits.types";
 
 let habit: Tables<'habits'>;
-export function HabitCard({id, name, description, category, edit_habit_function, completed}: typeof habit) {
-    const img_source = resolver(category.name);
-    const set_habits = habitStore((store) => store.setHabits);
-    const load_habits = habitStore((store) => store.loadData);
-    const habits = habitStore((store) => store.habits);
 
-    const handle_action = async (event: HabitEvent, data: typeof habit) => {
+interface props extends Habit {
+    completed?: boolean;
+    edit_habit_function: Function;
+}
+
+export function HabitCard({id, name, description, categoryObject, edit_habit_function, completed}: props) {
+    const img_source = resolver(categoryObject.name);
+    const load_habits = habitStore((store) => store.loadData);
+
+    const handle_action = async (event: HabitEvent.delete | HabitEvent.uncomplete | HabitEvent.complete, habit_id: number) => {
         try {
-            await dispatchHabitEvent(event, data);
-            if (event === HabitEvent.delete) {
-                let habits_filtered = habits.filter(h => h.id !== data.id);
-                set_habits(habits_filtered);
-            }
+            await dispatchHabitEvent({event: event, data: {id: habit_id}});
             load_habits();
         } catch (e) {
 
@@ -56,7 +56,7 @@ export function HabitCard({id, name, description, category, edit_habit_function,
                             <div>
                                 <CardTitle>{name}</CardTitle>
                                 <CardDescription className="mt-1 transition-colors duration-300">
-                                    {category.name}
+                                    {categoryObject.name}
                                 </CardDescription>
                             </div>
                         </div>
@@ -69,7 +69,7 @@ export function HabitCard({id, name, description, category, edit_habit_function,
                                 <Button variant="ghost" onClick={() => edit_habit_function()}>
                                     Edit
                                 </Button>
-                                <Button variant="ghost" onClick={() => handle_action(HabitEvent.delete, {id})}>
+                                <Button variant="ghost" onClick={() => handle_action(HabitEvent.delete, id)}>
                                     Delete
                                 </Button>
                             </DropdownMenuContent>
@@ -81,18 +81,14 @@ export function HabitCard({id, name, description, category, edit_habit_function,
 
                     {!completed ? (
                         <Button
-                            onClick={(e) => {
-                                handle_action(HabitEvent.complete, {id});
-                            }}
+                            onClick={() => handle_action(HabitEvent.complete, id)}
                             className="bg-blue-700 hover:bg-blue-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
                         >
                             <Check />
                         </Button>
                     ) : (
                         <Button
-                            onClick={(e) => {
-                                handle_action(HabitEvent.uncomplete, {id});
-                            }}
+                            onClick={() => handle_action(HabitEvent.uncomplete, id)}
                             className="bg-red-700 hover:bg-red-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
                         >
                             <X size={24} color="white" />
