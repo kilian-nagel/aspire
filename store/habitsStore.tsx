@@ -1,17 +1,15 @@
 "use client";
-import {Tables} from "@/models/database.types";
+import {Habit} from "@/models/habits/habits.types";
 import {create} from 'zustand';
 import {getAuthenticatedUser} from "@/utils/utils";
 import {getUserHabits} from '@/models/habits/habits.service';
 import {useEffect} from "react";
 import {persist} from 'zustand/middleware';
 
-let Habit: Tables<"habits">
-
 interface HabitData {
-    habits: typeof Habit[] | null,
+    habits: Habit[] | null,
     loaded: boolean,
-    setHabits: (habits: typeof Habit[]) => void,
+    setHabits: (habits: Habit[]) => void,
     loadData: () => void
 }
 
@@ -21,7 +19,7 @@ export const habitStore = create<HabitData>()(
         (set, get) => ({
             habits: null,
             loaded: false,
-            setHabits: (habits: typeof Habit[]) => set({habits}),
+            setHabits: (habits: Habit[]) => set({habits}),
             loadData: async () => {
 
                 // Fetch authenticated habit
@@ -44,7 +42,7 @@ export const habitStore = create<HabitData>()(
 );
 
 interface props {
-    initialData: typeof Habit[]
+    initialData: Habit[]
 }
 
 export const HabitsStoreInitializer: React.FC<props> = ({initialData}) => {

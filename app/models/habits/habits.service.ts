@@ -3,19 +3,27 @@
 import {createClient} from "@/utils/supabase/server";
 import {SupabaseClient} from '@supabase/supabase-js';
 import {Database, Tables} from "@/models/database.types";
+import {Habit, HabitCreate} from "@/models/habits/habits.types";
 
-let habit: Tables<'habits'>;
-interface habitsByCompletion {
-    completed: typeof habit[],
-    uncompleted: typeof habit[]
-}
+type HabitCategory = Database["public"]["Tables"]["habitCategory"]["Row"];
+type HabitFrequency = Database["public"]["Tables"]["habitFrequency"]["Row"];
+type HabitCompletion = Database["public"]["Tables"]["habitCompletion"]["Row"];
 
-export const getUserHabits = async (userId: string): Promise<typeof habit[]> => {
+
+type HabitWithRelations = Habit & {
+    categoryObject: HabitCategory | null;
+    frequency: HabitFrequency[]; // Assuming multiple frequencies per habit
+    completions: HabitCompletion[]; // Assuming multiple completions per habit
+};
+
+
+export const getUserHabits = async (userId: string): Promise<Habit[]> => {
     const supabase: SupabaseClient<Database> = await createClient();
     const {data, error} = await supabase
         .from('habits')
         .select(`
-            *, category:habitCategory(*), frequency:habitFrequency(*), completions: habitCompletion(*)`).eq("user_id", userId);
+            *, categoryObject:habitCategory(*), frequency:habitFrequency(*), completions: habitCompletion(*)`).eq("user_id", userId)
+        .returns<HabitWithRelations[]>();
 
     if (error || !data) {
         console.error('Error fetching posts:', error);
@@ -26,10 +34,12 @@ export const getUserHabits = async (userId: string): Promise<typeof habit[]> => 
     return data;
 };
 
-export const addHabit = async (habit_data: typeof habit) => {
+export const addHabit = async (habit_data: HabitCreate) => {
     const supabase = await createClient();
     const frequency = habit_data?.frequency;
-    delete habit_data?.frequency;
+    if (!frequency) throw new Error("Erreur lors de l'ajout, il faut sélectionner au moins un jour.")
+
+    delete habit_data.frequency;
 
     // On ajoute l'habitude et on récupère l'habitude créée.
     const {error, data} = await supabase
@@ -57,7 +67,7 @@ export const addHabit = async (habit_data: typeof habit) => {
     }
 
 
-    const days_ids = frequency.map(x => x["day"]);
+    const days_ids = frequency.map(x => x.day);
     const response2 = await supabase
         .from("habitFrequency")
         .delete()
@@ -84,11 +94,12 @@ export const deleteHabit = async (habit_id: number) => {
     }
 }
 
-export const getHabitsCategories = async (): Promise<typeof habit[]> => {
+export const getHabitsCategories = async (): Promise<Tables<'habitCategory'>[]> => {
     const supabase = await createClient();
     const {data, error} = await supabase
         .from('habitCategory')
         .select(`*`)
+        .returns<Tables<'habitCategory'>[]>();
 
     if (error) {
         console.error('Error fetching posts:', error);
@@ -118,7 +129,6 @@ export const uncompleteHabit = async (habit_id: number) => {
     today_at_midnight.setHours(0);
     today_at_midnight.setMinutes(0);
     today_at_midnight.setSeconds(0);
-    console.log(today_at_midnight.toString());
 
     // On ajoute l'habitude et on récupère l'habitude créée.
     const {error} = await supabase

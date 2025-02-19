@@ -3,27 +3,34 @@ import {Tables} from "@/models/database.types";
 
 export enum HabitEvent {
     create,
-    update,
     delete,
     complete,
     uncomplete
 }
 
-let habit: Tables<'habits'>;
-export const dispatchHabitEvent = async<T extends typeof habit>(event: HabitEvent, data: T) => {
+
+interface PartialHabit {
+    id: number;
+}
+
+type Habit = Tables<"habits">;
+
+type HabitEventData =
+    | {event: HabitEvent.create; data: Habit} // Requires full habit
+    | {event: HabitEvent.delete; data: PartialHabit}
+    | {event: HabitEvent.complete; data: PartialHabit}
+    | {event: HabitEvent.uncomplete; data: PartialHabit};
+
+export const dispatchHabitEvent = async ({event, data}: HabitEventData) => {
     switch (event) {
         case HabitEvent.create:
-            const res1 = await addHabit(data);
-            return res1;
+            return await addHabit(data); // Now TypeScript enforces full Habit object
         case HabitEvent.delete:
-            const res2 = await deleteHabit(data.id);
-            return res2;
+            return await deleteHabit(data.id);
         case HabitEvent.complete:
-            const res3 = await completeHabit(data.id);
-            return res3;
+            return await completeHabit(data.id);
         case HabitEvent.uncomplete:
-            const res4 = await uncompleteHabit(data.id);
-            return res4;
+            return await uncompleteHabit(data.id);
     }
 };
 
