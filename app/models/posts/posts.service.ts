@@ -3,7 +3,8 @@
 import {createClient} from "@/utils/supabase/server";
 import {Post} from "@/models/posts/posts.types";
 
-export const createPost = async (post: {userId: string; chatId: number; content: string}) => {
+export const createPost = async (post: {userId: string; chatId: number; content: string; id?: number}) => {
+    console.log(post);
     const supabase = await createClient();
     const {data, error} = await supabase.from('posts').insert([post]).single();
     if (error) throw error;

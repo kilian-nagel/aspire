@@ -18,6 +18,7 @@ import {useToast} from "@/hooks/use-toast";
 import {postStore} from "@/store/postStore";
 import {useRouter} from "next/navigation";
 import {PostEvent} from "@/handlers/post-reducer";
+import clsx from "clsx";
 
 import {
     DropdownMenu,
@@ -46,7 +47,7 @@ export function Post(post: PostModel) {
     }
 
     return (
-        <Card key={post.id} className={is_comment ? "border-none" : ""}>
+        <Card key={post.id} className={clsx("group hover:bg-[#111111]", {is_comment: "border-none"})}>
             <CardHeader>
                 <div className="flex gap-4 items-center">
                     <Avatar onClick={handle_click_on_post}>
@@ -67,12 +68,12 @@ export function Post(post: PostModel) {
                     </DropdownMenu>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4" onClick={handle_click_on_post}>
+            <CardContent className="space-y-4 cursor-pointer" onClick={handle_click_on_post}>
                 <p className="text-gray-200">{post.content}</p>
             </CardContent>
 
 
-            <CardContent className="flex gap-4">
+            <CardContent className="flex gap-4 group-hover:bg-[#111111]">
                 <LikeButton {...post} ></LikeButton>
                 <CommentButton {...post}></CommentButton>
                 <span className="flex gap-1 items-center">
