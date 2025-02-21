@@ -33,7 +33,8 @@ export const postStore = create<PostData>()(
                 if (!authUser) return null;
 
                 const chat = await getMainChat();
-                const postsData = await getPostsForChat(chat.id);
+                let postsData = await getPostsForChat(chat.id);
+                postsData = postsData.filter(data => data.postId === null)
 
                 if (postsData) {
                     set({posts: postsData, loaded: true});
