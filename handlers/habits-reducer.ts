@@ -15,7 +15,7 @@ interface PartialHabit {
 
 type Habit = Tables<"habits">;
 
-type HabitEventData =
+export type HabitEventData =
     | {event: HabitEvent.create; data: Habit} // Requires full habit
     | {event: HabitEvent.delete; data: PartialHabit}
     | {event: HabitEvent.complete; data: PartialHabit}

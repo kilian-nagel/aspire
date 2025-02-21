@@ -6,7 +6,7 @@ import {postStore} from "@/store/postStore";
 import {postDetailStore} from "@/store/postDetailStore";
 import {commentsStore} from "@/store/commentsStore";
 import {useToast} from "@/hooks/use-toast";
-import {dispatchPostEvent, PostEvent} from "@/handlers/post-reducer";
+import {dispatchPostEvent, PostEvent, PostEventData} from "@/handlers/post-reducer";
 
 interface Props {
     content?: string;
@@ -29,10 +29,28 @@ export function TextAreaAction({
     const handleClick = async () => {
         try {
             const chat = await getMainChat();
+
+            // On setup un id factice qui ne sera pas utiisé si on est en mode création.
+            if (!id) id = -1;
             if (!user_store?.user?.id || !text.trim() || !id) throw new Error("User ID empty or input empty");
 
+            let payload: PostEventData;
+
+            // Si on est on en mode création on fait un payload sans les ids. 
+            if (action_type === PostEvent.create) {
+                payload = {
+                    data: {userId: user_store.user.id, chatId: chat.id, content: text},
+                    event: action_type
+                };
+            } else {
+                payload = {
+                    data: {userId: user_store.user.id, chatId: chat.id, content: text, postId: id, id: id},
+                    event: action_type as PostEvent.createComment | PostEvent.update
+                };
+            }
+
             // On dispatch un évènement, d'ajout, modif etc.. pour exécuter l'action nécessaire
-            await dispatchPostEvent(action_type, {userId: user_store.user.id, chatId: chat.id, content: text, postId: id, id});
+            await dispatchPostEvent(payload);
             postStore.getState().reloadData();
             postDetailStore.getState().reloadData();
             commentsStore.getState().reloadData();

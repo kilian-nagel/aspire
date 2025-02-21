@@ -5,10 +5,9 @@ import {SupabaseClient} from '@supabase/supabase-js';
 import {Database, Tables} from "@/models/database.types";
 import {Habit, HabitCreate} from "@/models/habits/habits.types";
 
-type HabitCategory = Database["public"]["Tables"]["habitCategory"]["Row"];
-type HabitFrequency = Database["public"]["Tables"]["habitFrequency"]["Row"];
-type HabitCompletion = Database["public"]["Tables"]["habitCompletion"]["Row"];
-
+type HabitCategory = Tables<'habitCategory'>;
+type HabitFrequency = Tables<'habitFrequency'>;
+type HabitCompletion = Tables<'habitCompletion'>;
 
 type HabitWithRelations = Habit & {
     categoryObject: HabitCategory | null;
@@ -46,7 +45,6 @@ export const addHabit = async (habit_data: HabitCreate) => {
         .from('habits')
         .upsert(habit_data)
         .select();
-
 
     if (error) {
         throw new Error("Error while inserting an habit.")
@@ -94,19 +92,18 @@ export const deleteHabit = async (habit_id: number) => {
     }
 }
 
-export const getHabitsCategories = async (): Promise<Tables<'habitCategory'>[]> => {
+export const getHabitsCategories = async (): Promise<HabitCategory[]> => {
     const supabase = await createClient();
     const {data, error} = await supabase
         .from('habitCategory')
         .select(`*`)
-        .returns<Tables<'habitCategory'>[]>();
+        .returns<HabitCategory[]>();
 
     if (error) {
         console.error('Error fetching posts:', error);
         throw error;
     }
 
-    // Transform data into a type-safe structure
     return data;
 };
 

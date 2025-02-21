@@ -24,3 +24,9 @@ export interface PostPartial {
     content: string,
     chatId: number
 }
+
+export interface PostCreate {
+    userId: string,
+    content: string,
+    chatId: number
+}

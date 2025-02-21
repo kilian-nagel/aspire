@@ -1,17 +1,19 @@
 import {createPost, modifyPost} from "@/models/posts/posts.service";
 import {addComment} from "@/models/comments/comments.service";
-import {PostPartial} from "@/models/posts/posts.types";
+import {PostPartial, PostCreate} from "@/models/posts/posts.types";
 
 export enum PostEvent {
     create,
     createComment,
     update,
-    like,
-    delete,
-    share
 }
 
-export const dispatchPostEvent = async<T extends PostPartial>(event: PostEvent, data: T) => {
+export type PostEventData =
+    {event: PostEvent.create; data: PostCreate} |
+    {event: PostEvent.createComment; data: PostPartial} |
+    {event: PostEvent.update; data: PostPartial}
+
+export const dispatchPostEvent = async ({event, data}: PostEventData) => {
     switch (event) {
         case PostEvent.create:
             const res1 = await createPost(data);
