@@ -1,3 +1,11 @@
+
+
+/**
+ * Génère une chaîne de caractères indiquant le temps écoulé depuis une date donnée.
+ * 
+ * @param {string} dateString - Une date sous forme de chaîne (format ISO 8601 recommandé).
+ * @returns {string} Une chaîne indiquant le temps écoulé depuis la date fournie (ex. : "10 days ago", "2 hours ago").
+ */
 export function timeAgo(dateString: string): string {
     const inputDate = new Date(dateString);
     const now = new Date();
@@ -14,14 +22,14 @@ export function timeAgo(dateString: string): string {
     const one_day = 86400000;
     let time = 0;
 
-    if(!(diffInMs >= one_minute)){
-        time = Math.floor(diffInMs/one_second);
+    if (!(diffInMs >= one_minute)) {
+        time = Math.floor(diffInMs / one_second);
         display_text = `${time} second`;
-    } else if(!(diffInMs >= one_hour)){
-        time = Math.floor(diffInMs/one_minute);
+    } else if (!(diffInMs >= one_hour)) {
+        time = Math.floor(diffInMs / one_minute);
         display_text = `${time} minutes`;
-    } else if(!(diffInMs >= one_day)){
-        time = Math.floor(diffInMs/one_hour);
+    } else if (!(diffInMs >= one_day)) {
+        time = Math.floor(diffInMs / one_hour);
         display_text = `${time} hour`;
     } else {
         const formattedDate = inputDate.toLocaleDateString("fr-FR", {
@@ -34,6 +42,6 @@ export function timeAgo(dateString: string): string {
         return formattedDate;
     }
 
-    let plural = time > 1 ? "s":"";
+    let plural = time > 1 ? "s" : "";
     return display_text + plural + " ago";
 }
