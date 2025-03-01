@@ -79,7 +79,7 @@ export default function TestimonialSection() {
                             </div>
                         )}
                         <div className="rounded-full overflow-hidden h-16 w-16 md:h-20 md:w-20">
-                            <Image width={80} height={80} src={profile.image} />
+                            <Image alt="1" width={80} height={80} src={profile.image} />
                         </div>
                     </div>
                 </div>

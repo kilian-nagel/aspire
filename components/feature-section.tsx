@@ -2,12 +2,10 @@ import {CheckCircle, Target, Users} from "lucide-react"
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-
+import React, {ReactNode} from 'react';
 
 export default function FeatureSection() {
     return (
@@ -45,7 +43,13 @@ export default function FeatureSection() {
     )
 }
 
-function FeatureCard({icon, title, description}) {
+interface props {
+    icon: ReactNode
+    title: string
+    description: string
+}
+
+function FeatureCard({icon, title, description}: props) {
     return (
         <Card>
             <CardHeader className="flex flex-col items-center justify-center">

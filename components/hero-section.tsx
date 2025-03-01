@@ -8,6 +8,8 @@ export default function HeroSection() {
         <section className="py-8 mx-auto">
             <div className="grid md:grid-cols-2 justify-between items-center">
                 <div className="flex flex-col space-y-6">
+
+                    {/*-- Header */}
                     <div>
                         <h1 className="text-center lg:text-left text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
                             Track habits. <br />
@@ -33,7 +35,7 @@ export default function HeroSection() {
                                 <div key={i} className="w-8 h-8 rounded-full bg-muted border-2 border-background" />
                             ))}
                         </div>
-                        <p>Join 10,000+ users already tracking their habits</p>
+                        <p>Join dozen of users already tracking their habits</p>
                     </div>
                 </div>
 
