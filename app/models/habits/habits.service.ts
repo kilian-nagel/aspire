@@ -4,7 +4,7 @@ import {createClient} from "@/utils/supabase/server";
 import {SupabaseClient} from '@supabase/supabase-js';
 import {Database, Tables} from "@/models/database.types";
 import {Habit, HabitCreate} from "@/models/habits/habits.types";
-
+import {format, subDays, subMonths} from "date-fns"
 type HabitCategory = Tables<'habitCategory'>;
 type HabitFrequency = Tables<'habitFrequency'>;
 type HabitCompletion = Tables<'habitCompletion'>;
@@ -38,6 +38,7 @@ export const addHabit = async (habit_data: HabitCreate) => {
     const frequency = habit_data?.frequency;
     if (!frequency) throw new Error("Erreur lors de l'ajout, il faut sélectionner au moins un jour.")
 
+    if (habit_data.id === -1) delete habit_data.id;
     delete habit_data.frequency;
 
     // On ajoute l'habitude et on récupère l'habitude créée.
@@ -135,4 +136,20 @@ export const uncompleteHabit = async (habit_id: number) => {
         .gt("created_at", today_at_midnight.toISOString())
 
     if (error) throw new Error("Erreur lors de l'invalidation de l'habitude");
+}
+
+export const getHabitsCompletions = async (habits_ids: number[]) => {
+    const supabase = await createClient();
+    const one_month_ago = subMonths(new Date(), 1);
+
+    const {data, error} = await supabase
+        .from('habits')
+        .select("*, habits_completions: habitCompletion(*)")
+        .in("id", habits_ids)
+        .gt("created_at", one_month_ago.toISOString())
+        .order("created_at", {ascending: true})
+
+    if (error) throw new Error("Erreur lors de la récupération de complétion d'habitudes");
+
+    return data;
 }

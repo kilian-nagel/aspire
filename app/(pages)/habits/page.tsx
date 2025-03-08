@@ -5,6 +5,7 @@ import {createClient} from "@/utils/supabase/server";
 import {redirect} from "next/navigation";
 import {HabitsStoreInitializer} from "@/store/habitsStore";
 import {HabitsCards} from "@/components/habits/habits-cards";
+import {HabitCard} from "@/components/habits/habit-card";
 import {useRef} from "react";
 import smile from "@/public/blob.gif";
 import Image from "next/image";
@@ -15,6 +16,13 @@ import {
     DialogTrigger,
     DialogTitle
 } from "@/components/ui/dialog"
+
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
 
 export default async function page() {
 
@@ -28,6 +36,8 @@ export default async function page() {
     }
     const habits_type = await getHabitsCategories();
     const habits = await getUserHabits(user.id);
+    console.log(habits);
+
     return (
         <div>
             <div className="flex justify-between items-center gap-10">
@@ -52,7 +62,20 @@ export default async function page() {
 
             <HabitsStoreInitializer initialData={habits} />
 
-            <HabitsCards habits_type={habits_type} />
+            <Tabs defaultValue="all">
+                <TabsList className="grid w-full grid-cols-2 mb-5">
+                    <TabsTrigger value="all">All habits</TabsTrigger>
+                    <TabsTrigger value="today">Today</TabsTrigger>
+                </TabsList>
+
+                <TabsContent className="w-full" value="all">
+                    <HabitsCards no_complete_action={true} habits_type={habits_type} />
+                </TabsContent>
+
+                <TabsContent value="today">
+                    <HabitsCards habits_type={habits_type} />
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

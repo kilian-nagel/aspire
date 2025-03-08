@@ -59,7 +59,7 @@ export function Post(post: PostModel) {
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost">...</Button>
+                            <Button variant="ghost" className={user.id !== post.userId ? "hidden" : ""}>...</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56 flex flex-col">
                             <PostDialog className="p-2 hover:cursor-pointer" content={post.content} action_type={PostEvent.update} id={post.id} />
@@ -81,7 +81,7 @@ export function Post(post: PostModel) {
                     {post.shares.length}
                 </span>
             </CardContent>
-        </Card>
+        </Card >
     );
 }
 

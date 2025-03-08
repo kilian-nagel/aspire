@@ -25,10 +25,11 @@ let habit: Tables<'habits'>;
 
 interface props extends Habit {
     completed?: boolean;
+    no_complete_action: boolean
     edit_habit_function: Function;
 }
 
-export function HabitCard({id, name, description, categoryObject, edit_habit_function, completed}: props) {
+export function HabitCard({id, name, description, categoryObject, edit_habit_function, completed, no_complete_action}: props) {
     const img_source = resolver(categoryObject.name);
     const load_habits = habitStore((store) => store.loadData);
 
@@ -44,7 +45,7 @@ export function HabitCard({id, name, description, categoryObject, edit_habit_fun
     return (
         <div className="relative group">
             <Card className="h-full cursor-pointer transition-all duration-300 hover:bg-white/5 relative overflow-hidden">
-                {completed && (
+                {completed && !no_complete_action && (
                     <div className="absolute w-full h-full bg-black/50 flex items-center justify-center text-white text-lg font-bold">
                     </div>
                 )}
@@ -79,21 +80,23 @@ export function HabitCard({id, name, description, categoryObject, edit_habit_fun
                 <CardFooter>
                     {description}
 
-                    {!completed ? (
-                        <Button
-                            onClick={() => handle_action(HabitEvent.complete, id)}
-                            className="bg-blue-700 hover:bg-blue-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
-                        >
-                            <Check />
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={() => handle_action(HabitEvent.uncomplete, id)}
-                            className="bg-red-700 hover:bg-red-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
-                        >
-                            <X size={24} color="white" />
-                        </Button>
-                    )}
+                    {!no_complete_action ? <div>
+                        {!completed ? (
+                            <Button
+                                onClick={() => handle_action(HabitEvent.complete, id)}
+                                className="bg-blue-700 hover:bg-blue-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
+                            >
+                                <Check />
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={() => handle_action(HabitEvent.uncomplete, id)}
+                                className="bg-red-700 hover:bg-red-700 text-3xl text-white group-hover:block hidden absolute right-2 bottom-2"
+                            >
+                                <X size={24} color="white" />
+                            </Button>
+                        )}
+                    </div> : <div></div>}
                 </CardFooter>
             </Card>
         </div>
