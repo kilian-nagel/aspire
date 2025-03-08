@@ -40,12 +40,10 @@ interface props {
 }
 
 export const HabitsStoreInitializer: React.FC<props> = ({initialData}) => {
-    console.log(initialData);
     const setHabits = habitStore((state) => state.setHabits);
 
     useEffect(() => {
         setHabits(initialData);
-        console.log("setuo habits");
     }, [initialData, setHabits]);
 
     return null;
