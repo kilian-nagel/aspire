@@ -14,174 +14,6 @@ import {
 } from "@/components/chart"
 import {LineChart, Line, CartesianGrid, XAxis, YAxis} from "recharts";
 
-// Sample data for habits
-const habits = [
-    {
-        id: 1,
-        name: "Morning Meditation",
-        description: "15 minutes of mindfulness",
-        category: "Wellness",
-        streak: 5,
-        completionRate: 85,
-        lastWeek: [true, true, true, false, true, true, false],
-        monthlyData: [
-            {day: "1", completed: 1},
-            {day: "2", completed: 1},
-            {day: "3", completed: 1},
-            {day: "4", completed: 0},
-            {day: "5", completed: 1},
-            {day: "6", completed: 1},
-            {day: "7", completed: 0},
-            {day: "8", completed: 1},
-            {day: "9", completed: 1},
-            {day: "10", completed: 1},
-            {day: "11", completed: 1},
-            {day: "12", completed: 0},
-            {day: "13", completed: 1},
-            {day: "14", completed: 1},
-            {day: "15", completed: 1},
-            {day: "16", completed: 0},
-            {day: "17", completed: 1},
-            {day: "18", completed: 1},
-            {day: "19", completed: 1},
-            {day: "20", completed: 1},
-            {day: "21", completed: 0},
-            {day: "22", completed: 1},
-            {day: "23", completed: 1},
-            {day: "24", completed: 1},
-            {day: "25", completed: 1},
-            {day: "26", completed: 1},
-            {day: "27", completed: 0},
-            {day: "28", completed: 1},
-            {day: "29", completed: 1},
-            {day: "30", completed: 1},
-        ],
-    },
-    {
-        id: 2,
-        name: "Read 30 Pages",
-        description: "Daily reading habit",
-        category: "Learning",
-        streak: 12,
-        completionRate: 92,
-        lastWeek: [true, true, true, true, true, true, false],
-        monthlyData: [
-            {day: "1", completed: 1},
-            {day: "2", completed: 1},
-            {day: "3", completed: 1},
-            {day: "4", completed: 1},
-            {day: "5", completed: 1},
-            {day: "6", completed: 1},
-            {day: "7", completed: 0},
-            {day: "8", completed: 1},
-            {day: "9", completed: 1},
-            {day: "10", completed: 1},
-            {day: "11", completed: 1},
-            {day: "12", completed: 1},
-            {day: "13", completed: 1},
-            {day: "14", completed: 1},
-            {day: "15", completed: 1},
-            {day: "16", completed: 1},
-            {day: "17", completed: 1},
-            {day: "18", completed: 1},
-            {day: "19", completed: 1},
-            {day: "20", completed: 1},
-            {day: "21", completed: 0},
-            {day: "22", completed: 1},
-            {day: "23", completed: 1},
-            {day: "24", completed: 1},
-            {day: "25", completed: 1},
-            {day: "26", completed: 1},
-            {day: "27", completed: 1},
-            {day: "28", completed: 1},
-            {day: "29", completed: 1},
-            {day: "30", completed: 0},
-        ],
-    },
-    {
-        id: 3,
-        name: "Workout",
-        description: "30 minutes exercise",
-        category: "Fitness",
-        streak: 3,
-        completionRate: 70,
-        lastWeek: [false, true, false, true, false, true, false],
-        monthlyData: [
-            {day: "1", completed: 0},
-            {day: "2", completed: 1},
-            {day: "3", completed: 0},
-            {day: "4", completed: 1},
-            {day: "5", completed: 0},
-            {day: "6", completed: 1},
-            {day: "7", completed: 0},
-            {day: "8", completed: 1},
-            {day: "9", completed: 0},
-            {day: "10", completed: 1},
-            {day: "11", completed: 0},
-            {day: "12", completed: 1},
-            {day: "13", completed: 0},
-            {day: "14", completed: 1},
-            {day: "15", completed: 0},
-            {day: "16", completed: 1},
-            {day: "17", completed: 0},
-            {day: "18", completed: 1},
-            {day: "19", completed: 0},
-            {day: "20", completed: 1},
-            {day: "21", completed: 0},
-            {day: "22", completed: 1},
-            {day: "23", completed: 0},
-            {day: "24", completed: 1},
-            {day: "25", completed: 0},
-            {day: "26", completed: 1},
-            {day: "27", completed: 0},
-            {day: "28", completed: 1},
-            {day: "29", completed: 0},
-            {day: "30", completed: 1},
-        ],
-    },
-    {
-        id: 4,
-        name: "Drink 8 Glasses of Water",
-        description: "Stay hydrated",
-        category: "Health",
-        streak: 15,
-        completionRate: 95,
-        lastWeek: [true, true, true, true, true, true, true],
-        monthlyData: [
-            {day: "1", completed: 1},
-            {day: "2", completed: 1},
-            {day: "3", completed: 1},
-            {day: "4", completed: 1},
-            {day: "5", completed: 1},
-            {day: "6", completed: 1},
-            {day: "7", completed: 1},
-            {day: "8", completed: 1},
-            {day: "9", completed: 1},
-            {day: "10", completed: 1},
-            {day: "11", completed: 1},
-            {day: "12", completed: 1},
-            {day: "13", completed: 1},
-            {day: "14", completed: 1},
-            {day: "15", completed: 1},
-            {day: "16", completed: 0},
-            {day: "17", completed: 1},
-            {day: "18", completed: 1},
-            {day: "19", completed: 1},
-            {day: "20", completed: 1},
-            {day: "21", completed: 1},
-            {day: "22", completed: 1},
-            {day: "23", completed: 1},
-            {day: "24", completed: 1},
-            {day: "25", completed: 1},
-            {day: "26", completed: 1},
-            {day: "27", completed: 1},
-            {day: "28", completed: 1},
-            {day: "29", completed: 1},
-            {day: "30", completed: 1},
-        ],
-    },
-]
-
 // Generate last 7 days
 const getLast7Days = () => {
     return Array.from({length: 7}, (_, i) => {
@@ -194,10 +26,12 @@ const getLast7Days = () => {
     })
 }
 
-export default function HabitDashboard() {
+export default function HabitDashboard({habits}: {habits: Object[]}) {
     const [selectedDay, setSelectedDay] = useState(6) // Default to today (last day in the array)
     const [selectedHabit, setSelectedHabit] = useState(habits[0])
     const last7Days = getLast7Days()
+
+    console.log(habits);
 
     const handleDayClick = (index: number) => {
         setSelectedDay(index)
@@ -221,7 +55,9 @@ export default function HabitDashboard() {
                         </CardTitle>
                         <CardDescription>Click on a day to see your habits</CardDescription>
                     </CardHeader>
+
                     <CardContent>
+                        {/* Last 7 Days */}
                         <div className="grid grid-cols-7 gap-2">
                             {last7Days.map((day, index) => (
                                 <div
@@ -235,7 +71,8 @@ export default function HabitDashboard() {
                                     <div className="mt-2 flex">
                                         {habits.filter((h) => h.lastWeek[index]).length > 0 && (
                                             <Badge variant="secondary" className="text-xs">
-                                                {habits.filter((h) => h.lastWeek[index]).length}/{habits.length}
+                                                {habits.filter((h) => h.lastWeek[index]).length}/{
+                                                    habits.filter((h) => h.days_has_to_be_completed.includes(index)).length}
                                             </Badge>
                                         )}
                                     </div>

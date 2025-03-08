@@ -2,6 +2,8 @@ import HabitDashboard from "@/components/habits-dashboard";
 import {getHabitsCompletions, getUserHabits} from "@/models/habits/habits.service";
 import {createClient} from "@/utils/supabase/server";
 import {redirect} from "next/navigation";
+import {getHabitsCompletionData} from "@/models/habits/habits.utils";
+import {HabitsStoreInitializer} from "@/store/habitsStore";
 
 export default async function Page() {
     const supabase = await createClient();
@@ -14,9 +16,13 @@ export default async function Page() {
     }
 
     const habits = await getUserHabits(user?.id);
-    const habits_completions = getHabitsCompletions(habits.map(habit => habit.id));
+    const habits_completions = await getHabitsCompletions(habits.map(habit => habit.id));
+    const habits_completions_stats = Object.values(getHabitsCompletionData(habits, habits_completions));
 
     return (
-        <HabitDashboard />
+        <>
+            <HabitDashboard habits={habits_completions_stats} />
+            <HabitsStoreInitializer initialData={habits} />
+        </>
     )
 }
