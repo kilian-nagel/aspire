@@ -143,9 +143,9 @@ export const getHabitsCompletions = async (habits_ids: number[]) => {
     const one_month_ago = subMonths(new Date(), 1);
 
     const {data, error} = await supabase
-        .from('habits')
-        .select("*, habits_completions: habitCompletion(*)")
-        .in("id", habits_ids)
+        .from('habitCompletion')
+        .select("*")
+        .in("habit_id", habits_ids)
         .gt("created_at", one_month_ago.toISOString())
         .order("created_at", {ascending: true})
 
