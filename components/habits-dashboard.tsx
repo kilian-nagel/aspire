@@ -1,18 +1,12 @@
 "use client"
 
 import {useState} from "react"
-import {format, subDays} from "date-fns"
+import {format, subDays, isAfter, isEqual, formatISO} from "date-fns"
 import {Calendar, CheckCheck, CheckCircle2, Circle, TrendingUp, XCircle} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Badge} from "@/components/ui/badge"
 import {Progress} from "@/components/ui/progress"
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/chart"
-import {LineChart, Line, CartesianGrid, XAxis, YAxis} from "recharts";
 
 // Generate last 7 days
 const getLast7Days = () => {
@@ -26,12 +20,23 @@ const getLast7Days = () => {
     })
 }
 
-export default function HabitDashboard({habits}: {habits: Object[]}) {
-    const [selectedDay, setSelectedDay] = useState(6) // Default to today (last day in the array)
-    const [selectedHabit, setSelectedHabit] = useState(habits[0])
-    const last7Days = getLast7Days()
+const get_habits_for_selected_day = (habits: Object[], selectedDay: number, date: Date) => {
+    return habits.filter(h => {
+        // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait bien lors de la date sélectionnée.
+        return h?.days_has_to_be_completed?.includes(selectedDay) &&
+            isEqual(date, h.created_at) || isAfter(date, h.created_at);
+    });
+}
 
-    console.log(habits);
+const round = (n) => {
+    return Math.round(n * 100) / 100
+}
+
+export default function HabitDashboard({habits_infos}: {habits_infos: Object[]}) {
+    const [selectedDay, setSelectedDay] = useState(6) // Default to today (last day in the array)
+    const [selectedHabit, setSelectedHabit] = useState(habits_infos[0])
+    const last7Days = getLast7Days()
+    const habits = get_habits_for_selected_day(habits_infos, selectedDay, last7Days[selectedDay].date)
 
     const handleDayClick = (index: number) => {
         setSelectedDay(index)
@@ -68,13 +73,12 @@ export default function HabitDashboard({habits}: {habits: Object[]}) {
                                 >
                                     <span className="text-sm font-medium">{day.formattedDate}</span>
                                     <span className="text-xs mt-1">{day.fullDate}</span>
+
                                     <div className="mt-2 flex">
-                                        {habits.filter((h) => h.lastWeek[index]).length > 0 && (
-                                            <Badge variant="secondary" className="text-xs">
-                                                {habits.filter((h) => h.lastWeek[index]).length}/{
-                                                    habits.filter((h) => h.days_has_to_be_completed.includes(index)).length}
-                                            </Badge>
-                                        )}
+                                        <Badge variant="secondary" className="text-xs">
+                                            {get_habits_for_selected_day(habits_infos, index, last7Days[index].date).filter((h) => h.lastWeek[index]).length}/{
+                                                get_habits_for_selected_day(habits_infos, index, last7Days[index].date).length}
+                                        </Badge>
                                     </div>
                                 </div>
                             ))}
@@ -105,7 +109,8 @@ export default function HabitDashboard({habits}: {habits: Object[]}) {
                                             <p className="text-sm text-muted-foreground">{habit.description}</p>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <Badge variant="outline">{habit.category}</Badge>
+                                            <Badge variant={"secondary"}>{habit?.category}</Badge>
+
                                             {habit.lastWeek[selectedDay] ? (
                                                 <CheckCircle2 className="h-6 w-6 text-green-500" />
                                             ) : (
@@ -151,9 +156,9 @@ export default function HabitDashboard({habits}: {habits: Object[]}) {
                                         <CardContent>
                                             <div className="space-y-2">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-2xl font-bold">{selectedHabit.completionRate}%</span>
+                                                    <span className="text-2xl font-bold">{round(selectedHabit.completion_rate * 100)}%</span>
                                                 </div>
-                                                <Progress value={selectedHabit.completionRate} className="h-2" />
+                                                <Progress value={round(selectedHabit.completion_rate * 100)} className="h-2" />
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -180,49 +185,8 @@ export default function HabitDashboard({habits}: {habits: Object[]}) {
                                     </Card>
                                 </div>
                             </TabsContent>
+
                             <TabsContent value="trends">
-                                <div className="h-[300px]">
-                                    <ChartContainer
-                                        config={{
-                                            completed: {
-                                                label: "Completed",
-                                                color: "hsl(var(--primary))",
-                                            },
-                                        }}
-                                    >
-                                        <LineChart
-                                            accessibilityLayer
-                                            data={selectedHabit.monthlyData}
-                                            margin={{top: 5, right: 10, left: 0, bottom: 0}}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                            <XAxis dataKey="day" tickLine={false} axisLine={false} tickFormatter={(value) => value} />
-                                            <YAxis
-                                                tickLine={false}
-                                                axisLine={false}
-                                                tickFormatter={(value) => (value === 0 ? "No" : "Yes")}
-                                                domain={[0, 1]}
-                                                ticks={[0, 1]}
-                                            />
-                                            <ChartTooltip
-                                                content={
-                                                    <ChartTooltipContent
-                                                        labelFormatter={(value) => `Day ${value}`}
-                                                        valueFormatter={(value) => (value === 0 ? "Not Completed" : "Completed")}
-                                                    />
-                                                }
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="completed"
-                                                stroke="var(--color-completed)"
-                                                strokeWidth={2}
-                                                dot={{r: 4}}
-                                                activeDot={{r: 6}}
-                                            />
-                                        </LineChart>
-                                    </ChartContainer>
-                                </div>
                                 <div className="mt-4">
                                     <h3 className="text-lg font-medium mb-2 flex items-center">
                                         <TrendingUp className="mr-2 h-5 w-5" />
@@ -230,10 +194,10 @@ export default function HabitDashboard({habits}: {habits: Object[]}) {
                                     </h3>
                                     <p className="text-muted-foreground">
                                         {selectedHabit.name} was completed on{" "}
-                                        {selectedHabit.monthlyData.filter((d) => d.completed === 1).length} out of 30 days this month.
-                                        {selectedHabit.completionRate > 80
+                                        {selectedHabit.monthlyData.filter((d) => d.completed === 1).length} out of {selectedHabit.max_completions} days this month.
+                                        {round(selectedHabit.completion_rate * 100) > 80
                                             ? " You're doing great! Keep up the good work."
-                                            : selectedHabit.completionRate > 50
+                                            : round(selectedHabit.completion_rate * 100) >= 50
                                                 ? " You're making progress. Try to be more consistent."
                                                 : " You need to improve consistency with this habit."}
                                     </p>
