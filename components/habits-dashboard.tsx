@@ -48,7 +48,7 @@ export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-7xl">
+        <div className="container mx-auto pl-0 pr-0">
             <div className="flex flex-col space-y-4">
                 <h1 className="text-3xl font-bold">Statistics</h1>
 
