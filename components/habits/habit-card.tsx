@@ -1,5 +1,5 @@
 "use client";
-import {Tables} from "@/models/database.types"
+
 import {
     Card,
     CardDescription,
@@ -21,11 +21,9 @@ import {Check} from 'lucide-react';
 import {X} from "lucide-react";
 import {Habit} from "@/models/habits/habits.types";
 
-let habit: Tables<'habits'>;
-
 interface props extends Habit {
     completed?: boolean;
-    no_complete_action: boolean
+    no_complete_action?: boolean
     edit_habit_function: Function;
 }
 

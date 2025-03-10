@@ -1,186 +1,13 @@
 "use client"
 
 import {useState} from "react"
-import {format, subDays} from "date-fns"
+import {format, subDays, isAfter, isEqual, formatISO} from "date-fns"
 import {Calendar, CheckCheck, CheckCircle2, Circle, TrendingUp, XCircle} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Badge} from "@/components/ui/badge"
 import {Progress} from "@/components/ui/progress"
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/chart"
-import {LineChart, Line, CartesianGrid, XAxis, YAxis} from "recharts";
-
-// Sample data for habits
-const habits = [
-    {
-        id: 1,
-        name: "Morning Meditation",
-        description: "15 minutes of mindfulness",
-        category: "Wellness",
-        streak: 5,
-        completionRate: 85,
-        lastWeek: [true, true, true, false, true, true, false],
-        monthlyData: [
-            {day: "1", completed: 1},
-            {day: "2", completed: 1},
-            {day: "3", completed: 1},
-            {day: "4", completed: 0},
-            {day: "5", completed: 1},
-            {day: "6", completed: 1},
-            {day: "7", completed: 0},
-            {day: "8", completed: 1},
-            {day: "9", completed: 1},
-            {day: "10", completed: 1},
-            {day: "11", completed: 1},
-            {day: "12", completed: 0},
-            {day: "13", completed: 1},
-            {day: "14", completed: 1},
-            {day: "15", completed: 1},
-            {day: "16", completed: 0},
-            {day: "17", completed: 1},
-            {day: "18", completed: 1},
-            {day: "19", completed: 1},
-            {day: "20", completed: 1},
-            {day: "21", completed: 0},
-            {day: "22", completed: 1},
-            {day: "23", completed: 1},
-            {day: "24", completed: 1},
-            {day: "25", completed: 1},
-            {day: "26", completed: 1},
-            {day: "27", completed: 0},
-            {day: "28", completed: 1},
-            {day: "29", completed: 1},
-            {day: "30", completed: 1},
-        ],
-    },
-    {
-        id: 2,
-        name: "Read 30 Pages",
-        description: "Daily reading habit",
-        category: "Learning",
-        streak: 12,
-        completionRate: 92,
-        lastWeek: [true, true, true, true, true, true, false],
-        monthlyData: [
-            {day: "1", completed: 1},
-            {day: "2", completed: 1},
-            {day: "3", completed: 1},
-            {day: "4", completed: 1},
-            {day: "5", completed: 1},
-            {day: "6", completed: 1},
-            {day: "7", completed: 0},
-            {day: "8", completed: 1},
-            {day: "9", completed: 1},
-            {day: "10", completed: 1},
-            {day: "11", completed: 1},
-            {day: "12", completed: 1},
-            {day: "13", completed: 1},
-            {day: "14", completed: 1},
-            {day: "15", completed: 1},
-            {day: "16", completed: 1},
-            {day: "17", completed: 1},
-            {day: "18", completed: 1},
-            {day: "19", completed: 1},
-            {day: "20", completed: 1},
-            {day: "21", completed: 0},
-            {day: "22", completed: 1},
-            {day: "23", completed: 1},
-            {day: "24", completed: 1},
-            {day: "25", completed: 1},
-            {day: "26", completed: 1},
-            {day: "27", completed: 1},
-            {day: "28", completed: 1},
-            {day: "29", completed: 1},
-            {day: "30", completed: 0},
-        ],
-    },
-    {
-        id: 3,
-        name: "Workout",
-        description: "30 minutes exercise",
-        category: "Fitness",
-        streak: 3,
-        completionRate: 70,
-        lastWeek: [false, true, false, true, false, true, false],
-        monthlyData: [
-            {day: "1", completed: 0},
-            {day: "2", completed: 1},
-            {day: "3", completed: 0},
-            {day: "4", completed: 1},
-            {day: "5", completed: 0},
-            {day: "6", completed: 1},
-            {day: "7", completed: 0},
-            {day: "8", completed: 1},
-            {day: "9", completed: 0},
-            {day: "10", completed: 1},
-            {day: "11", completed: 0},
-            {day: "12", completed: 1},
-            {day: "13", completed: 0},
-            {day: "14", completed: 1},
-            {day: "15", completed: 0},
-            {day: "16", completed: 1},
-            {day: "17", completed: 0},
-            {day: "18", completed: 1},
-            {day: "19", completed: 0},
-            {day: "20", completed: 1},
-            {day: "21", completed: 0},
-            {day: "22", completed: 1},
-            {day: "23", completed: 0},
-            {day: "24", completed: 1},
-            {day: "25", completed: 0},
-            {day: "26", completed: 1},
-            {day: "27", completed: 0},
-            {day: "28", completed: 1},
-            {day: "29", completed: 0},
-            {day: "30", completed: 1},
-        ],
-    },
-    {
-        id: 4,
-        name: "Drink 8 Glasses of Water",
-        description: "Stay hydrated",
-        category: "Health",
-        streak: 15,
-        completionRate: 95,
-        lastWeek: [true, true, true, true, true, true, true],
-        monthlyData: [
-            {day: "1", completed: 1},
-            {day: "2", completed: 1},
-            {day: "3", completed: 1},
-            {day: "4", completed: 1},
-            {day: "5", completed: 1},
-            {day: "6", completed: 1},
-            {day: "7", completed: 1},
-            {day: "8", completed: 1},
-            {day: "9", completed: 1},
-            {day: "10", completed: 1},
-            {day: "11", completed: 1},
-            {day: "12", completed: 1},
-            {day: "13", completed: 1},
-            {day: "14", completed: 1},
-            {day: "15", completed: 1},
-            {day: "16", completed: 0},
-            {day: "17", completed: 1},
-            {day: "18", completed: 1},
-            {day: "19", completed: 1},
-            {day: "20", completed: 1},
-            {day: "21", completed: 1},
-            {day: "22", completed: 1},
-            {day: "23", completed: 1},
-            {day: "24", completed: 1},
-            {day: "25", completed: 1},
-            {day: "26", completed: 1},
-            {day: "27", completed: 1},
-            {day: "28", completed: 1},
-            {day: "29", completed: 1},
-            {day: "30", completed: 1},
-        ],
-    },
-]
+import {HabitInfo} from "@/models/habits/habits.utils";
 
 // Generate last 7 days
 const getLast7Days = () => {
@@ -194,10 +21,23 @@ const getLast7Days = () => {
     })
 }
 
-export default function HabitDashboard() {
+const get_habits_for_selected_day = (habits: HabitInfo[], selectedDay: number, date: Date) => {
+    return habits.filter(h => {
+        // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait bien lors de la date sélectionnée.
+        return h?.days_has_to_be_completed?.includes(selectedDay) &&
+            isEqual(date, h.created_at) || isAfter(date, h.created_at);
+    });
+}
+
+const round = (n: number) => {
+    return Math.round(n * 100) / 100
+}
+
+export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[]}) {
     const [selectedDay, setSelectedDay] = useState(6) // Default to today (last day in the array)
-    const [selectedHabit, setSelectedHabit] = useState(habits[0])
+    const [selectedHabit, setSelectedHabit] = useState(habits_infos[0])
     const last7Days = getLast7Days()
+    const habits = get_habits_for_selected_day(habits_infos, selectedDay, last7Days[selectedDay].date)
 
     const handleDayClick = (index: number) => {
         setSelectedDay(index)
@@ -221,7 +61,9 @@ export default function HabitDashboard() {
                         </CardTitle>
                         <CardDescription>Click on a day to see your habits</CardDescription>
                     </CardHeader>
+
                     <CardContent>
+                        {/* Last 7 Days */}
                         <div className="grid grid-cols-7 gap-2">
                             {last7Days.map((day, index) => (
                                 <div
@@ -232,12 +74,12 @@ export default function HabitDashboard() {
                                 >
                                     <span className="text-sm font-medium">{day.formattedDate}</span>
                                     <span className="text-xs mt-1">{day.fullDate}</span>
+
                                     <div className="mt-2 flex">
-                                        {habits.filter((h) => h.lastWeek[index]).length > 0 && (
-                                            <Badge variant="secondary" className="text-xs">
-                                                {habits.filter((h) => h.lastWeek[index]).length}/{habits.length}
-                                            </Badge>
-                                        )}
+                                        <Badge variant="secondary" className="text-xs">
+                                            {get_habits_for_selected_day(habits_infos, index, last7Days[index].date).filter((h) => h.lastWeek[index]).length}/{
+                                                get_habits_for_selected_day(habits_infos, index, last7Days[index].date).length}
+                                        </Badge>
                                     </div>
                                 </div>
                             ))}
@@ -265,10 +107,10 @@ export default function HabitDashboard() {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <h3 className="font-medium">{habit.name}</h3>
-                                            <p className="text-sm text-muted-foreground">{habit.description}</p>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <Badge variant="outline">{habit.category}</Badge>
+                                            <Badge variant={"secondary"}>{habit?.category}</Badge>
+
                                             {habit.lastWeek[selectedDay] ? (
                                                 <CheckCircle2 className="h-6 w-6 text-green-500" />
                                             ) : (
@@ -286,7 +128,6 @@ export default function HabitDashboard() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{selectedHabit.name} Stats</CardTitle>
-                        <CardDescription>{selectedHabit.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Tabs defaultValue="overview">
@@ -314,9 +155,9 @@ export default function HabitDashboard() {
                                         <CardContent>
                                             <div className="space-y-2">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-2xl font-bold">{selectedHabit.completionRate}%</span>
+                                                    <span className="text-2xl font-bold">{round(selectedHabit.completion_rate * 100)}%</span>
                                                 </div>
-                                                <Progress value={selectedHabit.completionRate} className="h-2" />
+                                                <Progress value={round(selectedHabit.completion_rate * 100)} className="h-2" />
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -343,49 +184,8 @@ export default function HabitDashboard() {
                                     </Card>
                                 </div>
                             </TabsContent>
+
                             <TabsContent value="trends">
-                                <div className="h-[300px]">
-                                    <ChartContainer
-                                        config={{
-                                            completed: {
-                                                label: "Completed",
-                                                color: "hsl(var(--primary))",
-                                            },
-                                        }}
-                                    >
-                                        <LineChart
-                                            accessibilityLayer
-                                            data={selectedHabit.monthlyData}
-                                            margin={{top: 5, right: 10, left: 0, bottom: 0}}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                            <XAxis dataKey="day" tickLine={false} axisLine={false} tickFormatter={(value) => value} />
-                                            <YAxis
-                                                tickLine={false}
-                                                axisLine={false}
-                                                tickFormatter={(value) => (value === 0 ? "No" : "Yes")}
-                                                domain={[0, 1]}
-                                                ticks={[0, 1]}
-                                            />
-                                            <ChartTooltip
-                                                content={
-                                                    <ChartTooltipContent
-                                                        labelFormatter={(value) => `Day ${value}`}
-                                                        valueFormatter={(value) => (value === 0 ? "Not Completed" : "Completed")}
-                                                    />
-                                                }
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="completed"
-                                                stroke="var(--color-completed)"
-                                                strokeWidth={2}
-                                                dot={{r: 4}}
-                                                activeDot={{r: 6}}
-                                            />
-                                        </LineChart>
-                                    </ChartContainer>
-                                </div>
                                 <div className="mt-4">
                                     <h3 className="text-lg font-medium mb-2 flex items-center">
                                         <TrendingUp className="mr-2 h-5 w-5" />
@@ -393,10 +193,10 @@ export default function HabitDashboard() {
                                     </h3>
                                     <p className="text-muted-foreground">
                                         {selectedHabit.name} was completed on{" "}
-                                        {selectedHabit.monthlyData.filter((d) => d.completed === 1).length} out of 30 days this month.
-                                        {selectedHabit.completionRate > 80
+                                        {selectedHabit.monthlyData.filter((d) => d.completed === 1).length} out of {selectedHabit.max_completions} days this month.
+                                        {round(selectedHabit.completion_rate * 100) > 80
                                             ? " You're doing great! Keep up the good work."
-                                            : selectedHabit.completionRate > 50
+                                            : round(selectedHabit.completion_rate * 100) >= 50
                                                 ? " You're making progress. Try to be more consistent."
                                                 : " You need to improve consistency with this habit."}
                                     </p>

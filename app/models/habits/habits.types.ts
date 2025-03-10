@@ -8,7 +8,8 @@ export interface Habit extends Tables<'habits'> {
     completions: Tables<'habitCompletion'>[];
 }
 
-export interface HabitCreate extends Omit<Tables<'habits'>, 'created_at'> {
+export interface HabitCreate extends Omit<Tables<'habits'>, 'created_at' | 'id'> {
+    id?: number,
     frequency?: Omit<Tables<'habitFrequency'>, 'created_at'>[];
 }
 
