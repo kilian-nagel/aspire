@@ -7,6 +7,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Badge} from "@/components/ui/badge"
 import {Progress} from "@/components/ui/progress"
+import {HabitInfo} from "@/models/habits/habits.utils";
 
 // Generate last 7 days
 const getLast7Days = () => {
@@ -20,7 +21,7 @@ const getLast7Days = () => {
     })
 }
 
-const get_habits_for_selected_day = (habits: Object[], selectedDay: number, date: Date) => {
+const get_habits_for_selected_day = (habits: HabitInfo[], selectedDay: number, date: Date) => {
     return habits.filter(h => {
         // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait bien lors de la date sélectionnée.
         return h?.days_has_to_be_completed?.includes(selectedDay) &&
@@ -28,11 +29,11 @@ const get_habits_for_selected_day = (habits: Object[], selectedDay: number, date
     });
 }
 
-const round = (n) => {
+const round = (n: number) => {
     return Math.round(n * 100) / 100
 }
 
-export default function HabitDashboard({habits_infos}: {habits_infos: Object[]}) {
+export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[]}) {
     const [selectedDay, setSelectedDay] = useState(6) // Default to today (last day in the array)
     const [selectedHabit, setSelectedHabit] = useState(habits_infos[0])
     const last7Days = getLast7Days()
@@ -106,7 +107,6 @@ export default function HabitDashboard({habits_infos}: {habits_infos: Object[]})
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <h3 className="font-medium">{habit.name}</h3>
-                                            <p className="text-sm text-muted-foreground">{habit.description}</p>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <Badge variant={"secondary"}>{habit?.category}</Badge>
@@ -128,7 +128,6 @@ export default function HabitDashboard({habits_infos}: {habits_infos: Object[]})
                 <Card>
                     <CardHeader>
                         <CardTitle>{selectedHabit.name} Stats</CardTitle>
-                        <CardDescription>{selectedHabit.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Tabs defaultValue="overview">

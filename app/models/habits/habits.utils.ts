@@ -2,6 +2,23 @@ import {Tables} from "@/models/database.types";
 import {Habit} from "@/models/habits/habits.types";
 import {differenceInDays, formatISO, isAfter, isEqual, startOfDay, getDay, subDays, subMonths, getMonth, getYear, getDaysInMonth, getDate} from 'date-fns';
 
+type HabitCompletion = Tables<'habitCompletion'>;
+
+export interface HabitInfo extends Omit<Tables<'habitCompletion'>, 'performance' | 'habit_id'> {
+    name: string,
+    category: string,
+    days_has_to_be_completed: number[]
+
+    streak: number,
+    max_completions: number,
+    total_completions: number,
+    completion_rate: number,
+    monthlyData: {day: number, completed: number}[]
+
+    lastWeek: Boolean[],
+    last_completion_date: Date,
+}
+
 interface habitsByCompletion {
     completed: Habit[],
     uncompleted: Habit[]
@@ -43,11 +60,8 @@ export const filterHabitsByCompletion = (data: Habit[] | null): habitsByCompleti
     return habits;
 };
 
-type HabitCompletion = Tables<'habitCompletion'>;
-
 export class HabitCompletionService {
     private today: Date;
-    private lastMonth: Date;
     private completionsByHabit: Record<number, Set<string>> = {};
 
     constructor(
@@ -55,7 +69,6 @@ export class HabitCompletionService {
         private habitsCompletions: HabitCompletion[]
     ) {
         this.today = new Date();
-        this.lastMonth = subMonths(this.today, 1);
         this.groupCompletionsByHabit();
     }
 
@@ -83,21 +96,26 @@ export class HabitCompletionService {
 
     private initializeHabits(): Record<string, HabitInfo> {
         return this.habits.reduce((acc, habit) => {
-            acc[habit.id] = HabitCompletionService.initializeHabitInfo(new Date(), habit.id);
+            acc[habit.id] = HabitCompletionService.initializeHabitInfo(new Date(), habit);
             return acc;
         }, {} as Record<string, HabitInfo>);
     }
 
     // Initialise les infos d'une habitude
-    private static initializeHabitInfo(completionDate: Date, habitId: number): HabitInfo {
+    private static initializeHabitInfo(completionDate: Date, habit: Habit): HabitInfo {
         return {
-            id: habitId,
+            id: habit.id,
             lastWeek: Array(7).fill(false),
             streak: 0,
             total_completions: 0,
             max_completions: 0,
             last_completion_date: completionDate,
-            name: ""
+            completion_rate: 0,
+            name: habit.name,
+            category: habit.categoryObject.name,
+            created_at: habit.created_at,
+            days_has_to_be_completed: [],
+            monthlyData: []
         };
     }
 
@@ -126,8 +144,6 @@ export class HabitCompletionService {
                 const dateStr = formatISO(date);
 
                 if (habit_existed && !isAfter(dateStr, habit.created_at) && !isEqual(dateStr, habit_creation_date)) habit_existed = false;
-
-                // console.log("isEqual -> ", isEqual(habit.created_at, dateStr));
 
                 const habit_should_have_been_done = habit.frequency?.some(freq => {
                     return freq.day === getDay(date)
@@ -158,7 +174,6 @@ export class HabitCompletionService {
             habitInfo.streak = streak;
             habitInfo.last_completion_date = lastCompletionDate || new Date();
             habitInfo.lastWeek = lastWeek;
-            console.log(habitInfo.max_completions);
         }
     }
 
@@ -179,8 +194,8 @@ export class HabitCompletionService {
 
         for (const habitId in habitsWithInfos) {
             const habitInfo = habitsWithInfos[habitId];
-            const monthlyData: {day: string; completed: number}[] = Array.from({length: daysInMonth}, (_, i) => ({
-                day: (i + 1).toString(),
+            const monthlyData: {day: number; completed: number}[] = Array.from({length: daysInMonth}, (_, i) => ({
+                day: (i + 1),
                 completed: 0
             }));
 
@@ -200,9 +215,7 @@ export class HabitCompletionService {
             const habitInfo = habitsWithInfos[habit.id];
             if (!habitInfo) continue;
 
-            habitInfo.category = habit?.categoryObject?.name;
-            habitInfo.created_at = habit.created_at;
-            habitInfo.days_has_to_be_completed = habit?.frequency?.map(freq => freq.day);
+            habitInfo.days_has_to_be_completed = habit?.frequency ? habit.frequency.map(freq => freq.day) : [];
         }
     }
 }
