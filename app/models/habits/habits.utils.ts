@@ -124,6 +124,7 @@ export class HabitCompletionService {
         for (const habit of this.habits) {
             const habitId = habit.id;
             const habitInfo = habitsWithInfos[habitId];
+
             if (!habitInfo) continue;
 
             // On initialise les données nécessaires.
@@ -143,11 +144,12 @@ export class HabitCompletionService {
                 const date = startOfDay(subDays(this.today, i));
                 const dateStr = formatISO(date);
 
-                if (habit_existed && !isAfter(dateStr, habit.created_at) && !isEqual(dateStr, habit_creation_date)) habit_existed = false;
+
+                if (habit_existed && !isAfter(dateStr, habit_creation_date) && !isEqual(dateStr, habit_creation_date)) habit_existed = false;
 
                 const habit_should_have_been_done = habit.frequency?.some(freq => {
                     return freq.day === getDay(date)
-                }) && habit_existed;
+                });
 
                 if (habit_existed && habit_should_have_been_done) {
                     habitInfo.max_completions++;
@@ -183,7 +185,9 @@ export class HabitCompletionService {
             if (!habitInfo) continue;
 
             habitInfo.name = habit.name;
+
             habitInfo.completion_rate = Math.round((habitInfo.total_completions / habitInfo.max_completions) * 100) / 100;
+
         }
     }
 
@@ -194,11 +198,14 @@ export class HabitCompletionService {
 
         for (const habitId in habitsWithInfos) {
             const habitInfo = habitsWithInfos[habitId];
+
+            // On initalisee un tableau qui contiendra des objects indiquant si l'habitude a été complétée lors d'un certain jour du mois
             const monthlyData: {day: number; completed: number}[] = Array.from({length: daysInMonth}, (_, i) => ({
                 day: (i + 1),
                 completed: 0
             }));
 
+            // S'il y a eu complétion de l'habitude on met l'attribut completed du jour correspondant à 1
             for (const completion of this.habitsCompletions) {
                 const completionDate = new Date(completion.created_at);
                 if (getMonth(completionDate) === currentMonth && getYear(completionDate) === currentYear) {
@@ -211,6 +218,7 @@ export class HabitCompletionService {
     }
 
     private assignHabitDetails(habitsWithInfos: Record<string, HabitInfo>): void {
+        // Pour chaque habitude on doit récupérer les jours durant lesquelles l'habitude devait être effectuée.
         for (const habit of this.habits) {
             const habitInfo = habitsWithInfos[habit.id];
             if (!habitInfo) continue;

@@ -1,7 +1,7 @@
 "use client"
 
 import {useState} from "react"
-import {format, subDays, isAfter, isEqual, formatISO} from "date-fns"
+import {format, subDays, isAfter, isEqual, getDay, formatISO, startOfDay} from "date-fns"
 import {Calendar, CheckCheck, CheckCircle2, Circle, TrendingUp, XCircle} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
@@ -9,26 +9,39 @@ import {Badge} from "@/components/ui/badge"
 import {Progress} from "@/components/ui/progress"
 import {HabitInfo} from "@/models/habits/habits.utils";
 
-// Generate last 7 days
+// Récupère les données concernant les 7 derniers jours de la semaine
 const getLast7Days = () => {
     return Array.from({length: 7}, (_, i) => {
         const date = subDays(new Date(), 6 - i)
+
+        const dayIndex = (getDay(date) + 6) % 7;
+        // On récupère l'index du jour en fonction d'ou il se trouve dans la semaine (0 = Lundi, 1 = Mardi etc..)
+
         return {
             date,
             formattedDate: format(date, "EEE"),
             fullDate: format(date, "MMM d"),
+            index: dayIndex
         }
     })
 }
 
+// Récupère les habitudes qui doivent être affichées en fonction du jour sélectionnée
 const get_habits_for_selected_day = (habits: HabitInfo[], selectedDay: number, date: Date) => {
     return habits.filter(h => {
-        // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait bien lors de la date sélectionnée.
-        return h?.days_has_to_be_completed?.includes(selectedDay) &&
-            isEqual(date, h.created_at) || isAfter(date, h.created_at);
+        // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait lors de la date sélectionnée.
+
+
+        // On compare les dates sans prendre en compte l'heure
+        let date_formatted = startOfDay(date);
+        let date_created_at_formatted = startOfDay(h.created_at);
+
+        return h.days_has_to_be_completed.includes(selectedDay) &&
+            (isEqual(date_formatted, date_created_at_formatted) || isAfter(date_formatted, date_created_at_formatted));
     });
 }
 
+// Arrondir à 2 décimales près
 const round = (n: number) => {
     return Math.round(n * 100) / 100
 }
@@ -37,7 +50,7 @@ export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[
     const [selectedDay, setSelectedDay] = useState(6) // Default to today (last day in the array)
     const [selectedHabit, setSelectedHabit] = useState(habits_infos[0])
     const last7Days = getLast7Days()
-    const habits = get_habits_for_selected_day(habits_infos, selectedDay, last7Days[selectedDay].date)
+    const habits = get_habits_for_selected_day(habits_infos, last7Days[selectedDay].index, last7Days[selectedDay].date)
 
     const handleDayClick = (index: number) => {
         setSelectedDay(index)
@@ -77,8 +90,8 @@ export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[
 
                                     <div className="mt-2 flex">
                                         <Badge variant="secondary" className="text-xs">
-                                            {get_habits_for_selected_day(habits_infos, index, last7Days[index].date).filter((h) => h.lastWeek[index]).length}/{
-                                                get_habits_for_selected_day(habits_infos, index, last7Days[index].date).length}
+                                            {get_habits_for_selected_day(habits_infos, last7Days[index].index, last7Days[index].date).filter((h) => h.lastWeek[index]).length}/{
+                                                get_habits_for_selected_day(habits_infos, last7Days[index].index, last7Days[index].date).length}
                                         </Badge>
                                     </div>
                                 </div>
@@ -176,6 +189,7 @@ export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[
                                                             <CheckCircle2 className="h-5 w-5 text-green-500" />
                                                         ) : (
                                                             <Circle className="h-5 w-5 text-muted-foreground" />
+
                                                         )}
                                                     </div>
                                                 ))}
@@ -195,10 +209,10 @@ export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[
                                         {selectedHabit.name} was completed on{" "}
                                         {selectedHabit.monthlyData.filter((d) => d.completed === 1).length} out of {selectedHabit.max_completions} days this month.
                                         {round(selectedHabit.completion_rate * 100) > 80
-                                            ? " You're doing great! Keep up the good work."
+                                            ? "You're doing great! Keep up the good work."
                                             : round(selectedHabit.completion_rate * 100) >= 50
-                                                ? " You're making progress. Try to be more consistent."
-                                                : " You need to improve consistency with this habit."}
+                                                ? "You're making progress. Try to be more consistent."
+                                                : "You need to improve consistency with this habit."}
                                     </p>
                                 </div>
                             </TabsContent>
@@ -206,8 +220,6 @@ export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[
                     </CardContent>
                 </Card>
             </div>
-        </div>
+        </div >
     )
 }
-
-
