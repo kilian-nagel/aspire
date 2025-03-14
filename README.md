@@ -16,25 +16,21 @@ Bienvenue sur **Aspire**, l'application ultime pour suivre vos habitudes, se fix
 
 ## **Rendu de l'application**
 
-![Texte alternatif](screen/screen-chats.png)
-![Texte alternatif](screen/screen-habit-creation.png)
-![Texte alternatif](screen/screen-habits.png)
+![Texte alternatif](screen/chats.png)
+![Texte alternatif](screen/habit-creation.png)
+![Texte alternatif](screen/habits.png)
+![Texte alternatif](screen/statistics.png)
 
 ## **Roadmap**
 
 ### **Fonctionnalités Réalisées**
 
 - [x] Création et suivi d'habitudes.
-- [x] Fixation d'objectifs personnels.
+- [x] Statistiques et insights.
 - [x] Fonctionnalité de chat pour interagir avec des amis.
-
-### **En Cours de Développement**
-
-- [ ] Intégration de défis communautaires pour encourager la participation.
-- [ ] Amélioration des notifications pour une meilleure rétention utilisateur.
 
 ### **À Venir**
 
-- [ ] Système de badges et de récompense.
 - [ ] Recherche et filtres avancés.
+- [ ] Système de badges et de récompense.
 - [ ] Personnalisation avancée des profils utilisateurs.
