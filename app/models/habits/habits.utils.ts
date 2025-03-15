@@ -1,6 +1,6 @@
 import {Tables} from "@/models/database.types";
 import {Habit} from "@/models/habits/habits.types";
-import {differenceInDays, formatISO, isAfter, isEqual, startOfDay, getDay, subDays, subMonths, getMonth, getYear, getDaysInMonth, getDate} from 'date-fns';
+import {differenceInDays, formatISO, isAfter, isEqual, startOfDay, getDay, subDays, format, getMonth, getYear, getDaysInMonth, getDate} from 'date-fns';
 
 type HabitCompletion = Tables<'habitCompletion'>;
 
@@ -124,6 +124,7 @@ export class HabitCompletionService {
         for (const habit of this.habits) {
             const habitId = habit.id;
             const habitInfo = habitsWithInfos[habitId];
+
             if (!habitInfo) continue;
 
             // On initialise les données nécessaires.
@@ -143,11 +144,12 @@ export class HabitCompletionService {
                 const date = startOfDay(subDays(this.today, i));
                 const dateStr = formatISO(date);
 
-                if (habit_existed && !isAfter(dateStr, habit.created_at) && !isEqual(dateStr, habit_creation_date)) habit_existed = false;
+
+                if (habit_existed && !isAfter(dateStr, habit_creation_date) && !isEqual(dateStr, habit_creation_date)) habit_existed = false;
 
                 const habit_should_have_been_done = habit.frequency?.some(freq => {
                     return freq.day === getDay(date)
-                }) && habit_existed;
+                });
 
                 if (habit_existed && habit_should_have_been_done) {
                     habitInfo.max_completions++;
@@ -183,7 +185,9 @@ export class HabitCompletionService {
             if (!habitInfo) continue;
 
             habitInfo.name = habit.name;
+
             habitInfo.completion_rate = Math.round((habitInfo.total_completions / habitInfo.max_completions) * 100) / 100;
+
         }
     }
 
@@ -194,11 +198,14 @@ export class HabitCompletionService {
 
         for (const habitId in habitsWithInfos) {
             const habitInfo = habitsWithInfos[habitId];
+
+            // On initalisee un tableau qui contiendra des objects indiquant si l'habitude a été complétée lors d'un certain jour du mois
             const monthlyData: {day: number; completed: number}[] = Array.from({length: daysInMonth}, (_, i) => ({
                 day: (i + 1),
                 completed: 0
             }));
 
+            // S'il y a eu complétion de l'habitude on met l'attribut completed du jour correspondant à 1
             for (const completion of this.habitsCompletions) {
                 const completionDate = new Date(completion.created_at);
                 if (getMonth(completionDate) === currentMonth && getYear(completionDate) === currentYear) {
@@ -211,6 +218,7 @@ export class HabitCompletionService {
     }
 
     private assignHabitDetails(habitsWithInfos: Record<string, HabitInfo>): void {
+        // Pour chaque habitude on doit récupérer les jours durant lesquelles l'habitude devait être effectuée.
         for (const habit of this.habits) {
             const habitInfo = habitsWithInfos[habit.id];
             if (!habitInfo) continue;
@@ -220,3 +228,40 @@ export class HabitCompletionService {
     }
 }
 
+
+// Récupère les données concernant les 7 derniers jours de la semaine
+export const getLast7Days = () => {
+    return Array.from({length: 7}, (_, i) => {
+        const date = subDays(new Date(), 6 - i)
+
+        const dayIndex = (getDay(date) + 6) % 7;
+        // On récupère l'index du jour en fonction d'ou il se trouve dans la semaine (0 = Lundi, 1 = Mardi etc..)
+
+        return {
+            date,
+            formattedDate: format(date, "EEE"),
+            fullDate: format(date, "MMM d"),
+            index: dayIndex
+        }
+    })
+}
+
+// Récupère les habitudes qui doivent être affichées en fonction du jour sélectionnée
+export const get_habits_for_selected_day = (habits: HabitInfo[], selectedDay: number, date: Date) => {
+    return habits.filter(h => {
+        // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait lors de la date sélectionnée.
+
+
+        // On compare les dates sans prendre en compte l'heure
+        let date_formatted = startOfDay(date);
+        let date_created_at_formatted = startOfDay(h.created_at);
+
+        return h.days_has_to_be_completed.includes(selectedDay) &&
+            (isEqual(date_formatted, date_created_at_formatted) || isAfter(date_formatted, date_created_at_formatted));
+    });
+}
+
+// Arrondir à 2 décimales près
+export const round = (n: number) => {
+    return Math.round(n * 100) / 100
+}

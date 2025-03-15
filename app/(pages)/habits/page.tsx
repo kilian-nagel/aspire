@@ -7,6 +7,7 @@ import {HabitsStoreInitializer} from "@/store/habitsStore";
 import {HabitsCards} from "@/components/habits/habits-cards";
 import {HabitCard} from "@/components/habits/habit-card";
 import {useRef} from "react";
+import {getFullUser} from "@/models/users/users.service";
 import smile from "@/public/blob.gif";
 import Image from "next/image";
 
@@ -25,18 +26,22 @@ import {
 } from "@/components/ui/tabs"
 
 export default async function page() {
-
     const supabase = await createClient();
+
     const {
         data: {user},
     } = await supabase.auth.getUser();
-
     if (!user) {
         return redirect("/sign-in");
     }
+
+    const userData = await getFullUser(user.id);
+    if (!userData) {
+        return redirect("/sign-in");
+    }
+
     const habits_type = await getHabitsCategories();
     const habits = await getUserHabits(user.id);
-    console.log(habits);
 
     return (
         <div>
@@ -44,7 +49,7 @@ export default async function page() {
 
                 <div className="flex gap-10 items-center mb-10">
                     <div className="flex flex-col gap-3">
-                        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Hello, guest</h1>
+                        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Hello, {userData.username}</h1>
                         <p>Ready to crush your goals ?</p>
                     </div>
                     <Image alt="smile" width={70} height={70} src={smile}></Image>
