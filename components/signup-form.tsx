@@ -25,6 +25,16 @@ export async function SignupForm(props: {searchParams: Message}) {
                     <Label htmlFor="password">Password</Label>
                     <Input id="password" name="password" type="password" required />
                 </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="tos">
+                        <input type="checkbox" id="tos" name="tos" required className="mr-2" />
+                        I agree to the{" "}
+                        <Link href="/terms-and-conditions" className="underline underline-offset-4">
+                            Terms and Conditions
+                        </Link>
+                    </Label>
+                </div>
+
                 <SubmitButton formAction={signUpAction} pendingText="Signing up...">
                     Sign up
                 </SubmitButton>
