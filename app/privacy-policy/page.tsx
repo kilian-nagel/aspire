@@ -11,13 +11,14 @@ export default function PrivacyPolicy() {
             <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-2">2. Responsable du traitement</h2>
                 <p>L’application Aspire est développée à titre non lucratif par un étudiant. L’hébergement et l’authentification sont gérés par des services tiers (Vercel et Supabase), mais la responsabilité des données collectées via l’application m’incombe.</p>
-                <p>Seule ma personne : Kilian Nagel, puis Vercel et Supabase ont accès aux données</p>
+                <p>Seul moi, Kilian Nagel (développeur du projet), ainsi que les services tiers (Vercel et Supabase), ont accès aux données</p>
                 <p>Les données collectées par l'application seront exclusivement utilisées pour les activités métiers. C'est-à-dire le suivi des habitudes, les intéractions sociales.</p>
             </section>
 
             <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-2">3. Données collectées</h2>
                 <p><strong>Données stockées par l’application :</strong></p>
+                <p>Les données sont traités sur la base de votre consentement. Lorsque vous utiliser cette application vous consentez à ce certaines données soient stockées et traitées.</p>
                 <ul className="list-disc pl-6">
                     <li>Identifiant utilisateur (ID, format entier)</li>
                     <li>Nom d’utilisateur (username, défini par l’utilisateur)</li>
@@ -25,7 +26,7 @@ export default function PrivacyPolicy() {
                 </ul>
                 <p>Aucune donnée permettant d’identifier une personne de manière unique (ex. nom réel, adresse, téléphone) n’est stockée par l’application.</p>
                 <p><strong>Données sensibles collectées par Supabase (via l’authentification) :</strong></p>
-                <p>Ces données sont stockées pour permettre l'authentification</p>
+                <p>Ces données critiques sont stockées pour permettre l'authentification. Elle sont protégés par des systèmes de sécurité mis en place par Supabase et Vercel.</p>
                 <ul className="list-disc pl-6">
                     <li>Adresse e-mail</li>
                     <li>Mot de passe (chiffré et sécurisé, non accessible par moi)</li>
@@ -62,6 +63,8 @@ export default function PrivacyPolicy() {
                     <li>Droit de rectification : vous pouvez modifier votre username.</li>
                     <li>Droit à l’oubli : vous pouvez demander la suppression de votre compte et de ses données associées.</li>
                     <li>Droit de retrait du consentement : vous pouvez supprimer votre compte à tout moment.</li>
+                    <li>Droit d'opposition : Conformément au RGPD, vous pouvez vous opposer au traitement de vos données personnelles. Toutefois, les informations collectées par Aspire (nom d'utilisateur, habitudes suivies, messages dans le chat) sont strictement nécessaires au bon fonctionnement du service. Par conséquent, l'opposition au traitement de ces données entraîne la suppression de votre compte et de toutes les données associées.</li>
+                    <li>Droit à la portabilité : Vous avez le droit de récupérer une copie des données que vous avez fournies à Aspire (nom d'utilisateur, statistiques d’habitudes, messages dans le chat) dans un format structuré et lisible (JSON). Pour en faire la demande, contactez-moi à aspire.app.adm@gmail.com. Les données vous seront transmises sous un délais de 30 jours</li>
                 </ul>
             </section>
 
@@ -75,7 +78,7 @@ export default function PrivacyPolicy() {
                 <p>Cette charte peut être mise à jour en fonction des évolutions de l’application. Les utilisateurs seront informés des changements par mail.</p>
             </section>
 
-            <p>Pour toute question, contactez-moi à <strong>aspire.app.adm@gmail.com</strong>. Je vous répondrais dans un délais de 30 jours maximum.</p>
+            <p>Pour toute question ou pour exercer vos droits, vous pouvez contactez le Responsable de la protection des données à cette adresse : <strong>aspire.app.adm@gmail.com</strong>. Je vous répondrai dans un délais de 30 jours maximum.</p>
         </div>
     );
 }
