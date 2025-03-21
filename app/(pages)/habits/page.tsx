@@ -5,8 +5,6 @@ import {createClient} from "@/utils/supabase/server";
 import {redirect} from "next/navigation";
 import {HabitsStoreInitializer} from "@/store/habitsStore";
 import {HabitsCards} from "@/components/habits/habits-cards";
-import {HabitCard} from "@/components/habits/habit-card";
-import {useRef} from "react";
 import {getFullUser} from "@/models/users/users.service";
 import smile from "@/public/blob.gif";
 import Image from "next/image";
