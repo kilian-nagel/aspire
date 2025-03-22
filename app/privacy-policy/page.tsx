@@ -1,85 +1,84 @@
 export default function PrivacyPolicy() {
     return (
         <div className="max-w-3xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4 mt-12">Charte de confidentialité</h1>
+            <h1 className="text-3xl font-bold mb-4 mt-12">Privacy Policy</h1>
 
             <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">1. Acceptation des conditions</h2>
-                <p>En utilisant les services de l'application Aspire, vous consentez et acceptez de suivre cette charte de confidentialité.</p>
+                <h2 className="text-xl font-semibold mb-2">1. Acceptance of Terms</h2>
+                <p>By using the Aspire application services, you consent to and agree to follow this privacy policy.</p>
             </section>
 
             <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">2. Responsable du traitement</h2>
-                <p>L’application Aspire est développée à titre non lucratif par un étudiant. L’hébergement et l’authentification sont gérés par des services tiers (Vercel et Supabase), mais la responsabilité des données collectées via l’application m’incombe.</p>
-                <p>Seul moi, Kilian Nagel (développeur du projet), ainsi que les services tiers (Vercel et Supabase), ont accès aux données</p>
-                <p>Les données collectées par l'application seront exclusivement utilisées pour les activités métiers. C'est-à-dire le suivi des habitudes, les intéractions sociales.</p>
+                <h2 className="text-xl font-semibold mb-2">2. Data Controller</h2>
+                <p>The Aspire application is developed on a non-profit basis by a student. Hosting and authentication are managed by third-party services (Vercel and Supabase), but the responsibility for data collected through the application lies with me.</p>
+                <p>Only I, Kilian Nagel (developer of the project), as well as third-party services (Vercel and Supabase), have access to the data.</p>
+                <p>The data collected by the application will be used exclusively for core functionalities, such as habit tracking and social interactions.</p>
             </section>
 
             <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">3. Données collectées</h2>
-                <p><strong>Données stockées par l’application :</strong></p>
-                <p>Les données sont traités sur la base de votre consentement. Lorsque vous utiliser cette application vous consentez à ce certaines données soient stockées et traitées.</p>
+                <h2 className="text-xl font-semibold mb-2">3. Collected Data</h2>
+                <p><strong>Data stored by the application:</strong></p>
+                <p>Data is processed based on your consent. By using this application, you agree that certain data will be stored and processed.</p>
                 <ul className="list-disc pl-6">
-                    <li>Identifiant utilisateur (ID, format entier)</li>
-                    <li>Nom d’utilisateur (username, défini par l’utilisateur)</li>
-                    <li>Données relatives aux habitudes suivies et à votre activité dans l'application (statistiques, messages dans le chat, intéraction, etc.)</li>
+                    <li>User ID (integer format)</li>
+                    <li>Username (defined by the user)</li>
+                    <li>Data related to tracked habits and your activity within the application (statistics, chat messages, interactions, etc.)</li>
                 </ul>
-                <p>Aucune donnée permettant d’identifier une personne de manière unique (ex. nom réel, adresse, téléphone) n’est stockée par l’application.</p>
-                <p><strong>Données sensibles collectées par Supabase (via l’authentification) :</strong></p>
-                <p>Ces données critiques sont stockées pour permettre l'authentification. Elle sont protégés par des systèmes de sécurité mis en place par Supabase et Vercel.</p>
+                <p>No data allowing a person to be uniquely identified (e.g., real name, address, phone number) is stored by the application.</p>
+                <p><strong>Sensitive data collected by Supabase (via authentication):</strong></p>
+                <p>These critical data points are stored to enable authentication. They are protected by security systems implemented by Supabase and Vercel.</p>
                 <ul className="list-disc pl-6">
-                    <li>Adresse e-mail</li>
-                    <li>Mot de passe (chiffré et sécurisé, non accessible par moi)</li>
+                    <li>Email address</li>
+                    <li>Password (encrypted and secured, not accessible by me)</li>
                 </ul>
 
-                <strong>L'ensemble de vos données seront supprimées après 1 an d'inactivité.</strong>
+                <strong>All your data will be deleted after 1 year of inactivity.</strong>
             </section>
 
             <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">4. Finalités du traitement</h2>
-                <p>Les données sont utilisées pour :</p>
+                <h2 className="text-xl font-semibold mb-2">4. Purpose of Data Processing</h2>
+                <p>The data is used to:</p>
                 <ul className="list-disc pl-6">
-                    <li>Permettre l’accès à l’application et l’authentification.</li>
-                    <li>Afficher les noms d’utilisateurs dans les communautés et le chat.</li>
-                    <li>Assurer le suivi des habitudes et des interactions sociales.</li>
-                </ul>
-            </section>
-
-            <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">5. Sécurité des données</h2>
-                <p>Les données sont hébergées par Vercel et Supabase, qui mettent en place des mesures de sécurité avancées (chiffrement, protection contre les attaques). De mon côté, je prends des précautions pour éviter toute fuite ou accès non autorisé.</p>
-            </section>
-
-            <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">6. Partage des données</h2>
-                <p>Les données ne sont jamais vendues ou partagées avec des tiers à des fins commerciales. Cependant, des services tiers comme Supabase gèrent l’authentification et stockent des emails et mots de passe.</p>
-            </section>
-
-            <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">7. Vos droits (RGPD)</h2>
-                <p>Vous disposez des droits suivants :</p>
-                <ul className="list-disc pl-6">
-                    <li>Droit d’accès : vous pouvez demander quelles informations sont stockées sur vous.</li>
-                    <li>Droit de rectification : vous pouvez modifier votre username.</li>
-                    <li>Droit à l’oubli : vous pouvez demander la suppression de votre compte et de ses données associées.</li>
-                    <li>Droit de retrait du consentement : vous pouvez supprimer votre compte à tout moment.</li>
-                    <li>Droit d'opposition : Conformément au RGPD, vous pouvez vous opposer au traitement de vos données personnelles. Toutefois, les informations collectées par Aspire (nom d'utilisateur, habitudes suivies, messages dans le chat) sont strictement nécessaires au bon fonctionnement du service. Par conséquent, l'opposition au traitement de ces données entraîne la suppression de votre compte et de toutes les données associées.</li>
-                    <li>Droit à la portabilité : Vous avez le droit de récupérer une copie des données que vous avez fournies à Aspire (nom d'utilisateur, statistiques d’habitudes, messages dans le chat) dans un format structuré et lisible (JSON). Pour en faire la demande, contactez-moi à aspire.app.adm@gmail.com. Les données vous seront transmises sous un délais de 30 jours</li>
+                    <li>Enable access to the application and authentication.</li>
+                    <li>Display usernames in communities and chat.</li>
+                    <li>Ensure habit tracking and social interactions.</li>
                 </ul>
             </section>
 
             <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">8. Cookies et suivi</h2>
-                <p>L’application n’utilise pas de cookies à des fins de suivi ou de publicité. Cependant, Supabase et Vercel peuvent utiliser des cookies techniques pour assurer l’authentification et le bon fonctionnement du service.</p>
+                <h2 className="text-xl font-semibold mb-2">5. Data Security</h2>
+                <p>Data is hosted by Vercel and Supabase, which implement advanced security measures (encryption, protection against attacks). On my side, I take precautions to prevent any leaks or unauthorized access.</p>
             </section>
 
             <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">9. Modifications de la charte</h2>
-                <p>Cette charte peut être mise à jour en fonction des évolutions de l’application. Les utilisateurs seront informés des changements par mail.</p>
+                <h2 className="text-xl font-semibold mb-2">6. Data Sharing</h2>
+                <p>Data is never sold or shared with third parties for commercial purposes. However, third-party services such as Supabase manage authentication and store emails and passwords.</p>
             </section>
 
-            <p>Pour toute question ou pour exercer vos droits, vous pouvez contactez le Responsable de la protection des données à cette adresse : <strong>aspire.app.adm@gmail.com</strong>. Je vous répondrai dans un délais de 30 jours maximum.</p>
+            <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-2">7. Your Rights (GDPR)</h2>
+                <p>You have the following rights:</p>
+                <ul className="list-disc pl-6">
+                    <li>Right of access: You can request information on what data is stored about you.</li>
+                    <li>Right of rectification: You can modify your username.</li>
+                    <li>Right to be forgotten: You can request the deletion of your account and associated data.</li>
+                    <li>Right to withdraw consent: You can delete your account at any time.</li>
+                    <li>Right to object: Under GDPR, you can object to the processing of your personal data. However, the information collected by Aspire (username, tracked habits, chat messages) is strictly necessary for the proper functioning of the service. Therefore, objecting to data processing will result in the deletion of your account and all associated data.</li>
+                    <li>Right to data portability: You have the right to obtain a copy of the data you have provided to Aspire (username, habit statistics, chat messages) in a structured and readable format (JSON). To request this, contact me at aspire.app.adm@gmail.com. The data will be provided within 30 days.</li>
+                </ul>
+            </section>
+
+            <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-2">8. Cookies and Tracking</h2>
+                <p>The application does not use cookies for tracking or advertising purposes. However, Supabase and Vercel may use technical cookies to ensure authentication and proper service functionality.</p>
+            </section>
+
+            <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-2">9. Policy Changes</h2>
+                <p>This policy may be updated as the application evolves. Users will be notified of any changes via email.</p>
+            </section>
+
+            <p>For any questions or to exercise your rights, you can contact the Data Protection Officer at this address: <strong>aspire.app.adm@gmail.com</strong>. I will respond within a maximum of 30 days.</p>
         </div>
     );
 }
-
