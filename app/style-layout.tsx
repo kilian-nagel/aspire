@@ -45,8 +45,14 @@ export default async function Layout({children}: {children: React.ReactNode}) {
                                 {children}
                                 <Toaster />
                             </div>
-                            <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+                            <footer className="w-full flex flex-col items-center justify-center border-t mx-auto text-center text-xs gap-4 py-16">
                                 <ThemeSwitcher />
+                                <div className="flex gap-3 justify-center">
+
+                                    <Link href="/privacy-policy">privacy policy</Link>
+                                    <Link href="/terms-and-conditions">terms and conditions</Link>
+                                    <Link href="/cookies-policy">cookie policy</Link>
+                                </div>
                             </footer>
                         </div>
                     </SidebarInset>
