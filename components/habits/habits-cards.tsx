@@ -20,6 +20,7 @@ export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tab
     const {habits} = habitStore();
     const habits_filtered_by_completion = filterHabitsByCompletion(habits);
     const [habit_to_edit, set_habit_to_edit] = useState<null | Habit>(null);
+    const [open, setOpen] = useState(false);
 
     if (!habits || habits.length === 0) {
         return (<p>No habits...</p>)
@@ -29,8 +30,13 @@ export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tab
         if (dialog_btn.current) {
             set_habit_to_edit(habit);
             dialog_btn.current.click();
+            setOpen(true);
         }
     }
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     if (no_complete_action) {
         return (
@@ -59,10 +65,12 @@ export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tab
                 {habits_filtered_by_completion.completed.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} completed={true} {...habit} />)}
             </div>
 
+            <div>{JSON.stringify({habit_to_edit})}</div>
             {/* Edit habit button */}
-            <Dialog >
+            <Dialog open={open} onOpenChange={(val) => !val && handleClose()}>
+
                 <DialogTrigger asChild className="absolute hidden">
-                    <Button ref={dialog_btn} variant="outline">New Habit</Button>
+                    <Button ref={dialog_btn} variant="outline">New Habit </Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle></DialogTitle>
