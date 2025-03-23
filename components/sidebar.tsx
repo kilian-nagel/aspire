@@ -19,8 +19,7 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar"
 
-// Navigation items with icons
-const navigationItems = [
+const nav_items_activities = [
     {
         title: "Habits",
         href: "/habits",
@@ -37,6 +36,25 @@ const navigationItems = [
         icon: MessageCircle,
     },
 ]
+
+const nav_items_legal = [
+    {
+        title: "Privacy policy",
+        href: "/privacy-policy",
+        icon: LayoutDashboard,
+    },
+    {
+        title: "Terms and conditions",
+        href: "/terms-and-conditions",
+        icon: FileCode,
+    },
+    {
+        title: "Cookies policy",
+        href: "/cookies-policy",
+        icon: MessageCircle,
+    },
+]
+
 
 export function AppSidebar({user}: {user: Omit<Tables<'users'>, 'created_at'>}) {
     const pathname = usePathname()
@@ -65,7 +83,26 @@ export function AppSidebar({user}: {user: Omit<Tables<'users'>, 'created_at'>}) 
                     <SidebarGroupLabel>Platform</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {navigationItems.map((item) => (
+                            {nav_items_activities.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
+                                        <Link href={item.href}>
+                                            <item.icon className="size-4" />
+                                            <span>{item.title}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+
+                <SidebarGroup>
+                    <SidebarGroupLabel>Legal</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {nav_items_legal.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
                                         <Link href={item.href}>
