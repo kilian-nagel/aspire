@@ -27,16 +27,14 @@ export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tab
     }
 
     const edit_habit = (habit: Habit) => {
-        if (dialog_btn.current) {
-            set_habit_to_edit(habit);
-            dialog_btn.current.click();
-            setOpen(true);
-        }
+        set_habit_to_edit(habit);
+        setOpen(true);
     }
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+    const handle_close = () => {
+        setOpen(false)
+        set_habit_to_edit(null);
+    }
 
     if (no_complete_action) {
         return (
@@ -45,7 +43,11 @@ export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tab
                     {habits.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} no_complete_action={true} key={habit.id} completed={true} {...habit} />)}
                 </div>
 
-                <Dialog >
+
+                <div>{JSON.stringify(open)}</div>
+                <div>{JSON.stringify({habit_to_edit})}</div>
+
+                <Dialog open={open} onOpenChange={(val) => {if (!val) handle_close()}}>
                     <DialogTrigger asChild className="absolute hidden">
                         <Button ref={dialog_btn} variant="outline">New Habit</Button>
                     </DialogTrigger>
@@ -65,10 +67,10 @@ export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tab
                 {habits_filtered_by_completion.completed.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} completed={true} {...habit} />)}
             </div>
 
+            <div>{JSON.stringify(open)}</div>
             <div>{JSON.stringify({habit_to_edit})}</div>
             {/* Edit habit button */}
-            <Dialog open={open} onOpenChange={(val) => !val && handleClose()}>
-
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild className="absolute hidden">
                     <Button ref={dialog_btn} variant="outline">New Habit </Button>
                 </DialogTrigger>
