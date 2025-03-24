@@ -6,73 +6,59 @@ import {HabitForm} from "@/components/habits/habit-form";
 import {Tables} from "@/models/database.types";
 import {Habit} from "@/models/habits/habits.types";
 import {filterHabitsByCompletion} from "@/models/habits/habits.utils";
-
 import {
     Dialog,
     DialogContent,
     DialogTrigger,
     DialogTitle
-} from "@/components/ui/dialog"
-import {useRef, useState} from "react";
+} from "@/components/ui/dialog";
+import {useState} from "react";
 
-export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tables<'habitCategory'>[], no_complete_action?: boolean}) => {
-    const dialog_btn = useRef<HTMLButtonElement | null>(null);
+export const HabitsCards = ({
+    habits_type,
+    no_complete_action
+}: {
+    habits_type: Tables<"habitCategory">[];
+    no_complete_action?: boolean;
+}) => {
     const {habits} = habitStore();
     const habits_filtered_by_completion = filterHabitsByCompletion(habits);
-    const [habit_to_edit, set_habit_to_edit] = useState<null | Habit>(null);
-    const [open, setOpen] = useState(false);
+    const [habit_to_edit, set_habit_to_edit] = useState<Habit | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     if (!habits || habits.length === 0) {
-        return (<p>No habits...</p>)
+        return <p>No habits...</p>;
     }
 
     const edit_habit = (habit: Habit) => {
         set_habit_to_edit(habit);
-        setOpen(true);
-    }
-
-    const handle_close = () => {
-        setOpen(false)
-        set_habit_to_edit(null);
-    }
-
-    if (no_complete_action) {
-        return (
-            <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
-                    {habits.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} no_complete_action={true} key={habit.id} completed={true} {...habit} />)}
-                </div>
-
-
-                <div>{JSON.stringify(open)}</div>
-                <div>{JSON.stringify({habit_to_edit})}</div>
-
-                <Dialog open={open} onOpenChange={(val) => {if (!val) handle_close()}}>
-                    <DialogTrigger asChild className="absolute hidden">
-                        <Button ref={dialog_btn} variant="outline">New Habit</Button>
-                    </DialogTrigger>
-                    <DialogContent className="min-w-[1200px]">
-                        <DialogTitle></DialogTitle>
-                        <HabitForm habits_type={habits_type} habit={habit_to_edit ?? undefined} />
-                    </DialogContent>
-                </Dialog>
-            </>
-        );
-    }
+        setIsDialogOpen(true); // Open the modal
+    };
 
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
-                {habits_filtered_by_completion.uncompleted.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} {...habit} />)}
-                {habits_filtered_by_completion.completed.map(habit => <HabitCard edit_habit_function={() => edit_habit(habit)} key={habit.id} completed={true} {...habit} />)}
+                {habits_filtered_by_completion.uncompleted.map(habit => (
+                    <HabitCard
+                        edit_habit_function={() => edit_habit(habit)}
+                        key={habit.id}
+                        {...habit}
+                    />
+                ))}
+                {habits_filtered_by_completion.completed.map(habit => (
+                    <HabitCard
+                        edit_habit_function={() => edit_habit(habit)}
+                        key={habit.id}
+                        completed={true}
+                        {...habit}
+                    />
+                ))}
             </div>
 
-            <div>{JSON.stringify(open)}</div>
-            <div>{JSON.stringify({habit_to_edit})}</div>
-            {/* Edit habit button */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild className="absolute hidden">
-                    <Button ref={dialog_btn} variant="outline">New Habit </Button>
+            {/* Controlled Modal */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline">New Habit</Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle></DialogTitle>
@@ -80,5 +66,6 @@ export const HabitsCards = ({habits_type, no_complete_action}: {habits_type: Tab
                 </DialogContent>
             </Dialog>
         </>
-    )
-}
+    );
+};
+
