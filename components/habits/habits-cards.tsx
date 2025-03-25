@@ -33,7 +33,9 @@ export const HabitsCards = ({
 
     const edit_habit = (habit: Habit) => {
         set_habit_to_edit(habit);
-        btn_ref.current.click();
+        if (btn_ref.current) {
+            btn_ref.current.click();
+        }
     };
 
     return (
