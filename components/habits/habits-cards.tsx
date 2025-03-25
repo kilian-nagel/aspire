@@ -12,7 +12,7 @@ import {
     DialogTrigger,
     DialogTitle
 } from "@/components/ui/dialog";
-import {useState} from "react";
+import {useState, useRef} from "react";
 
 export const HabitsCards = ({
     habits_type,
@@ -23,15 +23,17 @@ export const HabitsCards = ({
 }) => {
     const {habits} = habitStore();
     const habits_filtered_by_completion = filterHabitsByCompletion(habits);
-    console.log(habits_filtered_by_completion.completed);
-    const habit_to_edit = habits_filtered_by_completion.completed[0];
-    console.log(habit_to_edit);
+    const btn_ref = useRef<HTMLButtonElement | null>(null);
+    const [habit_to_edit, set_habit_to_edit] = useState<Habit | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     if (!habits || habits.length === 0) {
         return <p>No habits...</p>;
     }
 
     const edit_habit = (habit: Habit) => {
+        set_habit_to_edit(habit);
+        btn_ref.current.click();
     };
 
     return (
@@ -54,12 +56,10 @@ export const HabitsCards = ({
                 ))}
             </div>
 
-            {JSON.stringify(habit_to_edit)}
-
             {/* Controlled Modal */}
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline">New Habit</Button>
+                    <Button ref={btn_ref} variant="outline">New Habit</Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle></DialogTitle>
