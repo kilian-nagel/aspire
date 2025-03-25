@@ -34,7 +34,7 @@ export const HabitsCards = ({
     const edit_habit = (habit: Habit) => {
         set_habit_to_edit(habit);
         if (btn_ref.current) {
-            btn_ref.current.click();
+            btn_ref.current.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true}));
         }
     };
 
