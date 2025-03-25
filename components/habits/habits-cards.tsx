@@ -59,7 +59,7 @@ export const HabitsCards = ({
             {/* Controlled Modal */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                    <Button ref={btn_ref} variant="outline">New Habit</Button>
+                    <Button ref={btn_ref} className="hidden" variant="outline">New Habit</Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle></DialogTitle>
