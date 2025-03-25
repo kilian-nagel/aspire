@@ -45,6 +45,7 @@ export const HabitsCards = ({
                     <HabitCard
                         edit_habit_function={() => edit_habit(habit)}
                         key={habit.id}
+                        no_complete_action={no_complete_action}
                         {...habit}
                     />
                 ))}
@@ -53,6 +54,7 @@ export const HabitsCards = ({
                         edit_habit_function={() => edit_habit(habit)}
                         key={habit.id}
                         completed={true}
+                        no_complete_action={no_complete_action}
                         {...habit}
                     />
                 ))}
@@ -61,7 +63,7 @@ export const HabitsCards = ({
             {/* Controlled Modal */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                    <Button ref={btn_ref} className="hidden" variant="outline">New Habit</Button>
+                    <Button ref={btn_ref} className="opacity-0 absolute pointer-events-none" variant="outline">New Habit</Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle></DialogTitle>
