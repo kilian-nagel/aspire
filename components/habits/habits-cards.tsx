@@ -25,7 +25,6 @@ export const HabitsCards = ({
     const habits_filtered_by_completion = filterHabitsByCompletion(habits);
     const btn_ref = useRef<HTMLButtonElement | null>(null);
     const [habit_to_edit, set_habit_to_edit] = useState<Habit | null>(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     if (!habits || habits.length === 0) {
         return <p>No habits...</p>;
@@ -61,7 +60,7 @@ export const HabitsCards = ({
             </div>
 
             {/* Controlled Modal */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog>
                 <DialogTrigger ref={btn_ref} asChild>
                     <Button variant="outline">.</Button>
                 </DialogTrigger>
