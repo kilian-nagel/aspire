@@ -40,7 +40,6 @@ export default async function page() {
 
     const habits_type = await getHabitsCategories();
     const habits = await getUserHabits(user.id);
-
     return (
         <div>
             <div className="flex justify-between items-center gap-10">

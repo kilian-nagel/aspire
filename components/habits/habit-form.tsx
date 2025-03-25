@@ -59,6 +59,7 @@ function get_days_from_index(frequency: typeof HabitFrequency[]): string[] {
 }
 
 export function HabitForm({habits_type, habit}: props) {
+    console.log(habit);
     const {step, next, prev, reset} = useStepStore();
     const [badges_selected, set_badges_selected] = useState<string[]>(habit && habit?.frequency ? get_days_from_index(habit?.frequency) : []);
     const [category_id, set_category_id] = useState<number>(habit ? habit.category : 0);
