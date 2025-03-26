@@ -35,8 +35,14 @@ export const HabitsCards = ({
     };
 
     const closeModal = () => {
+        set_habit_to_edit(null);
         setIsDialogOpen(false);
-        setTimeout(() => set_habit_to_edit(null), 300); // Ensure cleanup after transition
+
+        document.querySelectorAll("*").forEach(el => {
+            if (window.getComputedStyle(el).pointerEvents !== "auto") {
+                el.style.pointerEvents = "auto";
+            }
+        });
     };
 
     return (
@@ -62,13 +68,10 @@ export const HabitsCards = ({
             </div>
 
             {/* Controlled Modal */}
-            <Dialog open={isDialogOpen} onOpenChange={closeModal}>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => !open && closeModal()}>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle>Edit Habit</DialogTitle>
                     <HabitForm habits_type={habits_type} habit={habit_to_edit} />
-                    <Button variant="outline" onClick={closeModal}>
-                        Close
-                    </Button>
                 </DialogContent>
             </Dialog>
         </>
