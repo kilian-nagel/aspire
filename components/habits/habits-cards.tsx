@@ -9,10 +9,9 @@ import {filterHabitsByCompletion} from "@/models/habits/habits.utils";
 import {
     Dialog,
     DialogContent,
-    DialogTrigger,
     DialogTitle
 } from "@/components/ui/dialog";
-import {useState, useRef} from "react";
+import {useState} from "react";
 
 export const HabitsCards = ({
     habits_type,
@@ -23,8 +22,8 @@ export const HabitsCards = ({
 }) => {
     const {habits} = habitStore();
     const habits_filtered_by_completion = filterHabitsByCompletion(habits);
-    const btn_ref = useRef<HTMLButtonElement | null>(null);
     const [habit_to_edit, set_habit_to_edit] = useState<Habit | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     if (!habits || habits.length === 0) {
         return <p>No habits...</p>;
@@ -32,9 +31,7 @@ export const HabitsCards = ({
 
     const edit_habit = (habit: Habit) => {
         set_habit_to_edit(habit);
-        if (btn_ref.current) {
-            btn_ref.current.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true}));
-        }
+        setIsDialogOpen(true); // Directly open the modal
     };
 
     return (
@@ -60,12 +57,9 @@ export const HabitsCards = ({
             </div>
 
             {/* Controlled Modal */}
-            <Dialog>
-                <DialogTrigger ref={btn_ref} asChild>
-                    <Button variant="outline">.</Button>
-                </DialogTrigger>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="min-w-[1200px]">
-                    <DialogTitle></DialogTitle>
+                    <DialogTitle>Edit Habit</DialogTitle>
                     <HabitForm habits_type={habits_type} habit={habit_to_edit} />
                 </DialogContent>
             </Dialog>
