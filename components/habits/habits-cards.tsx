@@ -39,10 +39,13 @@ export const HabitsCards = ({
         setIsDialogOpen(false);
 
         document.querySelectorAll("*").forEach(el => {
-            if (window.getComputedStyle(el).pointerEvents !== "auto") {
-                el.style.pointerEvents = "auto";
+            if (el instanceof HTMLElement) {
+                if (window.getComputedStyle(el).pointerEvents !== "auto") {
+                    el.style.pointerEvents = "auto"; // ✅ Safe because we checked
+                }
             }
         });
+
     };
 
     return (
