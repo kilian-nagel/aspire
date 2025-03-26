@@ -38,14 +38,18 @@ export const HabitsCards = ({
         set_habit_to_edit(null);
         setIsDialogOpen(false);
 
-        document.querySelectorAll("*").forEach(el => {
-            if (el instanceof HTMLElement) {
-                if (window.getComputedStyle(el).pointerEvents !== "auto") {
-                    console.log(el.style.pointerEvents);
-                    el.style.pointerEvents = "auto"; // ✅ Safe because we checked
+
+        setTimeout(() => {
+            console.log('setTimeOut');
+            document.querySelectorAll("*").forEach(el => {
+                if (el instanceof HTMLElement) {
+                    if (window.getComputedStyle(el).pointerEvents !== "auto") {
+                        console.log(el.style.pointerEvents);
+                        el.style.pointerEvents = "auto"; // ✅ Safe because we checked
+                    }
                 }
-            }
-        });
+            });
+        }, 2000);
     };
 
     return (
