@@ -34,6 +34,11 @@ export const HabitsCards = ({
         setIsDialogOpen(true); // Directly open the modal
     };
 
+    const closeModal = () => {
+        set_habit_to_edit(null); // Clear habit when closing
+        setIsDialogOpen(false);
+    };
+
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
@@ -57,10 +62,13 @@ export const HabitsCards = ({
             </div>
 
             {/* Controlled Modal */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={closeModal}>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle>Edit Habit</DialogTitle>
                     <HabitForm habits_type={habits_type} habit={habit_to_edit} />
+                    <Button variant="outline" onClick={closeModal}>
+                        Close
+                    </Button>
                 </DialogContent>
             </Dialog>
         </>
