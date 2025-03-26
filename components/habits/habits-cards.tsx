@@ -38,9 +38,7 @@ export const HabitsCards = ({
         set_habit_to_edit(null);
         setIsDialogOpen(false);
 
-
         setTimeout(() => {
-            console.log('setTimeOut');
             document.querySelectorAll("*").forEach(el => {
                 if (el instanceof HTMLElement) {
                     if (window.getComputedStyle(el).pointerEvents !== "auto") {
@@ -49,7 +47,7 @@ export const HabitsCards = ({
                     }
                 }
             });
-        }, 2000);
+        }, 100);
     };
 
     return (
