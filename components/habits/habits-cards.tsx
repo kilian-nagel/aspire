@@ -35,8 +35,8 @@ export const HabitsCards = ({
     };
 
     const closeModal = () => {
-        set_habit_to_edit(null); // Clear habit when closing
         setIsDialogOpen(false);
+        setTimeout(() => set_habit_to_edit(null), 300); // Ensure cleanup after transition
     };
 
     return (
