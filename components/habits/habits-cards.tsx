@@ -47,7 +47,7 @@ export const HabitsCards = ({
                     }
                 }
             });
-        }, 100);
+        }, 200);
     };
 
     return (
