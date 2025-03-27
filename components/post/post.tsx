@@ -19,6 +19,7 @@ import {postStore} from "@/store/postStore";
 import {useRouter} from "next/navigation";
 import {PostEvent} from "@/handlers/post-reducer";
 import clsx from "clsx";
+import DOMPurify from 'dompurify';
 
 import {
     DropdownMenu,
@@ -28,7 +29,6 @@ import {
 
 export function Post(post: PostModel) {
     const router = useRouter();
-    const is_comment = post.hasOwnProperty("postId") && post?.postId !== null;
 
     const {user} = userStore();
     const {toast} = useToast();
@@ -69,7 +69,8 @@ export function Post(post: PostModel) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4 cursor-pointer" onClick={handle_click_on_post}>
-                <p className="text-gray-200">{post.content}</p>
+                <p className="text-gray-200" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(post.content)}}></p>
+
             </CardContent>
 
 

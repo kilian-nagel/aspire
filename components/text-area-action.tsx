@@ -1,4 +1,3 @@
-import {Textarea} from "@/components/ui/textarea";
 import {useState} from "react";
 import {getMainChat} from "@/models/chats/chats.service";
 import {userStore} from "@/store/userStore";
@@ -6,7 +5,11 @@ import {postStore} from "@/store/postStore";
 import {postDetailStore} from "@/store/postDetailStore";
 import {commentsStore} from "@/store/commentsStore";
 import {useToast} from "@/hooks/use-toast";
+import {Button} from "@/components/ui/button"
 import {dispatchPostEvent, PostEvent, PostEventData} from "@/handlers/post-reducer";
+import {EditorContent, useEditor} from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import {cn} from "@/lib/utils";
 
 interface Props {
     content?: string;
@@ -25,6 +28,29 @@ export function TextAreaAction({
     const [prevConfirmClick, setPrevConfirmClick] = useState(confirm_button_clicked);
     const user_store = userStore();
     const {toast} = useToast();
+
+    const extensions = [
+        StarterKit.configure({
+            bulletList: {
+                keepMarks: true,
+                keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
+            },
+            orderedList: {
+                keepMarks: true,
+                keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
+            },
+        })
+    ]
+
+    const editor = useEditor({
+        extensions: extensions,
+        content,
+        onUpdate({editor}) {
+            setText(editor.getHTML()); // stores HTML into your state
+        },
+    });
+
+    if (!editor) return null;
 
     const handleClick = async () => {
         try {
@@ -81,12 +107,23 @@ export function TextAreaAction({
     }
 
     return (
-        <Textarea
-            id="post_content"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Write something..."
-        />
+
+        <div className="space-y-2">
+            {/* Toolbar */}
+            <div className="space-x-2">
+                <Button variant="outline" size="sm" onClick={() => editor.chain().focus().toggleBold().run()} className={cn({"bg-muted": editor.isActive('bold')})}>
+                    Bold
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => editor.chain().focus().toggleItalic().run()} className={cn({"bg-muted": editor.isActive('italic')})}>
+                    Italic
+                </Button>
+            </div>
+
+            {/* Editor Area */}
+            <div className="border rounded max-h-[150px] min-h-[150px] p-2">
+                <EditorContent className="h-full overflow-auto max-h-[140px]" editor={editor} />
+            </div>
+        </div>
     );
 }
 
