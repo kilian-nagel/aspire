@@ -10,6 +10,7 @@ import {dispatchPostEvent, PostEvent, PostEventData} from "@/handlers/post-reduc
 import {EditorContent, useEditor} from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import {cn} from "@/lib/utils";
+import {check_if_content_is_unacceptable} from "@/utils/validation";
 
 interface Props {
     content?: string;
@@ -60,6 +61,11 @@ export function TextAreaAction({
             if (!id) id = -1;
             if (!user_store?.user?.id || !text.trim() || !id) throw new Error("User ID empty or input empty");
 
+            if (check_if_content_is_unacceptable(text)) {
+                toast({title: "Error", description: "The post contains inappropriate content"});
+                return;
+            }
+
             let payload: PostEventData;
 
             // Si on est on en mode création on fait un payload sans les ids. 
@@ -92,6 +98,7 @@ export function TextAreaAction({
             toast({title: "Succès", description});
 
         } catch (e) {
+            console.log(e);
             toast({
                 title: "Erreur",
                 description: `Échec de l'opération`,

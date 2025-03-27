@@ -70,7 +70,6 @@ export function Post(post: PostModel) {
             </CardHeader>
             <CardContent className="space-y-4 cursor-pointer" onClick={handle_click_on_post}>
                 <p className="text-gray-200" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(post.content)}}></p>
-
             </CardContent>
 
 

@@ -1,7 +1,6 @@
 "use client";
 import {HabitCard} from "@/components/habits/habit-card";
 import {habitStore} from "@/store/habitsStore";
-import {Button} from "@/components/ui/button";
 import {HabitForm} from "@/components/habits/habit-form";
 import {Tables} from "@/models/database.types";
 import {Habit} from "@/models/habits/habits.types";

@@ -2,9 +2,13 @@
 
 import {createClient} from "@/utils/supabase/server";
 import {Post} from "@/models/posts/posts.types";
+import {check_if_content_is_unacceptable} from "@/utils/validation";
 
 export const createPost = async (post: {userId: string; chatId: number; content: string; id?: number}) => {
-    console.log(post);
+    if (check_if_content_is_unacceptable(post.content)) {
+        throw Error('Post contains inappropriate content');
+    }
+
     const supabase = await createClient();
     const {data, error} = await supabase.from('posts').insert([post]).single();
     if (error) throw error;
@@ -12,6 +16,10 @@ export const createPost = async (post: {userId: string; chatId: number; content:
 };
 
 export const modifyPost = async (post: {userId: string, content: string, postId: number}) => {
+    if (check_if_content_is_unacceptable(post.content)) {
+        throw Error('Post contains inappropriate content');
+    }
+
     const supabase = await createClient();
     const {data, error} = await supabase.from('posts').update({content: post.content}).eq("id", post.postId).is("postId", null).single();
     if (error) throw error;
