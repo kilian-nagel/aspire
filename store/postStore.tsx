@@ -34,7 +34,6 @@ export const postStore = create<PostData>()(
 
                 const chat = await getMainChat();
                 let postsData = await getPostsForChat(chat.id);
-                postsData = postsData.filter(data => data.postId === null)
 
                 if (postsData) {
                     set({posts: postsData, loaded: true});
@@ -48,9 +47,10 @@ export const postStore = create<PostData>()(
 
                 const chat = await getMainChat();
                 const postsData = await getPostsForChat(chat.id);
+                const postsDataFiltered = postsData.filter(data => data.postId === null)
 
                 if (postsData) {
-                    set({posts: postsData, loaded: true});
+                    set({posts: postsDataFiltered, loaded: true});
                 }
             },
         }),
