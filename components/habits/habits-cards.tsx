@@ -74,7 +74,7 @@ export const HabitsCards = ({
             <Dialog open={isDialogOpen} onOpenChange={(open) => !open && closeModal()}>
                 <DialogContent className="min-w-[1200px]">
                     <DialogTitle>Edit Habit</DialogTitle>
-                    <HabitForm habits_type={habits_type} habit={habit_to_edit} />
+                    <HabitForm habits_type={habits_type} habit={habit_to_edit} setOpen={setIsDialogOpen} />
                 </DialogContent>
             </Dialog>
         </>
