@@ -138,12 +138,10 @@ export class HabitCompletionService {
             // On traverse chaque jour du mois pour calculer la streak de l'habitude
             for (let i = 0; i <= 30; i++) {
                 // S'il n'y a aucune complétion alors le reste est inutile
-                if (completionDates.size === 0) break;
 
                 // On récupère la string du jour  
                 const date = startOfDay(subDays(this.today, i));
                 const dateStr = formatISO(date);
-
 
                 if (habit_existed && !isAfter(dateStr, habit_creation_date) && !isEqual(dateStr, habit_creation_date)) habit_existed = false;
 
