@@ -4,7 +4,7 @@ import {createClient} from "@/utils/supabase/server";
 import {SupabaseClient} from '@supabase/supabase-js';
 import {Database, Tables} from "@/models/database.types";
 import {Habit, HabitCreate} from "@/models/habits/habits.types";
-import {subMonths} from "date-fns"
+import {subMonths, startOfDay, formatISO} from "date-fns"
 type HabitCategory = Tables<'habitCategory'>;
 type HabitFrequency = Tables<'habitFrequency'>;
 type HabitCompletion = Tables<'habitCompletion'>;
@@ -110,9 +110,12 @@ export const getHabitsCategories = async (): Promise<HabitCategory[]> => {
 export const completeHabit = async (habit_id: number) => {
     const supabase = await createClient();
 
+    const date = startOfDay(new Date());
+    const dateStr = formatISO(date);
+
     const {error} = await supabase
         .from('habitCompletion')
-        .upsert({habit_id: habit_id})
+        .insert({habit_id: habit_id, created_at: dateStr})
         .select();
 
     if (error) throw new Error("Erreur lors de la complétion de l'habitude");
@@ -122,17 +125,15 @@ export const completeHabit = async (habit_id: number) => {
 export const uncompleteHabit = async (habit_id: number) => {
     const supabase = await createClient();
 
-    let today_at_midnight = new Date();
-    today_at_midnight.setHours(0);
-    today_at_midnight.setMinutes(0);
-    today_at_midnight.setSeconds(0);
+    const date = startOfDay(new Date());
+    const dateStr = formatISO(date);
 
     // On ajoute l'habitude et on récupère l'habitude créée.
     const {error} = await supabase
         .from('habitCompletion')
         .delete()
         .eq("habit_id", habit_id)
-        .gt("created_at", today_at_midnight.toISOString())
+        .eq("created_at", dateStr)
 
     if (error) throw new Error("Erreur lors de l'invalidation de l'habitude");
 }
