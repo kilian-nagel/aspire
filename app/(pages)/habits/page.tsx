@@ -49,7 +49,6 @@ export default async function page() {
                         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Hello, {userData.username}</h1>
                         <p>Ready to crush your goals ?</p>
                     </div>
-                    <Image alt="smile" width={70} height={70} src={smile}></Image>
                 </div>
                 <Dialog>
                     <DialogTrigger asChild>
