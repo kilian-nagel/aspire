@@ -127,51 +127,46 @@ export class HabitCompletionService {
 
             if (!habitInfo) continue;
 
-            // On initialise les données nécessaires.
             const completionDates = this.completionsByHabit[habitId] || new Set();
             let streak = 0;
             let lastCompletionDate: Date | null = null;
             let lastWeek = Array(7).fill(false);
             let habit_creation_date = formatISO(startOfDay(habit.created_at));
-            let habit_existed = true;
+            let habit_existed = false;
 
-            // On traverse chaque jour du mois pour calculer la streak de l'habitude
-            for (let i = 0; i <= 30; i++) {
-                // S'il n'y a aucune complétion alors le reste est inutile
+            let currentStreak = 0; // Track the longest streak
+            let hasMissedDay = false;
 
-                // On récupère la string du jour  
+            for (let i = 30; i >= 0; i--) { // Traversing from oldest to newest
                 const date = startOfDay(subDays(this.today, i));
                 const dateStr = formatISO(date);
 
-                if (habit_existed && !isAfter(dateStr, habit_creation_date) && !isEqual(dateStr, habit_creation_date)) habit_existed = false;
+                if (!habit_existed && (isAfter(dateStr, habit_creation_date) || isEqual(dateStr, habit_creation_date))) {
+                    habit_existed = true;
+                }
 
-                const habit_should_have_been_done = habit.frequency?.some(freq => {
-                    return freq.day === getDay(date)
-                });
+                const habit_should_have_been_done = habit.frequency?.some(freq => freq.day === getDay(date));
 
                 if (habit_existed && habit_should_have_been_done) {
                     habitInfo.max_completions++;
                 }
 
-                // Si la date du jour est existante parmi les dates de complétions de l'habitude
                 if (completionDates.has(dateStr)) {
-                    // Si seulement 1 jour écoulé depuis la dernière complétion on augmente la streak sinon on la set à 1.
-                    streak = lastCompletionDate && differenceInDays(lastCompletionDate, date) === 1 ? streak + 1 : 1;
+                    currentStreak++; // Increase streak if completed
                     lastCompletionDate = date;
                     habitInfo.total_completions++;
+                    hasMissedDay = false; // Reset miss flag
                 } else if (habit_should_have_been_done) {
-                    // Si la date du jour n'est pas existant parmi les dates de complétions et qu'elle devait être complétée ce jour là alors on reset la streak.
-                    streak = 0;
-                    continue;
+                    hasMissedDay = true;
+                    currentStreak = 0; // Reset streak if a required completion is missing
                 }
 
-                // On set l'activité de l'habitude
                 if (i < 7) {
-                    lastWeek[6 - i] = completionDates.has(dateStr);
+                    lastWeek[i] = completionDates.has(dateStr);
                 }
             }
 
-            habitInfo.streak = streak;
+            habitInfo.streak = currentStreak;
             habitInfo.last_completion_date = lastCompletionDate || new Date();
             habitInfo.lastWeek = lastWeek;
         }
@@ -246,7 +241,7 @@ export const getLast7Days = () => {
 
 // Récupère les habitudes qui doivent être affichées en fonction du jour sélectionnée
 export const get_habits_for_selected_day = (habits: HabitInfo[], selectedDay: number, date: Date) => {
-    return habits.filter(h => {
+    const habits_selected_day = habits.filter(h => {
         // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait lors de la date sélectionnée.
 
 
@@ -257,6 +252,7 @@ export const get_habits_for_selected_day = (habits: HabitInfo[], selectedDay: nu
         return h.days_has_to_be_completed.includes(selectedDay) &&
             (isEqual(date_formatted, date_created_at_formatted) || isAfter(date_formatted, date_created_at_formatted));
     });
+    return habits_selected_day;
 }
 
 // Arrondir à 2 décimales près

@@ -8,6 +8,8 @@ import {HabitInfo} from "@/models/habits/habits.utils";
 const round = (n: number) => Math.round(n * 100) / 100;
 
 export default function HabitStats({selectedHabit}: {selectedHabit: HabitInfo}) {
+    if (!selectedHabit.lastWeek) return;
+    const reversed_week = selectedHabit.lastWeek.reverse();
     return (
         <Card>
             <CardHeader>
@@ -53,18 +55,21 @@ export default function HabitStats({selectedHabit}: {selectedHabit: HabitInfo}) 
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex justify-between">
-                                        {selectedHabit.lastWeek.map((completed, i) => (
-                                            <div key={i} className="flex flex-col items-center">
-                                                <div className="text-xs text-muted-foreground mb-1">
-                                                    {format(subDays(new Date(), 6 - i), "E")}
-                                                </div>
-                                                {completed ? (
-                                                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                                                ) : (
-                                                    <Circle className="h-5 w-5 text-muted-foreground" />
-                                                )}
-                                            </div>
-                                        ))}
+                                        {
+                                            reversed_week.map((completed, i) => {
+                                                return (
+                                                    <div key={i} className="flex flex-col items-center">
+                                                        <div className="text-xs text-muted-foreground mb-1">
+                                                            {format(subDays(new Date(), 6 - i), "E")}
+                                                        </div>
+                                                        {completed ? (
+                                                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                                        ) : (
+                                                            <Circle className="h-5 w-5 text-muted-foreground" />
+                                                        )}
+                                                    </div>
+                                                )
+                                            })}
                                     </div>
                                 </CardContent>
                             </Card>

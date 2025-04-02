@@ -12,6 +12,9 @@ interface HabitListProps {
 }
 
 const HabitList = ({habits, selectedDay, selectedHabit, setSelectedHabit}: HabitListProps) => {
+
+    if (!selectedHabit.lastWeek) return;
+
     return (
         <Card>
             <CardHeader>
@@ -22,26 +25,32 @@ const HabitList = ({habits, selectedDay, selectedHabit, setSelectedHabit}: Habit
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {habits.map((habit) => (
-                        <div
-                            key={habit.id}
-                            className={`p-4 rounded-lg border cursor-pointer transition-all ${selectedHabit.id === habit.id ? "border-primary" : "border-border"
-                                }`}
-                            onClick={() => setSelectedHabit(habit)}
-                        >
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-medium">{habit.name}</h3>
-                                <div className="flex items-center space-x-2">
-                                    <Badge variant={"secondary"}>{habit.category}</Badge>
-                                    {habit.lastWeek[selectedDay] ? (
-                                        <CheckCircle2 className="h-6 w-6 text-green-500" />
-                                    ) : (
-                                        <XCircle className="h-6 w-6 text-red-500" />
-                                    )}
+
+                    {habits.map((habit) => {
+                        // Create a new reversed array for each habit
+                        const reversedLastWeek = [...habit.lastWeek].reverse();
+
+                        return (
+                            <div
+                                key={habit.id}
+                                className={`p-4 rounded-lg border cursor-pointer transition-all ${selectedHabit.id === habit.id ? "border-primary" : "border-border"
+                                    }`}
+                                onClick={() => setSelectedHabit(habit)}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-medium">{habit.name}</h3>
+                                    <div className="flex items-center space-x-2">
+                                        <Badge variant={"secondary"}>{habit.category}</Badge>
+                                        {reversedLastWeek[selectedDay] ? (
+                                            <CheckCircle2 className="h-6 w-6 text-green-500" />
+                                        ) : (
+                                            <XCircle className="h-6 w-6 text-red-500" />
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </CardContent>
         </Card>
