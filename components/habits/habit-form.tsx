@@ -22,7 +22,10 @@ import {
 import {addHabit} from "@/models/habits/habits.service";
 import {userStore} from "@/store/userStore";
 import {useToast} from "@/hooks/use-toast"
-import {DialogClose} from "@/components/ui/dialog";
+import {
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 import {habitStore} from "@/store/habitsStore";
 import {Tables} from "@/models/database.types"
 import {Habit} from "@/models/habits/habits.types";
@@ -118,8 +121,6 @@ export function HabitForm({habits_type, habit, setOpen}: props) {
             let description = habit ? "Failed to modify habit" : "Failed to create habit";
             toast({title: "Failure", description: description})
         }
-
-        setOpen(false);
         reset();
     }
 
@@ -203,7 +204,9 @@ export function HabitForm({habits_type, habit, setOpen}: props) {
                 {step < steps_length - 1 ? (
                     <Button onClick={next}>Next</Button>
                 ) : (
-                    <Button onClick={handle_form_validation}>Submit</Button>
+                    <DialogTrigger asChild>
+                        <Button onClick={handle_form_validation}>Submit</Button>
+                    </DialogTrigger>
                 )}
             </div>
         </div>
