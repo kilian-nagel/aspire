@@ -33,7 +33,7 @@ export const signUpAction = async (formData: FormData) => {
 
     if (data?.user?.id && username) {
         try {
-            createUser({id: data?.user?.id, email: email, username: username});
+            createUser({id: data?.user?.id, username: username});
         } catch (err) {
             if (err instanceof Error) {
                 return encodedRedirect("error", "/sign-up", err.message);
@@ -60,6 +60,7 @@ export const signUpAction = async (formData: FormData) => {
 export const signInAction = async (formData: FormData) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+
     const supabase = await createClient();
 
     let {error} = await supabase.auth.signInWithPassword({

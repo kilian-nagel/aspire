@@ -1,6 +1,6 @@
-import { Post } from "@/models/posts/posts.types";
-import { Like } from "@/models/likes/likes.types";
-import { Share } from "@/models/shares/shares.types";
+import {Post} from "@/models/posts/posts.types";
+import {Like} from "@/models/likes/likes.types";
+import {Share} from "@/models/shares/shares.types";
 
 export interface User {
     id: string;
@@ -14,6 +14,5 @@ export interface User {
 
 export interface PartialUser {
     id: string,
-    email: string,
     username: string
 }
