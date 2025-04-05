@@ -6,8 +6,6 @@ import {redirect} from "next/navigation";
 import {HabitsStoreInitializer} from "@/store/habitsStore";
 import {HabitsCards} from "@/components/habits/habits-cards";
 import {getFullUser} from "@/models/users/users.service";
-import smile from "@/public/blob.gif";
-import Image from "next/image";
 
 import {
     Dialog,
