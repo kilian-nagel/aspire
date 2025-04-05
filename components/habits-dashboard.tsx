@@ -13,7 +13,7 @@ export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[
     const habits = get_habits_for_selected_day(habits_infos, last7Days[selectedDay].index, last7Days[selectedDay].date);
 
     return (
-        <div className="container mx-auto">
+        <div>
             <Last7Days last7Days={last7Days} selectedDay={selectedDay} setSelectedDay={setSelectedDay} habits={habits_infos} />
             <div className="py-3"></div>
             <HabitList habits={habits} selectedDay={selectedDay} selectedHabit={selectedHabit} setSelectedHabit={setSelectedHabit} />
