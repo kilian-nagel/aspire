@@ -1,6 +1,6 @@
 import {Tables} from "@/models/database.types";
 import {Habit} from "@/models/habits/habits.types";
-import {differenceInDays, formatISO, isAfter, isEqual, startOfDay, getDay, subDays, format, getMonth, getYear, getDaysInMonth, getDate} from 'date-fns';
+import {formatISO, isAfter, isEqual, startOfDay, getDay, subDays, format, getMonth, getYear, getDaysInMonth, getDate} from 'date-fns';
 
 type HabitCompletion = Tables<'habitCompletion'>;
 
@@ -128,14 +128,12 @@ export class HabitCompletionService {
             if (!habitInfo) continue;
 
             const completionDates = this.completionsByHabit[habitId] || new Set();
-            let streak = 0;
             let lastCompletionDate: Date | null = null;
             let lastWeek = Array(7).fill(false);
             let habit_creation_date = formatISO(startOfDay(habit.created_at));
             let habit_existed = false;
 
             let currentStreak = 0; // Track the longest streak
-            let hasMissedDay = false;
 
             for (let i = 30; i >= 0; i--) { // Traversing from oldest to newest
                 const date = startOfDay(subDays(this.today, i));
@@ -155,9 +153,7 @@ export class HabitCompletionService {
                     currentStreak++; // Increase streak if completed
                     lastCompletionDate = date;
                     habitInfo.total_completions++;
-                    hasMissedDay = false; // Reset miss flag
                 } else if (habit_should_have_been_done) {
-                    hasMissedDay = true;
                     currentStreak = 0; // Reset streak if a required completion is missing
                 }
 
@@ -225,7 +221,7 @@ export class HabitCompletionService {
 // Récupère les données concernant les 7 derniers jours de la semaine
 export const getLast7Days = () => {
     return Array.from({length: 7}, (_, i) => {
-        const date = subDays(new Date(), 6 - i)
+        const date = subDays(startOfDay(new Date()), 6 - i)
 
         const dayIndex = (getDay(date) + 6) % 7;
         // On récupère l'index du jour en fonction d'ou il se trouve dans la semaine (0 = Lundi, 1 = Mardi etc..)
@@ -243,7 +239,6 @@ export const getLast7Days = () => {
 export const get_habits_for_selected_day = (habits: HabitInfo[], selectedDay: number, date: Date) => {
     const habits_selected_day = habits.filter(h => {
         // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait lors de la date sélectionnée.
-
 
         // On compare les dates sans prendre en compte l'heure
         let date_formatted = startOfDay(date);
