@@ -11,6 +11,9 @@ import {
     DialogTitle
 } from "@/components/ui/dialog";
 import {useState} from "react";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
+import {Button} from "@/components/ui/button";
+import {ClipboardList, Plus} from "lucide-react"
 
 export const HabitsCards = ({
     habits_type,
@@ -25,7 +28,19 @@ export const HabitsCards = ({
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     if (!habits || habits.length === 0) {
-        return <p>No habits...</p>;
+        return <Card className="w-full mx-auto border-dashed">
+            <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
+                <CardTitle className="text-xl">No habits yet</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center justify-center pt-6 pb-8">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted mb-4">
+                    <ClipboardList className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <CardDescription className="text-center max-w-md">
+                    You haven&apos;t created any habits to track. Start building better routines by adding your first habit.
+                </CardDescription>
+            </CardContent>
+        </Card>;
     }
 
     const edit_habit = (habit: Habit) => {
