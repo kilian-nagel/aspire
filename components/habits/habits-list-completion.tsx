@@ -13,7 +13,7 @@ interface HabitListProps {
 
 const HabitList = ({habits, selectedDay, selectedHabit, setSelectedHabit}: HabitListProps) => {
 
-    if (!selectedHabit.lastWeek) return;
+    if (!selectedHabit?.lastWeek) return;
 
     return (
         <Card>

@@ -8,8 +8,9 @@ import {HabitInfo} from "@/models/habits/habits.utils";
 const round = (n: number) => Math.round(n * 100) / 100;
 
 export default function HabitStats({selectedHabit}: {selectedHabit: HabitInfo}) {
-    if (!selectedHabit.lastWeek) return;
-    const reversed_week = selectedHabit.lastWeek.reverse();
+    if (!selectedHabit?.lastWeek) return;
+    const reversed_week_copy = [...selectedHabit.lastWeek];
+    const reversed_week = reversed_week_copy.reverse();
     return (
         <Card>
             <CardHeader>
