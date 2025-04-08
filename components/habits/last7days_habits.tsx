@@ -5,7 +5,7 @@ import {Badge} from "@/components/ui/badge";
 import {HabitInfo, get_habits_for_selected_day} from "@/models/habits/habits.utils";
 
 interface Last7DaysProps {
-    last7Days: {date: Date; formattedDate: string; fullDate: Date; index: number}[];
+    last7Days: {date: Date; formattedDate: string; fullDate: string; index: number}[];
     selectedDay: number;
     setSelectedDay: (index: number) => void;
     habits: HabitInfo[];
