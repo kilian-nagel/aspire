@@ -22,7 +22,10 @@ import {
 import {addHabit} from "@/models/habits/habits.service";
 import {userStore} from "@/store/userStore";
 import {useToast} from "@/hooks/use-toast"
-import {DialogClose} from "@/components/ui/dialog";
+import {
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 import {habitStore} from "@/store/habitsStore";
 import {Tables} from "@/models/database.types"
 import {Habit} from "@/models/habits/habits.types";
@@ -30,7 +33,7 @@ import {Habit} from "@/models/habits/habits.types";
 let HabitFrequency: Tables<'habitFrequency'>;
 interface props {
     habits_type: Tables<'habitCategory'>[],
-    habit?: Habit | null
+    habit?: Habit | null,
 }
 
 // Data store.
@@ -67,6 +70,13 @@ export function HabitForm({habits_type, habit}: props) {
     const user_store = userStore();
     const {toast} = useToast();
 
+    const handle_days_selection = () => {
+        if (!(badges_selected.length > 0)) {
+            toast({title: "Error", description: "You must select at least a day.", variant: "destructive"});
+            return false;
+        }
+        return true;
+    };
 
     const load_data = habitStore((store) => store.loadData);
 
@@ -81,6 +91,9 @@ export function HabitForm({habits_type, habit}: props) {
     const handle_form_validation = async () => {
         let user_id = user_store?.user?.id;
         let habit_id = habit ? habit.id : undefined;
+
+        const days_are_selected = handle_days_selection();
+        if (!days_are_selected) return;
 
         // On récupère les données nécessaires pour l'habitude
         const habit_data: HabitCreate = {id: -1, description: habit_description, name: habit_name, user_id: user_id ?? "", category: category_id};
@@ -107,7 +120,6 @@ export function HabitForm({habits_type, habit}: props) {
             let description = habit ? "Failed to modify habit" : "Failed to create habit";
             toast({title: "Failure", description: description})
         }
-
         reset();
     }
 
@@ -150,7 +162,7 @@ export function HabitForm({habits_type, habit}: props) {
                         {/* NOM DE L'HABITUDE */}
                         <div className="flex flex-col items-start gap-1">
                             <Label className="text-lg" htmlFor="name">Name</Label>
-                            <Input id="name" onChange={(e) => set_habit_name(e.target.value)} value={habit_name} placeholder="Enter a name" className="mt-1" />
+                            <Input required id="name" onChange={(e) => set_habit_name(e.target.value)} value={habit_name} placeholder="Enter a name" className="mt-1" />
                         </div>
 
                         {/* DIFFICULTE */}
@@ -191,9 +203,9 @@ export function HabitForm({habits_type, habit}: props) {
                 {step < steps_length - 1 ? (
                     <Button onClick={next}>Next</Button>
                 ) : (
-                    <DialogClose asChild>
+                    <DialogTrigger asChild>
                         <Button onClick={handle_form_validation}>Submit</Button>
-                    </DialogClose>
+                    </DialogTrigger>
                 )}
             </div>
         </div>
