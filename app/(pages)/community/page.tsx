@@ -10,7 +10,6 @@ import {PostEvent} from "@/handlers/post-reducer";
 
 export default async function Page() {
     const supabase = await createClient();
-    const posts = await getAllPosts();
 
     const {
         data: {user},
@@ -20,7 +19,12 @@ export default async function Page() {
         return redirect("/sign-in");
     }
 
-    const user_data = await getFullUser(user.id);
+    const posts_promise = getAllPosts();
+    const user_data_promise = getFullUser(user.id);
+
+    await Promise.all([posts_promise, user_data_promise]);
+    const posts = await posts_promise;
+    const user_data = await user_data_promise;
 
     return (
         <div className="flex-1 flex relative flex-col gap-12">
