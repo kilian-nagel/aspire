@@ -31,13 +31,18 @@ export default async function page() {
         return redirect("/sign-in");
     }
 
-    const userData = await getFullUser(user.id);
-    if (!userData) {
-        return redirect("/sign-in");
-    }
+    const userDataPromise = getFullUser(user.id);
+    const habits_type_promise = getHabitsCategories();
+    const habits_promise = getUserHabits(user.id);
 
-    const habits_type = await getHabitsCategories();
-    const habits = await getUserHabits(user.id);
+    const promises = [userDataPromise, habits_type_promise, habits_promise];
+    await Promise.all(promises);
+
+
+    const userData = await userDataPromise;
+    const habits_type = await habits_type_promise;
+    const habits = await habits_promise;
+
     return (
         <div>
             <div className="flex justify-between items-center gap-10">
