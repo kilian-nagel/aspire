@@ -23,17 +23,21 @@ export const postStore = create<PostData>()(
             posts: null,
             loaded: false,
             hasHydrated: false,
-            setPosts: (posts: Post[] | null) => set({posts}),
+            setPosts: (posts: Post[] | null) => {
+                set({posts})
+            },
+            setLoaded: (loaded: boolean) => {
+                set({loaded:loaded});
+            },
             loadData: async () => {
                 const {posts, loaded} = get();
-
-                if (loaded) return posts;
 
                 const authUser = await getAuthenticatedUser();
                 if (!authUser) return null;
 
                 const chat = await getMainChat();
                 let postsData = await getPostsForChat(chat.id);
+                console.log("getPostsForChat", postsData);
 
                 if (postsData) {
                     set({posts: postsData, loaded: true});
@@ -66,9 +70,15 @@ interface props {
 
 export const PostStoreInitializer: React.FC<props> = ({initialData}) => {
     const setPostsData = postStore((state) => state.setPosts);
+    const loadPostsData = postStore((state) => state.loadData);
 
     useEffect(() => {
         setPostsData(initialData);
+        if(!initialData){
+            // If not initial data that means we need to reload posts data manually.
+            loadPostsData();
+            console.log("loadPostsData");
+        }
     }, [initialData, setPostsData]);
 
     return null;
