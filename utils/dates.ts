@@ -1,8 +1,6 @@
-
-
 /**
  * Génère une chaîne de caractères indiquant le temps écoulé depuis une date donnée.
- * 
+ *
  * @param {string} dateString - Une date sous forme de chaîne (format ISO 8601 recommandé).
  * @returns {string} Une chaîne indiquant le temps écoulé depuis la date fournie (ex. : "10 days ago", "2 hours ago").
  */
@@ -12,7 +10,7 @@ export function timeAgo(dateString: string): string {
     let display_text = "";
 
     if (isNaN(inputDate.getTime())) {
-        throw new Error("Invalid date format");
+        return "";
     }
 
     const diffInMs = now.getTime() - inputDate.getTime();
