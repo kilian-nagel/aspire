@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { Post } from "@/models/posts/posts.types";
 import { check_if_content_is_unacceptable } from "@/utils/validation";
+import { formatISO } from "date-fns";
 
 export const createPost = async (post: {
     userId: string;
@@ -54,9 +55,14 @@ export const deletePost = async (postId: number) => {
     return data;
 };
 
-export const getPostsForChat = async (chatId: number) => {
+export const getPostsForChat = async (
+    chatId: number,
+    lastTimeStamp: string | null = null,
+    window: number = 3,
+) => {
+    console.log("in getPostsForChat");
     const supabase = await createClient();
-    const { data, error } = await supabase
+    let query = supabase
         .from("posts")
         .select(
             `
@@ -66,7 +72,16 @@ export const getPostsForChat = async (chatId: number) => {
       shares:shares(*),      
       comments:posts(*)`,
         ) // Correctly fetch related comments
-        .eq("chatId", chatId);
+        .eq("chatId", chatId)
+        .order("created_at", { ascending: false });
+
+    if (lastTimeStamp) {
+        console.log("lastTimeStamp", lastTimeStamp);
+        const lastTimeStampISO = formatISO(new Date(lastTimeStamp));
+        query = query.lt("created_at", lastTimeStampISO);
+    }
+
+    const { data, error } = await query.limit(window);
 
     if (error) {
         console.error("Error fetching posts:", error);
@@ -84,7 +99,7 @@ export const getPostsForChat = async (chatId: number) => {
 // Fetch all posts with associated likes, shares, and users
 export const getAllPosts = async (
     lastTimeStamp: string | null = null,
-    window: number = 20,
+    window: number = 3,
 ): Promise<Post[]> => {
     const supabase = await createClient();
 
@@ -99,6 +114,7 @@ export const getAllPosts = async (
       comments:posts(*)  
     `,
         )
+        .order("created_at", { ascending: false })
         .is("postId", null);
 
     if (lastTimeStamp) {

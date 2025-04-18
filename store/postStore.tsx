@@ -5,7 +5,6 @@ import {getAuthenticatedUser} from "@/utils/utils";
 import {getPostsForChat} from '@/models/posts/posts.service';
 import {getMainChat} from '@/models/chats/chats.service';
 import {useEffect} from "react";
-import {persist} from 'zustand/middleware';
 
 interface PostData {
     posts: Post[] | null,
@@ -13,16 +12,19 @@ interface PostData {
     loadData: () => void,
     reloadData: () => void,
     loaded: boolean,
-    hasHydrated: boolean
+    hasHydrated: boolean,
+    requestOngoing: boolean,
+    lastTimeStamp: string|null
 }
 
 // Create a store
 export const postStore = create<PostData>()(
-    persist(
         (set, get) => ({
             posts: null,
             loaded: false,
+            requestOngoing: false,
             hasHydrated: false,
+            lastTimeStamp: null,
             setPosts: (posts: Post[] | null) => {
                 set({posts})
             },
@@ -30,20 +32,34 @@ export const postStore = create<PostData>()(
                 set({loaded:loaded});
             },
             loadData: async () => {
-                const {posts, loaded} = get();
-
+                const {posts, loaded, requestOngoing, lastTimeStamp} = get();
+    
+                if(requestOngoing) return;
+                set({requestOngoing: true});
+                
                 const authUser = await getAuthenticatedUser();
-                if (!authUser) return null;
+                if (!authUser){
+                    set({requestOngoing: false});
+                    return null
+                };
 
-                const chat = await getMainChat();
-                let postsData = await getPostsForChat(chat.id);
-                console.log("getPostsForChat", postsData);
+                try {
+                    const chat = await getMainChat();
+                    let postsData = await getPostsForChat(chat.id, lastTimeStamp);
+                    const timestamps = postsData.map(post => new Date(post.created_at).getTime()).sort((a, b) => a-b);
+                    if(timestamps.length > 0){
+                        set({lastTimeStamp: new Date(timestamps[0]).toString()})
+                    }
 
-                if (postsData) {
-                    set({posts: postsData, loaded: true});
+                    if (postsData) {
+                        set({posts: [...posts, ...postsData], loaded: true, requestOngoing: false});
+                    }
+
+                    return postsData;
+                } catch (err){
+                    set({requestOngoing: false});
                 }
 
-                return postsData;
             },
             reloadData: async () => {
                 const authUser = await getAuthenticatedUser();
@@ -58,10 +74,6 @@ export const postStore = create<PostData>()(
                 }
             },
         }),
-        {
-            name: 'post-storage',
-        }
-    )
 );
 
 interface props {
@@ -77,7 +89,6 @@ export const PostStoreInitializer: React.FC<props> = ({initialData}) => {
         if(!initialData){
             // If not initial data that means we need to reload posts data manually.
             loadPostsData();
-            console.log("loadPostsData");
         }
     }, [initialData, setPostsData]);
 

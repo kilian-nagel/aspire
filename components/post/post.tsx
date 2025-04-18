@@ -51,10 +51,10 @@ export function Post(post: PostModel) {
             <CardHeader>
                 <div className="flex gap-4 items-center">
                     <Avatar onClick={handle_click_on_post}>
-                        <AvatarFallback>{post.user.username.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{post?.user?.username.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div onClick={handle_click_on_post}>
-                        <CardTitle className="text-lg font-semibold">{post.user.username}</CardTitle>
+                        <CardTitle className="text-lg font-semibold">{post?.user?.username}</CardTitle>
                         <CardDescription className="text-sm text-gray-400">{timeAgo(post.created_at)}</CardDescription>
                     </div>
                     <DropdownMenu>
@@ -78,7 +78,7 @@ export function Post(post: PostModel) {
                 <CommentButton {...post}></CommentButton>
                 <span className="flex gap-1 items-center">
                     <Share className="h-4 w-4" />
-                    {post.shares.length}
+                    {post?.shares?.length}
                 </span>
             </CardContent>
         </Card >
