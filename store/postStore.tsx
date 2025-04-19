@@ -5,6 +5,7 @@ import {getAuthenticatedUser} from "@/utils/utils";
 import {getPostsForChat} from '@/models/posts/posts.service';
 import {getMainChat} from '@/models/chats/chats.service';
 import {useEffect} from "react";
+import {merge_data} from "@/utils/object";
 
 interface PostData {
     posts: Post[] | null,
@@ -46,15 +47,14 @@ export const postStore = create<PostData>()(
                 try {
                     const chat = await getMainChat();
                     let postsData = await getPostsForChat(chat.id, lastTimeStamp);
+
                     const timestamps = postsData.map(post => new Date(post.created_at).getTime()).sort((a, b) => a-b);
                     if(timestamps.length > 0){
                         set({lastTimeStamp: new Date(timestamps[0]).toString()})
                     }
 
-                    if (postsData) {
-                        set({posts: [...posts, ...postsData], loaded: true, requestOngoing: false});
-                    }
-
+                    const merged_posts = merge_data(posts ?? [], postsData);
+                    set({posts: [...merged_posts], loaded: true, requestOngoing: false});
                     return postsData;
                 } catch (err){
                     set({requestOngoing: false});
