@@ -4,6 +4,12 @@ import { createClient } from "@/utils/supabase/server";
 import { Post } from "@/models/posts/posts.types";
 import { check_if_content_is_unacceptable } from "@/utils/validation";
 import { formatISO } from "date-fns";
+import {
+    LIKES_TABLE,
+    POSTS_TABLE,
+    SHARES_TABLE,
+    USERS_TABLE,
+} from "@/utils/constants";
 
 export const createPost = async (post: {
     userId: string;
@@ -17,7 +23,7 @@ export const createPost = async (post: {
 
     const supabase = await createClient();
     const { data, error } = await supabase
-        .from("posts")
+        .from(POSTS_TABLE)
         .insert([post])
         .single();
     if (error) throw error;
@@ -35,7 +41,7 @@ export const modifyPost = async (post: {
 
     const supabase = await createClient();
     const { data, error } = await supabase
-        .from("posts")
+        .from(POSTS_TABLE)
         .update({ content: post.content })
         .eq("id", post.postId)
         .is("postId", null)
@@ -48,7 +54,7 @@ export const deletePost = async (postId: number) => {
     const supabase = await createClient();
 
     const { data, error } = await supabase
-        .from("posts")
+        .from(POSTS_TABLE)
         .delete()
         .eq("id", postId);
     if (error) throw error;
@@ -60,17 +66,16 @@ export const getPostsForChat = async (
     lastTimeStamp: string | null = null,
     window: number = 3,
 ) => {
-    console.log("in getPostsForChat");
     const supabase = await createClient();
     let query = supabase
         .from("posts")
         .select(
             `
       *,
-      user:users(*),         
-      likes:likes(*),        
-      shares:shares(*),      
-      comments:posts(*)`,
+      user:${USERS_TABLE}(*),         
+      likes:${LIKES_TABLE}(*),        
+      shares:${SHARES_TABLE}(*),      
+      comments:${POSTS_TABLE}(*)`,
         ) // Correctly fetch related comments
         .eq("chatId", chatId)
         .order("created_at", { ascending: false });
@@ -104,14 +109,14 @@ export const getAllPosts = async (
     const supabase = await createClient();
 
     const query = supabase
-        .from("posts")
+        .from(POSTS_TABLE)
         .select(
             `
       *,
-      user:users(*),         
-      likes:likes(*),        
-      shares:shares(*),      
-      comments:posts(*)  
+      user:${USERS_TABLE}(*),         
+      likes:${LIKES_TABLE}(*),        
+      shares:${SHARES_TABLE}(*),      
+      comments:${POSTS_TABLE}(*)  
     `,
         )
         .order("created_at", { ascending: false })
@@ -139,14 +144,14 @@ export const getAllPosts = async (
 export const getPost = async (id: number): Promise<Post> => {
     const supabase = await createClient();
     const { data, error } = await supabase
-        .from("posts")
+        .from(POSTS_TABLE)
         .select(
             `
             *,
-            user:users(*),         
-            likes:likes(*),        
-            shares:shares(*),      
-            comments:posts(*)  
+            user:${USERS_TABLE}(*),         
+            likes:${LIKES_TABLE}(*),        
+            shares:${SHARES_TABLE}(*),      
+            comments:${POSTS_TABLE}(*)  
             `,
         )
         .eq("id", id)

@@ -5,9 +5,16 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Database, Tables } from "@/models/database.types";
 import { Habit, HabitCreate } from "@/models/habits/habits.types";
 import { subMonths, startOfDay, formatISO } from "date-fns";
-type HabitCategory = Tables<"habitCategory">;
-type HabitFrequency = Tables<"habitFrequency">;
-type HabitCompletion = Tables<"habitCompletion">;
+import {
+    HABITS_TABLE,
+    HABIT_CATEGORY_TABLE,
+    HABIT_FREQUENCY_TABLE,
+    HABIT_COMPLETION_TABLE,
+} from "@/utils/constants";
+
+type HabitCategory = Tables<HABIT_CATEGORY_TABLE>;
+type HabitFrequency = Tables<HABIT_FREQUENCY_TABLE>;
+type HabitCompletion = Tables<HABIT_COMPLETION_TABLE>;
 
 type HabitWithRelations = Habit & {
     categoryObject: HabitCategory | null;
@@ -18,10 +25,10 @@ type HabitWithRelations = Habit & {
 export const getUserHabits = async (userId: string): Promise<Habit[]> => {
     const supabase: SupabaseClient<Database> = await createClient();
     const { data, error } = await supabase
-        .from("habits")
+        .from(HABITS_TABLE)
         .select(
             `
-            *, categoryObject:habitCategory(*), frequency:habitFrequency(*), completions: habitCompletion(*)`,
+            *, categoryObject:${HABIT_CATEGORY_TABLE}(*), frequency:${HABIT_FREQUENCY_TABLE}(*), completions: ${HABIT_COMPLETION_TABLE}(*)`,
         )
         .eq("user_id", userId)
         .returns<HabitWithRelations[]>();
@@ -50,7 +57,7 @@ export const addHabit = async (
 
     // On ajoute l'habitude et on récupère l'habitude créée.
     const { error, data } = await supabase
-        .from("habits")
+        .from(HABITS_TABLE)
         .upsert(habit_data)
         .select();
 
@@ -62,7 +69,9 @@ export const addHabit = async (
     frequency.map((freq) => (freq.id = data[0].id));
 
     // On insère les fréquences de répétition de l'habitude.
-    const response = await supabase.from("habitFrequency").upsert(frequency);
+    const response = await supabase
+        .from(HABIT_FREQUENCY_TABLE)
+        .upsert(frequency);
 
     if (response.error) {
         console.error("Error fetching posts:", error);
@@ -71,7 +80,7 @@ export const addHabit = async (
 
     const days_ids = frequency.map((x) => x.day);
     const response2 = await supabase
-        .from("habitFrequency")
+        .from(HABIT_FREQUENCY_TABLE)
         .delete()
         .eq("id", data[0].id)
         .not("day", "in", `(${days_ids.join(",")})`);
@@ -84,7 +93,10 @@ export const addHabit = async (
 
 export const deleteHabit = async (habit_id: number): Promise<void | Error> => {
     const supabase = await createClient();
-    const { error } = await supabase.from("habits").delete().eq("id", habit_id);
+    const { error } = await supabase
+        .from(HABITS_TABLE)
+        .delete()
+        .eq("id", habit_id);
 
     if (error) {
         throw new Error("Error while delete an habit.");
@@ -96,7 +108,7 @@ export const getHabitsCategories = async (): Promise<
 > => {
     const supabase = await createClient();
     const { data, error } = await supabase
-        .from("habitCategory")
+        .from(HABIT_CATEGORY_TABLE)
         .select(`*`)
         .returns<HabitCategory[]>();
 
@@ -117,7 +129,7 @@ export const completeHabit = async (
     const dateStr = formatISO(date);
 
     const { error } = await supabase
-        .from("habitCompletion")
+        .from(HABIT_COMPLETION_TABLE)
         .insert({ habit_id: habit_id, created_at: dateStr })
         .select();
 
@@ -134,7 +146,7 @@ export const uncompleteHabit = async (
 
     // On ajoute l'habitude et on récupère l'habitude créée.
     const { error } = await supabase
-        .from("habitCompletion")
+        .from(HABIT_COMPLETION_TABLE)
         .delete()
         .eq("habit_id", habit_id)
         .eq("created_at", dateStr);
@@ -149,7 +161,7 @@ export const getHabitsCompletions = async (
     const one_month_ago = subMonths(new Date(), 1);
 
     const { data, error } = await supabase
-        .from("habitCompletion")
+        .from(HABIT_COMPLETION_TABLE)
         .select("*")
         .in("habit_id", habits_ids)
         .gt("created_at", one_month_ago.toISOString())
