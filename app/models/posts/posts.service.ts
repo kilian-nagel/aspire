@@ -16,7 +16,7 @@ export const createPost = async (post: {
     chatId: number;
     content: string;
     id?: number;
-}) => {
+}): Promise<null> => {
     if (check_if_content_is_unacceptable(post.content)) {
         throw Error("Post contains inappropriate content");
     }
@@ -34,7 +34,7 @@ export const modifyPost = async (post: {
     userId: string;
     content: string;
     postId: number;
-}) => {
+}): Promise<null> => {
     if (check_if_content_is_unacceptable(post.content)) {
         throw Error("Post contains inappropriate content");
     }

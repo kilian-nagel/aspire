@@ -7,6 +7,7 @@ import {
     LIKES_TABLE,
     SHARES_TABLE,
 } from "@/utils/constants";
+import { Database } from "@/app/models/database.types";
 
 export const addComment = async ({
     userId,
@@ -18,7 +19,7 @@ export const addComment = async ({
     postId: number;
     content: string;
     chatId?: number;
-}) => {
+}): Promise<null> => {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from(POSTS_TABLE)
@@ -27,7 +28,10 @@ export const addComment = async ({
     return data;
 };
 
-export const modifyComment = async (postId: number, content: string) => {
+export const modifyComment = async (
+    postId: number,
+    content: string,
+): Promise<null> => {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from(POSTS_TABLE)
@@ -38,7 +42,9 @@ export const modifyComment = async (postId: number, content: string) => {
     return data;
 };
 
-export const getCommentsForPost = async (postId: number) => {
+export const getCommentsForPost = async (
+    postId: number,
+): Promise<Database["public"]["Tables"][typeof POSTS_TABLE]["Row"][]> => {
     const supabase = await createClient();
 
     const { data, error } = await supabase
@@ -47,6 +53,7 @@ export const getCommentsForPost = async (postId: number) => {
             `*, user:${USERS_TABLE}(*), likes:${LIKES_TABLE}(*), shares:${SHARES_TABLE}(*), comments:${POSTS_TABLE}(*)`,
         )
         .eq("postId", postId);
+
     if (error) throw error;
     return data;
 };
