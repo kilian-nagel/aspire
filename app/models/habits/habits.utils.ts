@@ -28,7 +28,7 @@ export interface HabitInfo
     completion_rate: number;
     monthlyData: { day: number; completed: number }[];
 
-    lastWeek: Boolean[];
+    lastWeek: boolean[];
     last_completion_date: Date;
 }
 
@@ -60,14 +60,14 @@ export const filterHabitsByCompletion = (
 
     const now = new Date();
     const today = (now.getDay() + 6) % 7;
-    let filtered_habits = data.filter((habit) => {
+    const filtered_habits = data.filter((habit) => {
         const habit_days = habit?.frequency
             ? habit.frequency.map((freq) => freq.day)
             : [];
         return habit_days.includes(today);
     });
 
-    let habits: { completed: Habit[]; uncompleted: Habit[] } = {
+    const habits: { completed: Habit[]; uncompleted: Habit[] } = {
         completed: [],
         uncompleted: [],
     };
@@ -75,7 +75,7 @@ export const filterHabitsByCompletion = (
     // On filtre les habitudes en fonction de si elles ont été complétées.
     filtered_habits.map((habit) => {
         // On récupère la date de complétion de l'habitude la plus récente.
-        let last_habit_completion =
+        const last_habit_completion =
             habit?.completions?.length > 0
                 ? new Date(
                       habit.completions[
@@ -183,8 +183,8 @@ export class HabitCompletionService {
             const completionDates =
                 this.completionsByHabit[habitId] || new Set();
             let lastCompletionDate: Date | null = null;
-            let lastWeek = Array(7).fill(false);
-            let habit_creation_date = formatISO(startOfDay(habit.created_at));
+            const lastWeek = Array(7).fill(false);
+            const habit_creation_date = formatISO(startOfDay(habit.created_at));
             let habit_existed = false;
 
             let currentStreak = 0; // Track the longest streak
@@ -320,8 +320,8 @@ export const get_habits_for_selected_day = (
         // Il faut que ce soit un jour l'habitude devait être effectuée, et que l'habitude existait lors de la date sélectionnée.
 
         // On compare les dates sans prendre en compte l'heure
-        let date_formatted = startOfDay(date);
-        let date_created_at_formatted = startOfDay(h.created_at);
+        const date_formatted = startOfDay(date);
+        const date_created_at_formatted = startOfDay(h.created_at);
 
         return (
             h.days_has_to_be_completed.includes(selectedDay) &&

@@ -94,7 +94,7 @@ export const getPostsForChat = async (
     }
 
     // Transform data into a type-safe structure
-    return data.map((post: any) => ({
+    return data.map((post: Post) => ({
         ...post,
         numberOfLikes: post.likes.length,
         numberOfShares: post.comments.length,
@@ -134,7 +134,7 @@ export const getAllPosts = async (
     }
 
     // Transform data into a type-safe structure
-    return data.map((post: any) => ({
+    return data.map((post: Post) => ({
         ...post,
         numberOfLikes: post.likes.length,
         numberOfShares: post.comments.length,
