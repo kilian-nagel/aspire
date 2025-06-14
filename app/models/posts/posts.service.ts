@@ -64,7 +64,7 @@ export const deletePost = async (postId: number) => {
 export const getPostsForChat = async (
     chatId: number,
     lastTimeStamp: string | null = null,
-    window: number = 3,
+    window: number = 20,
 ) => {
     const supabase = await createClient();
     let query = supabase
@@ -104,7 +104,7 @@ export const getPostsForChat = async (
 // Fetch all posts with associated likes, shares, and users
 export const getAllPosts = async (
     lastTimeStamp: string | null = null,
-    window: number = 3,
+    window: number = 20,
 ): Promise<Post[]> => {
     const supabase = await createClient();
 
