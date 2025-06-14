@@ -1,6 +1,6 @@
-import {Like} from "@/models/likes/likes.types";
-import {User} from "@/models/users/users.types";
-import {Share} from "@/models/shares/shares.types";
+import { Like } from "@/models/likes/likes.types";
+import { User } from "@/models/users/users.types";
+import { Share } from "@/models/shares/shares.types";
 
 export interface Post {
     id: number;
@@ -8,8 +8,6 @@ export interface Post {
     chatId: number;
     content: string;
     created_at: string;
-    numberOfLikes: number;
-    numberOfShares: number;
     user: User;
     comments: Comment[];
     likes: Like[];
@@ -18,15 +16,15 @@ export interface Post {
 }
 
 export interface PostPartial {
-    id: number,
-    userId: string,
-    postId: number,
-    content: string,
-    chatId: number
+    id: number;
+    userId: string;
+    postId: number;
+    content: string;
+    chatId: number;
 }
 
 export interface PostCreate {
-    userId: string,
-    content: string,
-    chatId: number
+    userId: string;
+    content: string;
+    chatId: number;
 }

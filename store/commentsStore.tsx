@@ -2,10 +2,7 @@
 "use client";
 import {Post} from "@/models/posts/posts.types"
 import {create} from 'zustand';
-import {getAuthenticatedUser} from "@/utils/utils";
 import {getCommentsForPost} from '@/models/comments/comments.service';
-import {getMainChat} from '@/models/chats/chats.service';
-import {useEffect} from "react";
 import {persist} from 'zustand/middleware';
 
 interface PostData {
@@ -58,17 +55,12 @@ export const commentsStore = create<PostData>()(
 );
 
 interface props {
-    initialData: Post[],
     postId: number
 }
 
-export const CommentStoreInitializer: React.FC<props> = ({initialData, postId}) => {
-    const setCommentsData = commentsStore((state) => state.setComments);
-    const setPostId = commentsStore((state) => state.setPostId);
-
-    setPostId(postId);
-    setCommentsData(initialData);
-
+export const CommentStoreInitializer: React.FC<props> = ({postId}) => {
+    const loadCommentsData = commentsStore((state) => state.loadData);
+    loadCommentsData(postId);
     return null;
 };
 

@@ -38,7 +38,6 @@ export default async function page() {
     const promises = [userDataPromise, habits_type_promise, habits_promise];
     await Promise.all(promises);
 
-
     const userData = await userDataPromise;
     const habits_type = await habits_type_promise;
     const habits = await habits_promise;

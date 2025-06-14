@@ -53,7 +53,7 @@ export const PostDialog: React.FC<props> = ({children, content, action_type, id,
         <Dialog>
             <DialogTrigger className={className ?? ""} asChild>
                 {action_type !== PostEvent.createComment ?
-                    <button className="btn-ghost">{text}</button> : <p>{children}</p>}
+                    <Button variant={action_type !== PostEvent.create ? 'ghost' : 'outline'}>{text}</Button> : <p>{children}</p>}
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
