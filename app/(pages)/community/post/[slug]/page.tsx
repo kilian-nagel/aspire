@@ -32,13 +32,12 @@ export default async function Page(props: {params: Params}) {
     if (!post_id) return;
 
     const post = await getPost(post_id);
-    const comments = await getCommentsForPost(post_id);
 
     return (
         <>
             <ClientStoreInitializer initialData={user_data} />
             <PostDetailStoreInitializer initialData={post} />
-            <CommentStoreInitializer postId={post.id} initialData={comments} />
+            <CommentStoreInitializer postId={post.id} />
             <div>
                 <PostDetail key={post.id}></PostDetail>
                 <Comments />

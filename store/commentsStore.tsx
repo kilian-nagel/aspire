@@ -55,11 +55,10 @@ export const commentsStore = create<PostData>()(
 );
 
 interface props {
-    initialData: Post[],
     postId: number
 }
 
-export const CommentStoreInitializer: React.FC<props> = ({initialData, postId}) => {
+export const CommentStoreInitializer: React.FC<props> = ({postId}) => {
     const loadCommentsData = commentsStore((state) => state.loadData);
     loadCommentsData(postId);
     return null;
