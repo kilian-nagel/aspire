@@ -12,9 +12,9 @@ import {
     HABIT_COMPLETION_TABLE,
 } from "@/utils/constants";
 
-type HabitCategory = Tables<HABIT_CATEGORY_TABLE>;
-type HabitFrequency = Tables<HABIT_FREQUENCY_TABLE>;
-type HabitCompletion = Tables<HABIT_COMPLETION_TABLE>;
+type HabitCategory = Tables<typeof HABIT_CATEGORY_TABLE>;
+type HabitFrequency = Tables<typeof HABIT_FREQUENCY_TABLE>;
+type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
 type HabitWithRelations = Habit & {
     categoryObject: HabitCategory | null;
@@ -42,9 +42,7 @@ export const getUserHabits = async (userId: string): Promise<Habit[]> => {
     return data;
 };
 
-export const addHabit = async (
-    habit_data: HabitCreate,
-): Promise<void | Error> => {
+export const addHabit = async (habit_data: HabitCreate): Promise<void> => {
     const supabase = await createClient();
     const frequency = habit_data?.frequency;
     if (!frequency)
@@ -91,7 +89,7 @@ export const addHabit = async (
     }
 };
 
-export const deleteHabit = async (habit_id: number): Promise<void | Error> => {
+export const deleteHabit = async (habit_id: number): Promise<void> => {
     const supabase = await createClient();
     const { error } = await supabase
         .from(HABITS_TABLE)
@@ -103,9 +101,7 @@ export const deleteHabit = async (habit_id: number): Promise<void | Error> => {
     }
 };
 
-export const getHabitsCategories = async (): Promise<
-    HabitCategory[] | Error
-> => {
+export const getHabitsCategories = async (): Promise<HabitCategory[]> => {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from(HABIT_CATEGORY_TABLE)
@@ -120,9 +116,7 @@ export const getHabitsCategories = async (): Promise<
     return data;
 };
 
-export const completeHabit = async (
-    habit_id: number,
-): Promise<void | Error> => {
+export const completeHabit = async (habit_id: number): Promise<void> => {
     const supabase = await createClient();
 
     const date = startOfDay(new Date());
@@ -136,9 +130,7 @@ export const completeHabit = async (
     if (error) throw new Error("Erreur lors de la complétion de l'habitude");
 };
 
-export const uncompleteHabit = async (
-    habit_id: number,
-): Promise<void | Error> => {
+export const uncompleteHabit = async (habit_id: number): Promise<void> => {
     const supabase = await createClient();
 
     const date = startOfDay(new Date());
@@ -156,7 +148,7 @@ export const uncompleteHabit = async (
 
 export const getHabitsCompletions = async (
     habits_ids: number[],
-): Promise<Error | HabitCompletion[]> => {
+): Promise<HabitCompletion[]> => {
     const supabase = await createClient();
     const one_month_ago = subMonths(new Date(), 1);
 

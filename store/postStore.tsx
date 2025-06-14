@@ -57,8 +57,12 @@ export const postStore = create<PostData>()(
                         set({lastTimeStamp: new Date(timestamps[0]).toString()})
                     }
 
-                    const merged_posts = merge_data(posts ?? [], postsData);
-                    set({posts: [...merged_posts], loaded: true, requestOngoing: false});
+                    const merged_posts = merge_data<Post>(posts ?? [], postsData);
+                    set({
+                        posts: [...merged_posts], 
+                        loaded: true, 
+                        requestOngoing: false
+                    });
                     return postsData;
                 } catch (err){
                 }

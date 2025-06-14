@@ -2,7 +2,10 @@ interface ObjectWithId {
     id: string | number;
 }
 
-export function merge_data(data1: ObjectWithId[], data2: ObjectWithId[]) {
+export function merge_data<T extends ObjectWithId>(
+    data1: T[],
+    data2: T[],
+): T[] {
     // On récupère les ids du tableau n°1.
     const ids: { [key: string]: number } = {};
     for (const item of data1) {

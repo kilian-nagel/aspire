@@ -60,8 +60,14 @@ export function LikeButton(post: PostModel) {
             await likePost(user.id, post.id);
         } catch (error) {
             // En cas d'erreur on prévient l'user et on revient à l'état initial
-            toast({title: "Erreur", description: "Le post n'a pas pu être liké", variant: "destructive"})
+            toast({
+                title: "Erreur", 
+                description: "Le post n'a pas pu être liké", 
+                variant: "destructive"
+            });
+
             set_is_post_liked(initial_state)
+
             if (is_post_liked) {
                 dislike();
             } else {

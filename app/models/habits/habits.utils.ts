@@ -38,7 +38,7 @@ interface habitsByCompletion {
 }
 
 interface last7Days {
-    date: string;
+    date: Date;
     formattedDate: string;
     fullDate: string;
     index: number;
@@ -296,7 +296,7 @@ export class HabitCompletionService {
 // Récupère les données concernant les 7 derniers jours de la semaine
 export const getLast7Days = (): last7Days[] => {
     return Array.from({ length: 7 }, (_, i) => {
-        const date = subDays(startOfDay(new Date()), 6 - i);
+        const date: Date = subDays(startOfDay(new Date()), 6 - i);
 
         const dayIndex = (getDay(date) + 6) % 7;
         // On récupère l'index du jour en fonction d'ou il se trouve dans la semaine (0 = Lundi, 1 = Mardi etc..)

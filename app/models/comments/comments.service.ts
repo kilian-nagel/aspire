@@ -7,7 +7,7 @@ import {
     LIKES_TABLE,
     SHARES_TABLE,
 } from "@/utils/constants";
-import { Database } from "@/app/models/database.types";
+import { Post } from "@/models/posts/posts.types";
 
 export const addComment = async ({
     userId,
@@ -42,9 +42,7 @@ export const modifyComment = async (
     return data;
 };
 
-export const getCommentsForPost = async (
-    postId: number,
-): Promise<Database["public"]["Tables"][typeof POSTS_TABLE]["Row"][]> => {
+export const getCommentsForPost = async (postId: number): Promise<Post[]> => {
     const supabase = await createClient();
 
     const { data, error } = await supabase
