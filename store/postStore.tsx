@@ -15,6 +15,7 @@ interface PostData {
     loaded: boolean,
     hasHydrated: boolean,
     requestOngoing: boolean,
+    lastRequestTime: string | null,
     lastTimeStamp: string|null
 }
 
@@ -26,6 +27,7 @@ export const postStore = create<PostData>()(
             requestOngoing: false,
             hasHydrated: false,
             lastTimeStamp: null,
+            lastRequestTime: null,
             setPosts: (posts: Post[] | null) => {
                 set({posts})
             },
@@ -33,14 +35,16 @@ export const postStore = create<PostData>()(
                 set({loaded:loaded});
             },
             loadData: async () => {
-                const {posts, loaded, requestOngoing, lastTimeStamp} = get();
-    
-                if(requestOngoing) return;
-                set({requestOngoing: true});
+                const {posts, lastTimeStamp, lastRequestTime} = get();
+
+                const now = (new Date()).getTime();
+                const lastRequestTimeMs = (new Date(lastRequestTime ?? '')).getTime();
+
+                if(lastRequestTime && ((now - lastRequestTimeMs) < 1000)) return;
+                set({requestOngoing: true, lastRequestTime: (new Date()).toString()});
                 
                 const authUser = await getAuthenticatedUser();
                 if (!authUser){
-                    set({requestOngoing: false});
                     return null
                 };
 
@@ -57,7 +61,6 @@ export const postStore = create<PostData>()(
                     set({posts: [...merged_posts], loaded: true, requestOngoing: false});
                     return postsData;
                 } catch (err){
-                    set({requestOngoing: false});
                 }
 
             },
