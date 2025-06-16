@@ -31,13 +31,19 @@ export default async function Page(props: {params: Params}) {
     const post_id = parseInt(url_params.get("id") ?? "");
     if (!post_id) return;
 
-    const post = await getPost(post_id);
+    const post_request = getPost(post_id);
+    const comments_request = getCommentsForPost(post_id);
+
+    await Promise.all([post_request, comments_request]);
+
+    const post = await post_request;
+    const comments = await comments_request;
 
     return (
         <>
             <ClientStoreInitializer initialData={user_data} />
             <PostDetailStoreInitializer initialData={post} />
-            <CommentStoreInitializer postId={post.id} />
+            <CommentStoreInitializer postId={post.id} comments={comments} />
             <div>
                 <PostDetail key={post.id}></PostDetail>
                 <Comments />
