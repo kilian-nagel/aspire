@@ -136,6 +136,18 @@ export class HabitCompletionService {
         return habitsWithInfos;
     }
 
+    public getTotalCompletions(): number {
+        return this.habitsCompletions.length;
+    }
+
+    public getTotalHabits(): number {
+        return this.habits.length;
+    }
+
+    public getHabits(): Habit[] {
+        return this.habits;
+    }
+
     private initializeHabits(): Record<string, HabitInfo> {
         return this.habits.reduce(
             (acc, habit) => {
