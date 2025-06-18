@@ -1,8 +1,8 @@
 "use client";
-import {Post} from "@/models/posts/posts.types"
+import {Post, PostsQueryType} from "@/models/posts/posts.types"
 import {create} from 'zustand';
 import {getAuthenticatedUser} from "@/utils/utils";
-import {getPostsForChat} from '@/models/posts/posts.service';
+import {getPosts} from '@/models/posts/posts.service';
 import {getMainChat} from '@/models/chats/chats.service';
 import {useEffect} from "react";
 import {merge_data} from "@/utils/object";
@@ -50,7 +50,12 @@ export const postStore = create<PostData>()(
 
                 try {
                     const chat = await getMainChat();
-                    let postsData = await getPostsForChat(chat.id, lastTimeStamp);
+                    let postsData = await getPosts({
+                        postQuery: {
+                            type:  PostsQueryType.Chat,
+                            id  :  chat.id
+                        }, lastTimeStamp
+                    });
 
                     const timestamps = postsData.map(post => new Date(post.created_at).getTime()).sort((a, b) => a-b);
                     if(timestamps.length > 0){

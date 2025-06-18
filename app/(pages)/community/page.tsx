@@ -1,7 +1,8 @@
 import {createClient} from "@/utils/supabase/server";
 import {redirect} from "next/navigation";
 import {SocialFeed} from "@/components/social-feed"
-import {getAllPosts} from "@/models/posts/posts.service";
+import {getPosts} from "@/models/posts/posts.service";
+import { PostsQueryType } from "@/app/models/posts/posts.types";        
 import {PostDialog} from "@/components/post/post-dialog";
 import {getFullUser} from "@/models/users/users.service";
 import {ClientStoreInitializer} from "@/store/userStore";
@@ -19,7 +20,12 @@ export default async function Page() {
         return redirect("/sign-in");
     }
 
-    const posts_promise = getAllPosts();
+    const posts_promise = getPosts({
+        postQuery: {    
+            type:PostsQueryType.All,
+            id:-1
+        }
+    });
     const user_data_promise = getFullUser(user.id);
 
     await Promise.all([posts_promise, user_data_promise]);
