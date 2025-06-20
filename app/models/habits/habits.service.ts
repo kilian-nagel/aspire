@@ -11,6 +11,7 @@ import {
     HABIT_FREQUENCY_TABLE,
     HABIT_COMPLETION_TABLE,
 } from "@/utils/constants";
+import { HabitCompletionService } from "./habits.utils";
 
 type HabitCategory = Tables<typeof HABIT_CATEGORY_TABLE>;
 type HabitFrequency = Tables<typeof HABIT_FREQUENCY_TABLE>;
@@ -18,12 +19,16 @@ type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
 type HabitWithRelations = Habit & {
     categoryObject: HabitCategory | null;
-    frequency: HabitFrequency[]; // Assuming multiple frequencies per habit
-    completions: HabitCompletion[]; // Assuming multiple completions per habit
+    frequency: HabitFrequency[];
+    completions: HabitCompletion[];
+    total_completions: number;
 };
 
-export const getUserHabits = async (userId: string): Promise<Habit[]> => {
+export const getUserHabits = async (
+    userId: string,
+): Promise<HabitWithRelations[]> => {
     const supabase: SupabaseClient<Database> = await createClient();
+
     const { data, error } = await supabase
         .from(HABITS_TABLE)
         .select(

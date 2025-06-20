@@ -1,5 +1,6 @@
 import { Tables } from "@/models/database.types";
 import { Habit } from "@/models/habits/habits.types";
+import { HABIT_COMPLETION_TABLE } from "@/utils/constants";
 import {
     formatISO,
     isAfter,
@@ -14,10 +15,10 @@ import {
     getDate,
 } from "date-fns";
 
-type HabitCompletion = Tables<"habitCompletion">;
+type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
 export interface HabitInfo
-    extends Omit<Tables<"habitCompletion">, "performance" | "habit_id"> {
+    extends Omit<HabitCompletion, "performance" | "habit_id"> {
     name: string;
     category: string;
     days_has_to_be_completed: number[];
@@ -102,6 +103,7 @@ export const filterHabitsByCompletion = (
 export class HabitCompletionService {
     private today: Date;
     private completionsByHabit: Record<number, Set<string>> = {};
+    private habitsWithInfos: Record<string, HabitInfo>;
 
     constructor(
         private habits: Habit[],
@@ -109,6 +111,15 @@ export class HabitCompletionService {
     ) {
         this.today = new Date();
         this.groupCompletionsByHabit();
+
+        const habitsWithInfos: Record<string, HabitInfo> =
+            this.initializeHabits();
+        this.habitsWithInfos = habitsWithInfos;
+
+        this.computeStreaksAndLastWeek(habitsWithInfos);
+        this.calculateCompletionRates(habitsWithInfos);
+        this.calculateMonthlyData(habitsWithInfos);
+        this.assignHabitDetails(habitsWithInfos);
     }
 
     // Pour chaque id d'habitude on va récupérer les complétions associées (sous forme set avec la date de complétion en string)
@@ -146,6 +157,24 @@ export class HabitCompletionService {
 
     public getHabits(): Habit[] {
         return this.habits;
+    }
+
+    public getCompletionRate() {
+        let totalCompletionsRate = 0;
+        for (const habit of Object.values(this.habitsWithInfos)) {
+            totalCompletionsRate += habit.completion_rate;
+        }
+        return (totalCompletionsRate / this.habits.length).toFixed(2);
+    }
+
+    public getHighestStreak(): number {
+        return Object.values(this.habits).reduce(
+            (maxStreak: number, habit: Object) => {
+                if (habit.streak > maxStreak) return habit.streak;
+                else return maxStreak;
+            },
+            0,
+        );
     }
 
     private initializeHabits(): Record<string, HabitInfo> {
