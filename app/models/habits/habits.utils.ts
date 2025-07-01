@@ -1,5 +1,5 @@
 import { Tables } from "@/models/database.types";
-import { Habit } from "@/models/habits/habits.types";
+import { Habit, HabitInfo } from "@/models/habits/habits.types";
 import { HABIT_COMPLETION_TABLE } from "@/utils/constants";
 import {
     formatISO,
@@ -17,22 +17,6 @@ import {
 
 type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
-export interface HabitInfo
-    extends Omit<HabitCompletion, "performance" | "habit_id"> {
-    name: string;
-    category: string;
-    days_has_to_be_completed: number[];
-
-    streak: number;
-    max_completions: number;
-    total_completions: number;
-    completion_rate: number;
-    monthlyData: { day: number; completed: number }[];
-
-    lastWeek: boolean[];
-    last_completion_date: Date;
-}
-
 interface habitsByCompletion {
     completed: Habit[];
     uncompleted: Habit[];
@@ -43,6 +27,11 @@ interface last7Days {
     formattedDate: string;
     fullDate: string;
     index: number;
+}
+
+interface HabitIdWithNumber {
+    habitId: number;
+    data: number;
 }
 
 export const dateEqualByDayPrecision = (date1: Date, date2: Date): boolean => {
@@ -167,14 +156,42 @@ export class HabitCompletionService {
         return (totalCompletionsRate / this.habits.length).toFixed(2);
     }
 
-    public getHighestStreak(): number {
+    public getHighestStreak(): HabitIdWithNumber {
         return Object.values(this.habits).reduce(
-            (maxStreak: number, habit: Object) => {
-                if (habit.streak > maxStreak) return habit.streak;
-                else return maxStreak;
+            (maxStreakHabit: HabitIdWithNumber, habit: Habit) => {
+                if (habit.max_completion_streak > maxStreakHabit.data)
+                    return {
+                        habitId: habit.id,
+                        data: habit.max_completion_streak,
+                    };
+                else return maxStreakHabit;
             },
-            0,
+            {
+                data: 0,
+                habitId: -1,
+            },
         );
+    }
+
+    public getCurrentStreak(): HabitIdWithNumber {
+        return Object.values(this.habitsWithInfos).reduce(
+            (maxCurrentStreak: HabitIdWithNumber, habit: Habit) => {
+                if (habit.streak > maxCurrentStreak.data)
+                    return {
+                        data: habit.streak,
+                        habitId: habit.id,
+                    };
+                else return maxCurrentStreak;
+            },
+            {
+                data: 0,
+                habitId: 0,
+            },
+        );
+    }
+
+    public getHabitInfos(habitId: number) {
+        return this.habitsWithInfos[habitId];
     }
 
     private initializeHabits(): Record<string, HabitInfo> {
@@ -199,6 +216,7 @@ export class HabitCompletionService {
             id: habit.id,
             lastWeek: Array(7).fill(false),
             streak: 0,
+            max_streak: habit.max_completion_streak,
             total_completions: 0,
             max_completions: 0,
             last_completion_date: completionDate,

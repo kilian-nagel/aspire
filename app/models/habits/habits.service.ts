@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database, Tables } from "@/models/database.types";
-import { Habit, HabitCreate } from "@/models/habits/habits.types";
+import { Habit, HabitCreate, HabitInfo } from "@/models/habits/habits.types";
 import { subMonths, startOfDay, formatISO } from "date-fns";
 import {
     HABITS_TABLE,
@@ -27,10 +27,10 @@ type HabitWithRelations = Habit & {
 export const getUserHabits = async (
     userId: string,
 ): Promise<HabitWithRelations[]> => {
-    const supabase: SupabaseClient<Database> = await createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
-        .from(HABITS_TABLE)
+        .from("habits")
         .select(
             `
             *, categoryObject:${HABIT_CATEGORY_TABLE}(*), frequency:${HABIT_FREQUENCY_TABLE}(*), completions: ${HABIT_COMPLETION_TABLE}(*)`,
@@ -45,6 +45,27 @@ export const getUserHabits = async (
 
     // Transform data into a type-safe structure
     return data;
+};
+
+export const getHabitStats = async (habitId: number): Promise<HabitInfo> => {
+    const supabase = await createClient();
+    // Récupération de l'habitude et ses complétions
+    const habit_raw = await supabase
+        .from(HABITS_TABLE)
+        .select(
+            `*, categoryObject:${HABIT_CATEGORY_TABLE}(*), frequency:${HABIT_FREQUENCY_TABLE}(*), completions: ${HABIT_COMPLETION_TABLE}(*)`,
+        )
+        .eq("id", habitId)
+        .single();
+    const habit = habit_raw.data;
+
+    // On récupère les stats de l'habitude
+    const habits_completions_service = new HabitCompletionService(
+        [habit],
+        habit.completions,
+    );
+
+    return habits_completions_service.getHabitInfos(habitId);
 };
 
 export const addHabit = async (habit_data: HabitCreate): Promise<void> => {
@@ -126,13 +147,23 @@ export const completeHabit = async (habit_id: number): Promise<void> => {
 
     const date = startOfDay(new Date());
     const dateStr = formatISO(date);
+    const habitStats = await getHabitStats(habit_id);
 
-    const { error } = await supabase
+    let updateHabitMaxStreakRequest;
+    if (habitStats.streak > habitStats.max_completions_streak) {
+        updateHabitMaxStreakRequest = supabase
+            .from(HABITS_TABLE)
+            .update({ max_completions_streak: habitStats.streak })
+            .eq("id", habit_id);
+    }
+
+    const completeHabitRequest = supabase
         .from(HABIT_COMPLETION_TABLE)
         .insert({ habit_id: habit_id, created_at: dateStr })
         .select();
 
-    if (error) throw new Error("Erreur lors de la complétion de l'habitude");
+    // Exécution parallèle
+    await Promise.all([updateHabitMaxStreakRequest, completeHabitRequest]);
 };
 
 export const uncompleteHabit = async (habit_id: number): Promise<void> => {

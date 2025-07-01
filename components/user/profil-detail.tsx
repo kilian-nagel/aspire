@@ -95,15 +95,12 @@ export default function UserProfile({user, posts, habits}: props) {
 
   const habits_stats = new HabitCompletionService(habits, habits_completions);
   const maxStreak = habits_stats.getHighestStreak();
+  const currentMaxStreak = habits_stats.getCurrentStreak();
   const habitsCompleted = habits_stats.getTotalCompletions();
   const completionRate = habits_stats.getCompletionRate();
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "MMM d, yyyy")
-  }
-
-  const formatTimestamp = (timestamp: string) => {
-    return format(new Date(timestamp), "MMM d 'at' h:mm a")
   }
 
   return (
@@ -157,8 +154,8 @@ export default function UserProfile({user, posts, habits}: props) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{maxStreak} days</div>
-            <p className="text-xs text-muted-foreground mt-1">Longest: {maxStreak} days</p>
+            <div className="text-2xl font-bold">{currentMaxStreak?.data} days</div>
+            <p className="text-xs text-muted-foreground mt-1">Longest: {maxStreak?.data} days</p>
           </CardContent>
         </Card>
 
@@ -193,8 +190,6 @@ export default function UserProfile({user, posts, habits}: props) {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="posts">Posts</TabsTrigger>
-          <TabsTrigger value="achievements">Achievements</TabsTrigger>
-          <TabsTrigger value="about">About</TabsTrigger>
         </TabsList>
 
         {/* Posts Tab */}
