@@ -32,50 +32,50 @@ interface props {
 
 // Mock user data
 const userData = {
-  id: 1,
-  username: "sarah_wellness",
-  displayName: "Sarah Johnson",
-  avatar: "/placeholder.svg?height=120&width=120",
-  bio: "Wellness enthusiast 🧘‍♀️ | Building better habits one day at a time | Sharing my journey to inspire others ✨",
-  joinDate: "2023-03-15",
-  location: "San Francisco, CA",
-  email: "sarah.johnson@email.com",
-  phone: "+1 (555) 123-4567",
-  website: "https://sarahwellness.com",
-  isVerified: true,
-  followers: 1247,
-  following: 389,
-  metrics: {
-    currentStreak: 23,
-    totalHabitsCompleted: 1456,
-    completionRate: 87,
-    totalHabits: 8,
-    longestStreak: 45,
-    daysActive: 287,
-  },
-  achievements: [
-    {
-      id: 1,
-      name: "Early Bird",
-      description: "Completed morning routine 30 days in a row",
-      icon: "🌅",
-      earnedDate: "2024-01-15",
+    id: 1,
+    username: "sarah_wellness",
+    displayName: "Sarah Johnson",
+    avatar: "/placeholder.svg?height=120&width=120",
+    bio: "Wellness enthusiast 🧘‍♀️ | Building better habits one day at a time | Sharing my journey to inspire others ✨",
+    joinDate: "2023-03-15",
+    location: "San Francisco, CA",
+    email: "sarah.johnson@email.com",
+    phone: "+1 (555) 123-4567",
+    website: "https://sarahwellness.com",
+    isVerified: true,
+    followers: 1247,
+    following: 389,
+    metrics: {
+        currentStreak: 23,
+        totalHabitsCompleted: 1456,
+        completionRate: 87,
+        totalHabits: 8,
+        longestStreak: 45,
+        daysActive: 287,
     },
-    {
-      id: 2,
-      name: "Consistency King",
-      description: "Maintained 80%+ completion rate for 3 months",
-      icon: "👑",
-      earnedDate: "2024-02-20",
-    },
-    {
-      id: 3,
-      name: "Wellness Warrior",
-      description: "Completed 1000 wellness habits",
-      icon: "⚡",
-      earnedDate: "2024-03-10",
-    },
-  ],
+    achievements: [
+        {
+            id: 1,
+            name: "Early Bird",
+            description: "Completed morning routine 30 days in a row",
+            icon: "🌅",
+            earnedDate: "2024-01-15",
+        },
+        {
+            id: 2,
+            name: "Consistency King",
+            description: "Maintained 80%+ completion rate for 3 months",
+            icon: "👑",
+            earnedDate: "2024-02-20",
+        },
+        {
+            id: 3,
+            name: "Wellness Warrior",
+            description: "Completed 1000 wellness habits",
+            icon: "⚡",
+            earnedDate: "2024-03-10",
+        },
+    ],
 }
 
 export function build_stats_object(data: Array<Object>){
@@ -85,7 +85,7 @@ export function build_stats_object(data: Array<Object>){
 }
 
 export default function UserProfile({user, posts, habits}: props) {
-  const [activeTab, setActiveTab] = useState("posts")
+    const [activeTab, setActiveTab] = useState("posts")
 
   const habits_completions = habits.reduce((habits:Habit[], habit: Habit) => {
       habits = habits.concat(habit.completions); 
@@ -181,7 +181,6 @@ export default function UserProfile({user, posts, habits}: props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{completionRate}%</div>
-            <p className="text-xs text-muted-foreground mt-1">10 days active</p>
           </CardContent>
         </Card>
       </div>
