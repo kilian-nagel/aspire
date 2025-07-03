@@ -250,7 +250,7 @@ export class HabitCompletionService {
 
             for (let i = 30; i >= 0; i--) {
                 // Traversing from oldest to newest
-                const date = startOfDay(subDays(this.today, i));
+                const date = startOfDay(formatISO(subDays(this.today, i)));
                 const dateStr = formatISO(date);
 
                 if (
@@ -262,7 +262,9 @@ export class HabitCompletionService {
                 }
 
                 const habit_should_have_been_done = habit.frequency?.some(
-                    (freq) => freq.day === getDay(date),
+                    (freq) => {
+                        return freq.day === getDay(date) - 1;
+                    },
                 );
 
                 if (habit_existed && habit_should_have_been_done) {
