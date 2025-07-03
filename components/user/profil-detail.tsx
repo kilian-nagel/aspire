@@ -91,7 +91,6 @@ export default function UserProfile({user, posts, habits}: props) {
       habits = habits.concat(habit.completions); 
     return habits;
   }, []);
-    console.log(habits_completions);
 
   const habits_stats = new HabitCompletionService(habits, habits_completions);
   const maxStreak = habits_stats.getHighestStreak();
