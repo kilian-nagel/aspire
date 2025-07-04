@@ -40,6 +40,10 @@ export function Post(post: PostModel) {
         router.push(`/community/post/id=${post.id}`);
     }
 
+    const handle_click_on_profile = () => {
+        router.push(`/user/id=${post.user.id}`)
+    }
+
     const handle_action = async () => {
         await deletePost(post.id);
         postStore.getState().reloadData();
@@ -50,10 +54,10 @@ export function Post(post: PostModel) {
         <Card key={post.id} className={clsx("group hover:bg-[#111111]", {is_comment: "border-none"})}>
             <CardHeader>
                 <div className="flex gap-4 items-center">
-                    <Avatar onClick={handle_click_on_post}>
+                    <Avatar className="hover:cursor-pointer" onClick={handle_click_on_profile}>
                         <AvatarFallback>{post?.user?.username.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <div onClick={handle_click_on_post}>
+                    <div className="hover:cursor-pointer" onClick={handle_click_on_post}>
                         <CardTitle className="text-lg font-semibold">{post?.user?.username}</CardTitle>
                         <CardDescription className="text-sm text-gray-400">{timeAgo(post.created_at)}</CardDescription>
                     </div>

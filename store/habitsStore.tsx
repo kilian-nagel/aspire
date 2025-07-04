@@ -2,13 +2,13 @@
 import {Habit} from "@/models/habits/habits.types";
 import {create} from 'zustand';
 import {getAuthenticatedUser} from "@/utils/utils";
-import {getUserHabits} from '@/models/habits/habits.service';
+import {getUserHabits, HabitWithRelations} from '@/models/habits/habits.service';
 import {useEffect} from "react";
 
 interface HabitData {
-    habits: Habit[] | null,
+    habits: HabitWithRelations[] | null,
     loaded: boolean,
-    setHabits: (habits: Habit[]) => void,
+    setHabits: (habits: HabitWithRelations[]) => void,
     loadData: () => void
 }
 
@@ -17,7 +17,7 @@ export const habitStore = create<HabitData>()(
     (set, get) => ({
         habits: null,
         loaded: false,
-        setHabits: (habits: Habit[]) => set({habits}),
+        setHabits: (habits: HabitWithRelations[]) => set({habits}),
         loadData: async () => {
 
             // Fetch authenticated habit
@@ -36,7 +36,7 @@ export const habitStore = create<HabitData>()(
 );
 
 interface props {
-    initialData: Habit[]
+    initialData: HabitWithRelations[]
 }
 
 export const HabitsStoreInitializer: React.FC<props> = ({initialData}) => {

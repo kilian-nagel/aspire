@@ -4,7 +4,7 @@ import {getLast7Days, get_habits_for_selected_day} from "@/models/habits/habits.
 import Last7Days from "@/components/habits/last7days_habits";
 import HabitList from "@/components/habits/habits-list-completion";
 import HabitStats from "@/components/habits/habits-stats";
-import {HabitInfo} from "@/models/habits/habits.utils";
+import {HabitInfo} from "@/models/habits/habits.types";
 
 export default function HabitDashboard({habits_infos}: {habits_infos: HabitInfo[]}) {
     const [selectedDay, setSelectedDay] = useState(6);

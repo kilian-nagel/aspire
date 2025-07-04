@@ -12,7 +12,6 @@ interface HabitListProps {
 }
 
 const HabitList = ({habits, selectedDay, selectedHabit, setSelectedHabit}: HabitListProps) => {
-
     if (!selectedHabit?.lastWeek) return;
 
     return (
@@ -58,4 +57,3 @@ const HabitList = ({habits, selectedDay, selectedHabit, setSelectedHabit}: Habit
 };
 
 export default HabitList;
-

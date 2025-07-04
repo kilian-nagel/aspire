@@ -11,9 +11,8 @@ import {
     DialogTitle
 } from "@/components/ui/dialog";
 import {useState} from "react";
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
-import {Button} from "@/components/ui/button";
-import {ClipboardList, Plus} from "lucide-react"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {ClipboardList} from "lucide-react";
 
 export const HabitsCards = ({
     habits_type,
@@ -22,7 +21,8 @@ export const HabitsCards = ({
     habits_type: Tables<"habitCategory">[];
     no_complete_action?: boolean;
 }) => {
-    const {habits} = habitStore();
+    const habits = habitStore((state) => state.habits);
+    if(!habits) return;
     const habits_filtered_by_completion = filterHabitsByCompletion(habits);
     const [habit_to_edit, set_habit_to_edit] = useState<Habit | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -65,25 +65,43 @@ export const HabitsCards = ({
 
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
-                {habits_filtered_by_completion.uncompleted.map(habit => (
-                    <HabitCard
-                        edit_habit_function={() => edit_habit(habit)}
-                        key={habit.id}
-                        no_complete_action={no_complete_action}
-                        {...habit}
-                    />
-                ))}
-                {habits_filtered_by_completion.completed.map(habit => (
-                    <HabitCard
-                        edit_habit_function={() => edit_habit(habit)}
-                        key={habit.id}
-                        completed={true}
-                        no_complete_action={no_complete_action}
-                        {...habit}
-                    />
-                ))}
-            </div>
+            { /* Si on affiche toutes les habitudes */ }
+
+            { /* Si on affiche les habitudes de la journée */ }
+            { no_complete_action ? 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
+                    {
+                        habits.map(habit => (
+                            <HabitCard
+                                edit_habit_function={() => edit_habit(habit)}
+                                key={habit.id}
+                                no_complete_action={no_complete_action}
+                                {...habit}
+                            />
+                        ))
+                    }
+                </div>
+                    : 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
+                    {habits_filtered_by_completion.uncompleted.map(habit => (
+                        <HabitCard
+                            edit_habit_function={() => edit_habit(habit)}
+                            key={habit.id}
+                            no_complete_action={no_complete_action}
+                            {...habit}
+                        />
+                    ))}
+                    {habits_filtered_by_completion.completed.map(habit => (
+                        <HabitCard
+                            edit_habit_function={() => edit_habit(habit)}
+                            key={habit.id}
+                            completed={true}
+                            no_complete_action={no_complete_action}
+                            {...habit}
+                        />
+                    ))}
+                </div>
+            }
 
             {/* Controlled Modal */}
             <Dialog open={isDialogOpen} onOpenChange={(open) => !open && closeModal()}>

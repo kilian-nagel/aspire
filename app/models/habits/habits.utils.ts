@@ -1,5 +1,7 @@
 import { Tables } from "@/models/database.types";
-import { Habit } from "@/models/habits/habits.types";
+import { Habit, HabitInfo } from "@/models/habits/habits.types";
+import { HabitWithRelations } from "./habits.service";
+import { HABIT_COMPLETION_TABLE } from "@/utils/constants";
 import {
     formatISO,
     isAfter,
@@ -14,23 +16,7 @@ import {
     getDate,
 } from "date-fns";
 
-type HabitCompletion = Tables<"habitCompletion">;
-
-export interface HabitInfo
-    extends Omit<Tables<"habitCompletion">, "performance" | "habit_id"> {
-    name: string;
-    category: string;
-    days_has_to_be_completed: number[];
-
-    streak: number;
-    max_completions: number;
-    total_completions: number;
-    completion_rate: number;
-    monthlyData: { day: number; completed: number }[];
-
-    lastWeek: boolean[];
-    last_completion_date: Date;
-}
+type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
 interface habitsByCompletion {
     completed: Habit[];
@@ -44,6 +30,11 @@ interface last7Days {
     index: number;
 }
 
+interface HabitIdWithNumber {
+    habitId: number;
+    data: number;
+}
+
 export const dateEqualByDayPrecision = (date1: Date, date2: Date): boolean => {
     return Boolean(
         date1 &&
@@ -54,7 +45,7 @@ export const dateEqualByDayPrecision = (date1: Date, date2: Date): boolean => {
 };
 
 export const filterHabitsByCompletion = (
-    data: Habit[] | null,
+    data: HabitWithRelations[] | null,
 ): habitsByCompletion => {
     if (!data) return { completed: [], uncompleted: [] };
 
@@ -102,13 +93,23 @@ export const filterHabitsByCompletion = (
 export class HabitCompletionService {
     private today: Date;
     private completionsByHabit: Record<number, Set<string>> = {};
+    private habitsWithInfos: Record<string, HabitInfo>;
 
     constructor(
-        private habits: Habit[],
+        private habits: HabitWithRelations[],
         private habitsCompletions: HabitCompletion[],
     ) {
         this.today = new Date();
         this.groupCompletionsByHabit();
+
+        const habitsWithInfos: Record<string, HabitInfo> =
+            this.initializeHabits();
+        this.habitsWithInfos = habitsWithInfos;
+
+        this.computeStreaksAndLastWeek(habitsWithInfos);
+        this.calculateCompletionRates(habitsWithInfos);
+        this.calculateMonthlyData(habitsWithInfos);
+        this.assignHabitDetails(habitsWithInfos);
     }
 
     // Pour chaque id d'habitude on va récupérer les complétions associées (sous forme set avec la date de complétion en string)
@@ -148,6 +149,51 @@ export class HabitCompletionService {
         return this.habits;
     }
 
+    public getCompletionRate() {
+        let totalCompletionsRate = 0;
+        for (const habit of Object.values(this.habitsWithInfos)) {
+            totalCompletionsRate += habit.completion_rate;
+        }
+        return (totalCompletionsRate / this.habits.length).toFixed(2);
+    }
+
+    public getHighestStreak(): HabitIdWithNumber {
+        let current = {
+            data: 0,
+            habitId: -1,
+        };
+
+        for (const habit of this.habits) {
+            if (
+                habit.max_completion_streak !== null &&
+                habit.max_completion_streak > current.data
+            ) {
+                current.habitId = habit.id;
+                current.data = habit.max_completion_streak;
+            }
+        }
+        return current;
+    }
+
+    public getCurrentStreak(): HabitIdWithNumber {
+        let current = {
+            data: 0,
+            habitId: -1,
+        };
+
+        for (const habit of Object.values(this.habitsWithInfos)) {
+            if (habit.streak !== null && habit.streak > current.data) {
+                current.habitId = habit.id;
+                current.data = habit.streak;
+            }
+        }
+        return current;
+    }
+
+    public getHabitInfos(habitId: number) {
+        return this.habitsWithInfos[habitId];
+    }
+
     private initializeHabits(): Record<string, HabitInfo> {
         return this.habits.reduce(
             (acc, habit) => {
@@ -164,18 +210,20 @@ export class HabitCompletionService {
     // Initialise les infos d'une habitude
     private static initializeHabitInfo(
         completionDate: Date,
-        habit: Habit,
+        habit: HabitWithRelations,
     ): HabitInfo {
         return {
             id: habit.id,
             lastWeek: Array(7).fill(false),
             streak: 0,
+            max_streak: habit.max_completion_streak,
+            max_completions_streak: 0,
             total_completions: 0,
             max_completions: 0,
             last_completion_date: completionDate,
             completion_rate: 0,
             name: habit.name,
-            category: habit.categoryObject.name,
+            category: habit?.categoryObject?.name ?? "",
             created_at: habit.created_at,
             days_has_to_be_completed: [],
             monthlyData: [],
@@ -203,7 +251,7 @@ export class HabitCompletionService {
 
             for (let i = 30; i >= 0; i--) {
                 // Traversing from oldest to newest
-                const date = startOfDay(subDays(this.today, i));
+                const date = startOfDay(formatISO(subDays(this.today, i)));
                 const dateStr = formatISO(date);
 
                 if (
@@ -215,7 +263,9 @@ export class HabitCompletionService {
                 }
 
                 const habit_should_have_been_done = habit.frequency?.some(
-                    (freq) => freq.day === getDay(date),
+                    (freq) => {
+                        return freq.day === getDay(date) - 1;
+                    },
                 );
 
                 if (habit_existed && habit_should_have_been_done) {
