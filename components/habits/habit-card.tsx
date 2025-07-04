@@ -19,12 +19,13 @@ import {HabitEvent, dispatchHabitEvent} from "@/handlers/habits-reducer";
 import {habitStore} from "@/store/habitsStore";
 import {Check} from 'lucide-react';
 import {X} from "lucide-react";
-import {Habit} from "@/models/habits/habits.types";
+import {Habit, HabitCategory} from "@/models/habits/habits.types";
 
 interface props extends Habit {
     completed?: boolean;
     no_complete_action?: boolean
     edit_habit_function: Function;
+    categoryObject: HabitCategory;
 }
 
 export function HabitCard({id, name, description, categoryObject, edit_habit_function, completed, no_complete_action}: props) {

@@ -3,7 +3,7 @@ import {CheckCheck, CheckCircle2, Circle, TrendingUp} from "lucide-react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Progress} from "@/components/ui/progress";
-import {HabitInfo} from "@/models/habits/habits.utils";
+import {HabitInfo} from "@/models/habits/habits.types";
 
 const round = (n: number) => Math.round(n * 100) / 100;
 

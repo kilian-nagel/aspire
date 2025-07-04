@@ -47,7 +47,6 @@
     "eslint": "^9.28.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.2.0",
-    "jsx-runtime": "link:@eslint/react/jsx-runtime",
     "postcss": "8.4.49",
     "supabase": "2.15.8",
     "tailwind-merge": "^2.5.2",

@@ -19,7 +19,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import {addHabit} from "@/models/habits/habits.service";
+import {addHabit, HabitWithRelations} from "@/models/habits/habits.service";
 import {userStore} from "@/store/userStore";
 import {useToast} from "@/hooks/use-toast"
 import {
@@ -28,12 +28,11 @@ import {
 
 import {habitStore} from "@/store/habitsStore";
 import {Tables} from "@/models/database.types"
-import {Habit} from "@/models/habits/habits.types";
 
 let HabitFrequency: Tables<'habitFrequency'>;
 interface props {
     habits_type: Tables<'habitCategory'>[],
-    habit?: Habit | null,
+    habit: HabitWithRelations | null,
 }
 
 // Data store.
@@ -96,8 +95,14 @@ export function HabitForm({habits_type, habit}: props) {
         if (!days_are_selected) return;
 
         // On récupère les données nécessaires pour l'habitude
-        const habit_data: HabitCreate = {id: -1, description: habit_description, name: habit_name, user_id: user_id ?? "", category: category_id};
-
+        const habit_data: HabitCreate = {
+            id: -1, 
+            description: habit_description, 
+            name: habit_name, 
+            user_id: user_id ?? "", 
+            category: category_id,
+            max_completion_streak: 0
+        };
 
         if (habit_id) habit_data.id = habit_id;
 
@@ -211,6 +216,3 @@ export function HabitForm({habits_type, habit}: props) {
         </div>
     );
 }
-
-
-

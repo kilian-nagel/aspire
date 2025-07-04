@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { Post } from "@/models/posts/posts.types";
+import { Post, PostsQueryType } from "@/models/posts/posts.types";
 import { check_if_content_is_unacceptable } from "@/utils/validation";
 import { formatISO } from "date-fns";
 import {
@@ -10,6 +10,15 @@ import {
     SHARES_TABLE,
     USERS_TABLE,
 } from "@/utils/constants";
+
+interface getPostsProps {
+    postQuery: {
+        type: PostsQueryType;
+        id: number | string;
+    };
+    lastTimeStamp?: string | null;
+    window?: number;
+}
 
 export const createPost = async (post: {
     userId: string;
@@ -61,11 +70,14 @@ export const deletePost = async (postId: number) => {
     return data;
 };
 
-export const getPostsForChat = async (
-    chatId: number,
-    lastTimeStamp: string | null = null,
-    window: number = 20,
-) => {
+/*
+ Obtention de posts pour un certain type de données (Chat, User, ou alors aucune donnée spécifique (All))
+ */
+export const getPosts = async ({
+    postQuery,
+    lastTimeStamp = null,
+    window = 20,
+}: getPostsProps) => {
     const supabase = await createClient();
     let query = supabase
         .from("posts")
@@ -77,51 +89,17 @@ export const getPostsForChat = async (
       shares:${SHARES_TABLE}(*),      
       comments:${POSTS_TABLE}(*)`,
         ) // Correctly fetch related comments
-        .eq("chatId", chatId)
         .order("created_at", { ascending: false });
 
+    if (postQuery.type === PostsQueryType.Chat) {
+        query.eq("chatId", postQuery.id);
+    } else if (postQuery.type === PostsQueryType.User) {
+        query.eq("userId", postQuery.id);
+    }
+
     if (lastTimeStamp) {
-        console.log("lastTimeStamp", lastTimeStamp);
         const lastTimeStampISO = formatISO(new Date(lastTimeStamp));
         query = query.lt("created_at", lastTimeStampISO);
-    }
-
-    const { data, error } = await query.limit(window);
-
-    if (error) {
-        console.error("Error fetching posts:", error);
-        throw error;
-    }
-
-    // Transform data into a type-safe structure
-    return data.map((post: Post) => ({
-        ...post,
-    }));
-};
-
-// Fetch all posts with associated likes, shares, and users
-export const getAllPosts = async (
-    lastTimeStamp: string | null = null,
-    window: number = 20,
-): Promise<Post[]> => {
-    const supabase = await createClient();
-
-    const query = supabase
-        .from(POSTS_TABLE)
-        .select(
-            `
-      *,
-      user:${USERS_TABLE}(*),         
-      likes:${LIKES_TABLE}(*),        
-      shares:${SHARES_TABLE}(*),      
-      comments:${POSTS_TABLE}(*)  
-    `,
-        )
-        .order("created_at", { ascending: false })
-        .is("postId", null);
-
-    if (lastTimeStamp) {
-        query.lt("created_at", lastTimeStamp);
     }
 
     const { data, error } = await query.limit(window);

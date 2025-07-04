@@ -28,3 +28,9 @@ export interface PostCreate {
     content: string;
     chatId: number;
 }
+
+export enum PostsQueryType {
+    Chat,
+    User,
+    All,
+}

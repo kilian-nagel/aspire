@@ -58,7 +58,7 @@ export default async function page() {
                     </DialogTrigger>
                     <DialogContent className="min-w-[1200px]">
                         <DialogTitle></DialogTitle>
-                        <HabitForm habits_type={habits_type} />
+                        <HabitForm habits_type={habits_type} habit={null}/>
                     </DialogContent>
                 </Dialog>
             </div>
