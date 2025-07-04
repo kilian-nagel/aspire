@@ -6,6 +6,7 @@ type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
 export type Habit = Tables<"habits">;
 export type HabitCategory = Tables<"habitCategory">;
+export type HabitCompletions = Tables<"habitCompletion">;
 
 export interface HabitCreate
     extends Omit<Tables<"habits">, "created_at" | "id"> {

@@ -2,7 +2,8 @@
 import {Calendar} from "lucide-react";
 import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import {HabitInfo, get_habits_for_selected_day} from "@/models/habits/habits.utils";
+import {get_habits_for_selected_day} from "@/models/habits/habits.utils";
+import { HabitInfo } from "@/models/habits/habits.types";
 
 interface Last7DaysProps {
     last7Days: {date: Date; formattedDate: string; fullDate: string; index: number}[];

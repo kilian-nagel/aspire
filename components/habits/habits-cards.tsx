@@ -13,6 +13,7 @@ import {
 import {useState} from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {ClipboardList} from "lucide-react";
+import { HabitWithRelations } from "@/app/models/habits/habits.service";
 
 export const HabitsCards = ({
     habits_type,
@@ -23,8 +24,8 @@ export const HabitsCards = ({
 }) => {
     const habits = habitStore((state) => state.habits);
     if(!habits) return;
-    const habits_filtered_by_completion = filterHabitsByCompletion(habits);
-    const [habit_to_edit, set_habit_to_edit] = useState<Habit | null>(null);
+    const habits_filtered_by_completion: {completed: HabitWithRelations[], uncompleted: HabitWithRelations[]} = filterHabitsByCompletion(habits);
+    const [habit_to_edit, set_habit_to_edit] = useState<HabitWithRelations | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     if (!habits || habits.length === 0) {
@@ -43,7 +44,7 @@ export const HabitsCards = ({
         </Card>;
     }
 
-    const edit_habit = (habit: Habit) => {
+    const edit_habit = (habit: HabitWithRelations) => {
         set_habit_to_edit(habit);
         setIsDialogOpen(true); // Directly open the modal
     };

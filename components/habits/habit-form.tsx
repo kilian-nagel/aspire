@@ -32,7 +32,7 @@ import {Tables} from "@/models/database.types"
 let HabitFrequency: Tables<'habitFrequency'>;
 interface props {
     habits_type: Tables<'habitCategory'>[],
-    habit?: HabitWithRelations | null,
+    habit: HabitWithRelations | null,
 }
 
 // Data store.

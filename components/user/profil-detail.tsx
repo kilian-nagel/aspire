@@ -21,13 +21,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Post as PostComponent } from "@/components/post/post";
 import { User } from "@/models/users/users.types";
 import { Post } from "@/models/posts/posts.types";
-import { Habit } from "@/app/models/habits/habits.types"
+import { Habit, HabitCompletions } from "@/app/models/habits/habits.types"
 import { HabitCompletionService } from "@/app/models/habits/habits.utils"
+import { HabitWithRelations } from "@/app/models/habits/habits.service"
 
 interface props {
     user: User;
     posts: Post[];
-    habits: Habit[];
+    habits: HabitWithRelations[];
 }
 
 // Mock user data
@@ -85,9 +86,9 @@ export function build_stats_object(data: Array<Object>){
 }
 
 export default function UserProfile({user, posts, habits}: props) {
-    const [activeTab, setActiveTab] = useState("posts")
+  const [activeTab, setActiveTab] = useState("posts")
 
-  const habits_completions = habits.reduce((habits:Habit[], habit: Habit) => {
+  const habits_completions = habits.reduce((habits:HabitCompletions[], habit: HabitWithRelations) => {
       habits = habits.concat(habit.completions); 
     return habits;
   }, []);
@@ -110,7 +111,7 @@ export default function UserProfile({user, posts, habits}: props) {
           <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
             <div className="flex flex-col items-center md:items-start">
               <Avatar className="h-24 w-24 md:h-32 md:w-32">
-                <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user.username} />
+                <AvatarImage src={"/placeholder.svg"} alt={user.username} />
                 <AvatarFallback className="text-2xl">
                   {userData.displayName
                     .split(" ")
@@ -126,12 +127,10 @@ export default function UserProfile({user, posts, habits}: props) {
                 <span className="text-muted-foreground">@{user.username}</span>
               </div>
 
-              <p className="text-muted-foreground mb-4 max-w-2xl">{user.biography}</p>
-
               <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  Joined {formatDate(user?.created_at)}
+                  Joined {formatDate(user?.created_at ?? "")}
                 </div>
                 <div className="flex items-center">
                   <MessageSquareDashed className="h-4 w-4 mr-1" />

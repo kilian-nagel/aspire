@@ -78,7 +78,10 @@ export const postStore = create<PostData>()(
                 if (!authUser) return;
 
                 const chat = await getMainChat();
-                const postsData = await getPostsForChat(chat.id);
+                const postsData = await getPosts({postQuery:{
+                    type:PostsQueryType.Chat,
+                    id: chat.id
+                }});
                 const postsDataFiltered = postsData.filter(data => data.postId === null)
 
                 if (postsData) {

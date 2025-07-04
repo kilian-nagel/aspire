@@ -55,7 +55,6 @@ const nav_items_legal = [
     },
 ]
 
-
 export function AppSidebar({user}: {user: Omit<Tables<'users'>, 'created_at'>}) {
     const pathname = usePathname()
     const {toggleSidebar} = useSidebar()
@@ -126,7 +125,6 @@ export function AppSidebar({user}: {user: Omit<Tables<'users'>, 'created_at'>}) 
                             </div>
                             <div className="flex flex-col gap-0.5 leading-none">
                                 <span className="font-medium">{user?.username ?? 'guest'}</span>
-                                <span className="text-xs text-muted-foreground">{user?.email ?? ''}</span>
                             </div>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

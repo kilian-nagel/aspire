@@ -46,7 +46,7 @@ export const dateEqualByDayPrecision = (date1: Date, date2: Date): boolean => {
 
 export const filterHabitsByCompletion = (
     data: HabitWithRelations[] | null,
-): habitsByCompletion => {
+): { completed: HabitWithRelations[]; uncompleted: HabitWithRelations[] } => {
     if (!data) return { completed: [], uncompleted: [] };
 
     const now = new Date();
@@ -58,7 +58,10 @@ export const filterHabitsByCompletion = (
         return habit_days.includes(today);
     });
 
-    const habits: { completed: Habit[]; uncompleted: Habit[] } = {
+    const habits: {
+        completed: HabitWithRelations[];
+        uncompleted: HabitWithRelations[];
+    } = {
         completed: [],
         uncompleted: [],
     };

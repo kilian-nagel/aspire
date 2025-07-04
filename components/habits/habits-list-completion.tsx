@@ -2,7 +2,7 @@
 import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {CheckCircle2, XCircle} from "lucide-react";
-import {HabitInfo} from "@/models/habits/habits.utils";
+import {HabitInfo} from "@/models/habits/habits.types";
 
 interface HabitListProps {
     habits: HabitInfo[];
