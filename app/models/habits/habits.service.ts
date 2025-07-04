@@ -1,8 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { Database, Tables } from "@/models/database.types";
+import { Tables } from "@/models/database.types";
 import { Habit, HabitCreate, HabitInfo } from "@/models/habits/habits.types";
 import { subMonths, startOfDay, formatISO } from "date-fns";
 import {
@@ -17,8 +16,8 @@ type HabitCategory = Tables<typeof HABIT_CATEGORY_TABLE>;
 type HabitFrequency = Tables<typeof HABIT_FREQUENCY_TABLE>;
 type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
-type HabitWithRelations = Habit & {
-    categoryObject: HabitCategory | null;
+export type HabitWithRelations = Habit & {
+    categoryObject: HabitCategory;
     frequency: HabitFrequency[];
     completions: HabitCompletion[];
     total_completions: number;

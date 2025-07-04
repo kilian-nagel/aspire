@@ -6,7 +6,11 @@ import { getPosts } from "@/app/models/posts/posts.service";
 import { getUserHabits } from "@/app/models/habits/habits.service";
 import { PostsQueryType } from "@/app/models/posts/posts.types";
 
-export default async function Page(props: {params}) {
+interface params {
+    params: Promise<{id : string}>
+}
+
+export default async function Page(props: params) {
     const supabase = await createClient();
     const {
         data: {user},

@@ -22,6 +22,7 @@ export const HabitsCards = ({
     no_complete_action?: boolean;
 }) => {
     const habits = habitStore((state) => state.habits);
+    if(!habits) return;
     const habits_filtered_by_completion = filterHabitsByCompletion(habits);
     const [habit_to_edit, set_habit_to_edit] = useState<Habit | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);

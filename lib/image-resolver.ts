@@ -1,4 +1,3 @@
-
 import sport from "@/images/sports.svg";
 import heart from "@/images/heart.svg";
 import books from "@/images/books.svg";
@@ -29,4 +28,4 @@ export const resolver = (icon_name: string) => {
         default:
             return character;
     }
-}
+};

@@ -1,13 +1,11 @@
 import { Tables } from "@/models/database.types";
 export type HabitFrequencyCreate = Omit<Tables<"habitFrequency">, "created_at">;
+import { HABIT_COMPLETION_TABLE } from "@/utils/constants";
 
 type HabitCompletion = Tables<typeof HABIT_COMPLETION_TABLE>;
 
-export interface Habit extends Tables<"Habits"> {
-    frequency?: Tables<"habitFrequency">[];
-    categoryObject?: Tables<"habitCategory">;
-    completions?: Tables<"habitCompletion">[];
-}
+export type Habit = Tables<"habits">;
+export type HabitCategory = Tables<"habitCategory">;
 
 export interface HabitCreate
     extends Omit<Tables<"habits">, "created_at" | "id"> {
@@ -23,6 +21,8 @@ export interface HabitInfo
 
     streak: number;
     max_completions: number;
+    max_streak?: number | null;
+    max_completions_streak: number;
     total_completions: number;
     completion_rate: number;
     monthlyData: { day: number; completed: number }[];

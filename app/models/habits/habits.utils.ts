@@ -1,5 +1,6 @@
 import { Tables } from "@/models/database.types";
 import { Habit, HabitInfo } from "@/models/habits/habits.types";
+import { HabitWithRelations } from "./habits.service";
 import { HABIT_COMPLETION_TABLE } from "@/utils/constants";
 import {
     formatISO,
@@ -44,7 +45,7 @@ export const dateEqualByDayPrecision = (date1: Date, date2: Date): boolean => {
 };
 
 export const filterHabitsByCompletion = (
-    data: Habit[] | null,
+    data: HabitWithRelations[] | null,
 ): habitsByCompletion => {
     if (!data) return { completed: [], uncompleted: [] };
 
@@ -95,7 +96,7 @@ export class HabitCompletionService {
     private habitsWithInfos: Record<string, HabitInfo>;
 
     constructor(
-        private habits: Habit[],
+        private habits: HabitWithRelations[],
         private habitsCompletions: HabitCompletion[],
     ) {
         this.today = new Date();
@@ -157,37 +158,36 @@ export class HabitCompletionService {
     }
 
     public getHighestStreak(): HabitIdWithNumber {
-        return Object.values(this.habits).reduce(
-            (maxStreakHabit: HabitIdWithNumber, habit: Habit) => {
-                if (habit.max_completion_streak > maxStreakHabit.data)
-                    return {
-                        habitId: habit.id,
-                        data: habit.max_completion_streak,
-                    };
-                else return maxStreakHabit;
-            },
-            {
-                data: 0,
-                habitId: -1,
-            },
-        );
+        let current = {
+            data: 0,
+            habitId: -1,
+        };
+
+        for (const habit of this.habits) {
+            if (
+                habit.max_completion_streak !== null &&
+                habit.max_completion_streak > current.data
+            ) {
+                current.habitId = habit.id;
+                current.data = habit.max_completion_streak;
+            }
+        }
+        return current;
     }
 
     public getCurrentStreak(): HabitIdWithNumber {
-        return Object.values(this.habitsWithInfos).reduce(
-            (maxCurrentStreak: HabitIdWithNumber, habit: Habit) => {
-                if (habit.streak > maxCurrentStreak.data)
-                    return {
-                        data: habit.streak,
-                        habitId: habit.id,
-                    };
-                else return maxCurrentStreak;
-            },
-            {
-                data: 0,
-                habitId: 0,
-            },
-        );
+        let current = {
+            data: 0,
+            habitId: -1,
+        };
+
+        for (const habit of Object.values(this.habitsWithInfos)) {
+            if (habit.streak !== null && habit.streak > current.data) {
+                current.habitId = habit.id;
+                current.data = habit.streak;
+            }
+        }
+        return current;
     }
 
     public getHabitInfos(habitId: number) {
@@ -210,19 +210,20 @@ export class HabitCompletionService {
     // Initialise les infos d'une habitude
     private static initializeHabitInfo(
         completionDate: Date,
-        habit: Habit,
+        habit: HabitWithRelations,
     ): HabitInfo {
         return {
             id: habit.id,
             lastWeek: Array(7).fill(false),
             streak: 0,
             max_streak: habit.max_completion_streak,
+            max_completions_streak: 0,
             total_completions: 0,
             max_completions: 0,
             last_completion_date: completionDate,
             completion_rate: 0,
             name: habit.name,
-            category: habit.categoryObject.name,
+            category: habit?.categoryObject?.name ?? "",
             created_at: habit.created_at,
             days_has_to_be_completed: [],
             monthlyData: [],
